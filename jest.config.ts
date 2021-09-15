@@ -28,7 +28,13 @@ export default {
   // An array of regexp pattern strings used to skip coverage collection
   coveragePathIgnorePatterns: [
     "node_modules",
-    "built"
+    "/built",
+    "built",
+    "/built/",
+    "built/",
+    "/built/*.*",
+    "built/*.*",
+    "./built"
   ],
 
   // Indicates which provider should be used to instrument code for coverage
@@ -85,7 +91,9 @@ export default {
   // moduleNameMapper: {},
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
-  // modulePathIgnorePatterns: [],
+  modulePathIgnorePatterns: [
+    "built",
+  ],
 
   // Activates notifications for test results
   // notify: false,
@@ -115,7 +123,7 @@ export default {
   // restoreMocks: false,
 
   // The root directory that Jest should scan for tests and modules within
-  // rootDir: undefined,
+  // rootDir: 'src',
 
   // A list of paths to directories that Jest should use to search for files in
   // roots: [
@@ -153,9 +161,10 @@ export default {
   // ],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
-  // testPathIgnorePatterns: [
-  //   "\\\\node_modules\\\\"
-  // ],
+  testPathIgnorePatterns: [
+    "\\\\node_modules\\\\",
+    "built"
+  ],
 
   // The regexp pattern or array of patterns that Jest uses to detect test files
   // testRegex: [],

@@ -9,7 +9,8 @@
 /coverage
 
 # production
-/built
+/built/*
+!/built/web.config
 
 # misc
 .DS_Store
