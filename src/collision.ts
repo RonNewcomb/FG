@@ -7,9 +7,9 @@ export function hits(attack: CharacterMove, attackFrame: frameCount, target: Cha
     return checkBoxes(attackBoxes, targetBoxes);
 }
 
-const hasAll = (box: Hitbox, property: HitboxProperties) => (box.props & property) === property;
-const hasAny = (box: Hitbox, property: HitboxProperties) => (box.props & property) !== 0;
-const hasNone = (box: Hitbox, property: HitboxProperties) => (box.props & property) === 0;
+export const hasAll = (box: Hitbox, property: HitboxProperties) => (box.props & property) === property;
+export const hasAny = (box: Hitbox, property: HitboxProperties) => (box.props & property) !== 0;
+export const hasNone = (box: Hitbox, property: HitboxProperties) => (box.props & property) === 0;
 
 // nested loops instead of .filter(lambda) are ugly but more efficient - no space allocation except return value
 export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connected | null {

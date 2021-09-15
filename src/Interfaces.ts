@@ -62,7 +62,7 @@ export interface CharacterMove {
     animationAt: number;
     sound?: IAudio;
     hitboxes: HitboxSet[]; // most entries in this array will be dups but we have O(1) lookup on nthFrame
-    branchOnConnection: any; // hit-grab, rekkas, chain-cancel, whiff animations.... 
+    branchOnConnection?: any; // hit-grab, rekkas, chain-cancel, whiff animations.... 
 }
 
 export interface FrameData {
@@ -71,7 +71,7 @@ export interface FrameData {
 
 /** a hitbox touched a hurtbox, via property strike/grab/projectile/counter/reflect */
 export interface Connected {
-    0: Hitbox;
-    1: Hitbox;
-    2: HitboxProperties;
+    0: Hitbox; // successful attack
+    1: Hitbox; // tagged hurtbox
+    2: HitboxProperties; // type of attack (since [0] may have multiple properties i.e. both counter and reflector)
 }

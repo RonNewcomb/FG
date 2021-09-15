@@ -1,3 +1,4 @@
+import { hasAll } from "./collision";
 import { frameCount, halfmillion, Hitbox, HitboxProperties, million } from "./interfaces";
 import { IColor, IPlatform } from "./IPlatform";
 
@@ -61,13 +62,16 @@ export class PlatformBrowser implements IPlatform {
         [HitboxProperties.Hurtbox, { R: 0, G: 0, B: million }],
     ]);
 
-    drawHitbox(box: Hitbox, as: HitboxProperties): void {
+    drawHitbox(box: Hitbox): void {
         const sprite = document.createElement('div');
         sprite.style.position = 'absolute';
         sprite.style.top = box.y * PPMtoPixels + 'px';
         sprite.style.left = box.x * PPMtoPixels + 'px';
         sprite.style.width = box.wide * PPMtoPixels + 'px';
         sprite.style.height = box.tall * PPMtoPixels + 'px';
+        const as = hasAll(box, HitboxProperties.Strike) ? HitboxProperties.Strike
+            : hasAll(box, HitboxProperties.Grab) ? HitboxProperties.Grab
+                : HitboxProperties.Hurtbox;
         let color = this.hitboxColors.get(as) || this.unknownHitboxColor;
         color.A = halfmillion;
         sprite.style.backgroundColor = asHexValue(color);
