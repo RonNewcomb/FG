@@ -84,7 +84,7 @@ export class PlatformBrowser implements IPlatform {
         label.style.top = y * PPMtoPixels + 'px';
         label.style.fontSize = 'xx-large';
         label.style.fontWeight = '600';
-        label.style.webkitTextStroke = '2px black';
+        label.style.webkitTextStroke = '1px black';
         incompleteFrame.appendChild(label);
     }
 

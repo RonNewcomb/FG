@@ -16,9 +16,9 @@ export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connec
 
     // check strike -> target
     for (let attack of attackBoxes)
-        if (attack.props & HitboxProperties.Strike)
+        if ((attack.props & HitboxProperties.Strike) > 0)
             for (let target of targetBoxes)
-                if (target.props & HitboxProperties.Hurtbox && !(target.props & HitboxProperties.ImmuneStrike))
+                if ((target.props & HitboxProperties.Hurtbox) > 0 && (target.props & HitboxProperties.ImmuneStrike) === 0)
                     if (rectanglesIntersect(attack, target))
                         return [attack, target, HitboxProperties.Strike];
 

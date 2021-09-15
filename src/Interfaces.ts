@@ -12,30 +12,30 @@ export type meterPoints = number;
 
 
 export enum HitboxProperties { // bit flags
-    Pushbox,
-    Hurtbox,
-    //Hitbox, // grab or strike
-    Grab,
-    Strike,
-    Projectile,
+    Pushbox = 1,
+    Hurtbox = 2,
 
-    ImmuneGrab,
-    ImmuneStrike,
-    ImmuneProjectile,
+    Grab = 4,
+    Strike = 8,
+    Projectile = 16,
 
-    Armor,
-    Counter,
-    Reflect,
+    ImmuneGrab = 32,
+    ImmuneStrike = 64,
+    ImmuneProjectile = 128,
 
-    KnockdownLight,
-    KnockdownMedium,
-    KnockdownHard,
+    Armor = 256,
+    Counter = 512,
+    Reflect = 1024,
 
-    ReelingFromThrust,
-    ReelingFromClockwiseX,
-    ReelingFromCouterclockwiseX,
-    ReelingFromOverhead,
-    ReelingFromUnderhand,
+    KnockdownLight = 2048,
+    KnockdownMedium = 4096,
+    KnockdownHard = 8192,
+
+    ReelingFromThrust = 16384,
+    ReelingFromClockwiseX = 32768,
+    ReelingFromCouterclockwiseX = 65536,
+    ReelingFromOverhead = 131072,
+    ReelingFromUnderhand = 262144,
 }
 
 export interface Hitbox {

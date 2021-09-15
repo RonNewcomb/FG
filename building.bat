@@ -1,3 +1,6 @@
+@echo off
+echo Deploying to /built/ ...
+
 copy /y .\\src\\index.html .\\built
 
 cd built
