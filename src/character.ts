@@ -1,9 +1,9 @@
-import { damagePoints, meterPoints, FrameData, pixelCount } from "./interfaces";
+import { damagePoints, meterPoints, FrameData, PPM } from "./interfaces";
 import { I3DModel, IAudio } from "./IPlatform";
 
 export class Character {
-    x: pixelCount = 0;
-    y: pixelCount = 0;
+    x: PPM = 0;
+    y: PPM = 0;
     facingLeft: boolean = true;
     isAirborne: boolean = false;
     health: damagePoints = 1000;
@@ -13,11 +13,11 @@ export class Character {
     }
 
     reset(player1side: boolean) {
-        this.x = 500 + (player1side ? -1 : +1) * 100;
-        this.y = 0;
+        this.x = <PPM>500000 + (player1side ? -1 : +1) * <PPM>100000;
+        this.y = <PPM>50;
         this.facingLeft = player1side;
         this.isAirborne = false;
-        this.health = 1000;
-        this.meter = 0;
+        this.health = <damagePoints>1000;
+        this.meter = <meterPoints>0;
     }
 }

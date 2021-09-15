@@ -2,17 +2,21 @@ import { Hitbox, HitboxProperties } from "./interfaces";
 import { IPlatform } from "./IPlatform";
 import { PlatformBrowser } from "./PlatformBrowser";
 
-const platformApi: IPlatform = new PlatformBrowser();
+const platformApi: IPlatform = new PlatformBrowser().init();
 let currentFrame = 1;
 
 function drawFrame() {
-    const attack: Hitbox = { x: 50, y: 0, tall: 30, wide: 20, props: HitboxProperties.Strike };
-    const target: Hitbox = { x: 50, y: 0, tall: 30, wide: 20, props: HitboxProperties.Hurtbox };
+    const attack: Hitbox = { x: 50000, y: 5000, tall: 60000, wide: 20000, props: HitboxProperties.Strike };
+    const target: Hitbox = { x: 50000, y: 5000, tall: 30000, wide: 40000, props: HitboxProperties.Hurtbox };
 
-    platformApi.drawHitbox(attack, { R: 1, G: 0, B: 0 });
-    platformApi.drawHitbox(target, { R: 0, G: 0, B: 1 });
-    platformApi.renderText(500, 30, currentFrame.toString());
-    currentFrame = platformApi.newFrame();
+    platformApi.drawHitbox(attack, HitboxProperties.Strike);
+    platformApi.drawHitbox(target, HitboxProperties.Hurtbox);
+
+    platformApi.renderText(900000, 900000, currentFrame.toString());
+
+
+    platformApi.newFrame();
+    currentFrame++;
     // setTimeout(drawFrame, 1000 / 60);
 }
 

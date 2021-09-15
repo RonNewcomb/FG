@@ -7,12 +7,12 @@
   },
   "scripts": {
     "start": "http://localhost/FG",
-    "build, test, copy": "tsc && jest && cmd /c building.bat",
-    "build and copy": "tsc && cmd /c building.bat",
+    "build, test, deploy": "tsc && jest && cmd /c building.bat",
+    "build and deploy": "tsc && cmd /c building.bat",
     "build and test": "tsc && jest",
     "build": "tsc",
     "test": "jest",
-    "copy": "cmd /c building.bat",
+    "deploy": "cmd /c building.bat",
     "view coverage": "C:/code/FG/coverage/lcov-report/index.html"
   },
   "devDependencies": {

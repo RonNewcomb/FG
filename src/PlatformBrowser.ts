@@ -1,4 +1,4 @@
-import { frameCount, Hitbox } from "./interfaces";
+import { frameCount, halfmillion, Hitbox, HitboxProperties, million } from "./interfaces";
 import { IColor, IPlatform } from "./IPlatform";
 
 document.body.innerHTML = `
@@ -20,6 +20,11 @@ document.body.innerHTML = `
   }
 </style>`;
 
+const ratioPPMto255 = 256 / million;
+const ratioPPMto0_1 = 1 / million;
+let tall = 0;
+let wide = 0;
+let PPMtoPixels = 0;
 let FrameCount: frameCount = 1;
 const framebuffer1 = document.getElementById('framebuffer1')!;
 const framebuffer2 = document.getElementById('framebuffer2')!;
@@ -27,12 +32,16 @@ let incompleteFrame = framebuffer2;
 let visibleFrame = framebuffer1;
 visibleFrame.style.display = 'block'; // override class
 
-export function asHexValue(color: IColor): string {
-    const rgb = color.R * 256 + ',' + color.G * 256 + ',' + color.B * 256;
-    return color.A ? "rgba(" + rgb + "," + color.A + ")" : "rgb(" + rgb + ")";
-}
-
 export class PlatformBrowser implements IPlatform {
+    init(): IPlatform {
+        tall = document.body.clientHeight;
+        wide = document.body.clientWidth;
+        const smaller = Math.min(tall, wide);
+        PPMtoPixels = smaller / million;
+        console.log('tall', tall, 'wide', wide, 'ppm2pixels', PPMtoPixels);
+        return this;
+    }
+
     newFrame(): frameCount {
         let swap = incompleteFrame;
         incompleteFrame = visibleFrame;
@@ -45,14 +54,22 @@ export class PlatformBrowser implements IPlatform {
         return ++FrameCount;
     }
 
-    drawHitbox(box: Hitbox, color: IColor): void {
+    private unknownHitboxColor: IColor = { R: million, G: million, B: million };
+    private hitboxColors = new Map<HitboxProperties, IColor>([
+        [HitboxProperties.Strike, { R: million, G: 0, B: 0 }],
+        [HitboxProperties.Grab, { R: million, G: million, B: 0 }],
+        [HitboxProperties.Hurtbox, { R: 0, G: 0, B: million }],
+    ]);
+
+    drawHitbox(box: Hitbox, as: HitboxProperties): void {
         const sprite = document.createElement('div');
         sprite.style.position = 'absolute';
-        sprite.style.top = (box.y + box.tall) + 'px';
-        sprite.style.left = box.x + 'px';
-        sprite.style.width = box.wide + 'px';
-        sprite.style.height = box.tall + 'px';
-        color.A = 0.5;
+        sprite.style.top = box.y * PPMtoPixels + 'px';
+        sprite.style.left = box.x * PPMtoPixels + 'px';
+        sprite.style.width = box.wide * PPMtoPixels + 'px';
+        sprite.style.height = box.tall * PPMtoPixels + 'px';
+        let color = this.hitboxColors.get(as) || this.unknownHitboxColor;
+        color.A = halfmillion;
         sprite.style.backgroundColor = asHexValue(color);
         color.A = undefined;
         sprite.style.border = '1px solid ' + asHexValue(color);
@@ -63,9 +80,11 @@ export class PlatformBrowser implements IPlatform {
         const label = document.createElement("span");
         label.innerText = str;
         label.style.position = 'absolute';
-        label.style.left = x + 'px';
-        label.style.top = y + 'px';
-        label.style.fontSize = 'large';
+        label.style.left = x * PPMtoPixels + 'px';
+        label.style.top = y * PPMtoPixels + 'px';
+        label.style.fontSize = 'xx-large';
+        label.style.fontWeight = '600';
+        label.style.webkitTextStroke = '2px black';
         incompleteFrame.appendChild(label);
     }
 
@@ -85,4 +104,9 @@ export class PlatformBrowser implements IPlatform {
         throw new Error("Method not implemented.");
     }
 
+}
+
+export function asHexValue(color: IColor): string {
+    const rgb = color.R * ratioPPMto255 + ',' + color.G * ratioPPMto255 + ',' + color.B * ratioPPMto255;
+    return color.A ? "rgba(" + rgb + "," + color.A * ratioPPMto0_1 + ")" : "rgb(" + rgb + ")";
 }

@@ -1,10 +1,15 @@
 import { I3DModel, IAudio } from "./IPlatform";
 
-export type pixelCount = number;
-export type frameCount = number;
+export type PPM = number; // Parts Per Million: an integer from 0 to 1,000,000 used instead of a floating percentage
+export const million = 1000000;
+export const quartermillion = 250000;
+export const halfmillion = 500000;
+export const threequartermillion = 750000;
+
+export type frameCount = number; // 1/60th of a second
 export type damagePoints = number;
 export type meterPoints = number;
-export type Between0And1 = number; // including exactly 0 and exactly 1
+
 
 export enum HitboxProperties { // bit flags
     Pushbox,
@@ -34,10 +39,10 @@ export enum HitboxProperties { // bit flags
 }
 
 export interface Hitbox {
-    x: pixelCount;
-    y: pixelCount;
-    wide: pixelCount;
-    tall: pixelCount;
+    x: PPM;
+    y: PPM;
+    wide: PPM;
+    tall: PPM;
     props: HitboxProperties; // bitfield
     effects?: ActivationEffects; // on hit/grab/reflected/countered/armored
 }
