@@ -1,4 +1,4 @@
-import { CharacterMove, Connection, frameCount, Hitbox, HitboxProperties, HitboxSet } from "./Interfaces";
+import { CharacterMove, Connection, frameCount, Hitbox, HitboxProperties, HitboxSet } from "./interfaces";
 
 // frameCount MUST be within the move's duration
 export function hits(attack: CharacterMove, attackFrame: frameCount, target: CharacterMove, targetFrame: frameCount): Connection | null {

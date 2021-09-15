@@ -1,5 +1,5 @@
 import { rectanglesIntersect } from "./collision.js";
-import { Hitbox, HitboxProperties } from "./Interfaces.js";
+import { Hitbox, HitboxProperties } from "./interfaces.js";
 
 console.log("hello world");
 

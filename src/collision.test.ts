@@ -1,5 +1,5 @@
 import { rectanglesIntersect, checkBoxes, } from './collision';
-import { Hitbox, HitboxProperties } from './Interfaces';
+import { Hitbox, HitboxProperties } from './interfaces';
 
 test('exactly equal boxes intersect', () => {
     const attack: Hitbox = { x: 50, y: 0, tall: 30, wide: 20, props: HitboxProperties.Strike };

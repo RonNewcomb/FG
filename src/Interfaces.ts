@@ -67,27 +67,6 @@ export interface FrameData {
     moves: CharacterMove[];
 }
 
-export const canIt = (move: CharacterMove, condition: (b: Hitbox) => boolean) => move.hitboxes.some(c => c.some(condition));
-export const canDamage = (move: CharacterMove) => canIt(move, b => !!b.effects?.damage);
-
-export class Character {
-    isAirborne = false;
-    health: damagePoints = 1000;
-    meter: meterPoints = 0;
-
-    constructor(public models: I3DModel[], public soundBites: IAudio[], public fdata: FrameData) {
-        this.reset();
-    }
-
-    reset() {
-        this.isAirborne = false;
-        this.health = 1000;
-        this.meter = 0;
-    }
-}
-
-export const NoHitboxes: Hitbox[] = []; // default value instead of null or [] -- prevent memory fragmentation issues
-
 /** a hitbox touched a hurtbox, via property strike/grab/projectile/counter/reflect */
 export interface Connection {
     0: Hitbox;
