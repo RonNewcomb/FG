@@ -1,4 +1,5 @@
-import { damagePoints, meterPoints, I3DModel, IAudio, FrameData, pixelCount } from "./interfaces.js";
+import { damagePoints, meterPoints, FrameData, pixelCount } from "./interfaces";
+import { I3DModel, IAudio } from "./IPlatform";
 
 export class Character {
     x: pixelCount = 0;
@@ -9,7 +10,6 @@ export class Character {
     meter: meterPoints = 0;
 
     constructor(public models: I3DModel[], public soundBites: IAudio[], public fdata: FrameData) {
-        this.reset(true);
     }
 
     reset(player1side: boolean) {

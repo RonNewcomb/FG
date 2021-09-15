@@ -1,13 +1,10 @@
-// platform specific
-export type I3DModel = object;
-export type IAudio = object;
-
+import { I3DModel, IAudio } from "./IPlatform";
 
 export type pixelCount = number;
 export type frameCount = number;
 export type damagePoints = number;
 export type meterPoints = number;
-
+export type Between0And1 = number; // including exactly 0 and exactly 1
 
 export enum HitboxProperties { // bit flags
     Pushbox,
@@ -68,7 +65,7 @@ export interface FrameData {
 }
 
 /** a hitbox touched a hurtbox, via property strike/grab/projectile/counter/reflect */
-export interface Connection {
+export interface Connected {
     0: Hitbox;
     1: Hitbox;
     2: HitboxProperties;

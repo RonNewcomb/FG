@@ -7,8 +7,10 @@
   },
   "scripts": {
     "start": "http://localhost/FG",
+    "make": "tsc && jest",
     "build": "tsc",
     "test": "jest",
+    "copy": "cmd /c building.bat",
     "coverage": "C:/code/FG/coverage/lcov-report/index.html"
   },
   "devDependencies": {

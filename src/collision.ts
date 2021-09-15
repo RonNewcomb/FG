@@ -1,7 +1,7 @@
-import { CharacterMove, Connection, frameCount, Hitbox, HitboxProperties, HitboxSet } from "./interfaces";
+import { CharacterMove, Connected, frameCount, Hitbox, HitboxProperties, HitboxSet } from "./interfaces";
 
 // frameCount MUST be within the move's duration
-export function hits(attack: CharacterMove, attackFrame: frameCount, target: CharacterMove, targetFrame: frameCount): Connection | null {
+export function hits(attack: CharacterMove, attackFrame: frameCount, target: CharacterMove, targetFrame: frameCount): Connected | null {
     const attackBoxes: HitboxSet = attack.hitboxes[attackFrame - 1];
     const targetBoxes: HitboxSet = target.hitboxes[targetFrame - 1];
     return checkBoxes(attackBoxes, targetBoxes);
@@ -12,7 +12,7 @@ const hasAny = (box: Hitbox, property: HitboxProperties) => (box.props & propert
 const hasNone = (box: Hitbox, property: HitboxProperties) => (box.props & property) === 0;
 
 // nested loops instead of .filter(lambda) are ugly but more efficient - no space allocation except return value
-export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connection | null {
+export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connected | null {
 
     // check strike -> target
     for (let attack of attackBoxes)

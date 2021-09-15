@@ -1,4 +1,4 @@
-import { Hitbox } from "./interfaces.js";
+import { HitboxSet } from "./interfaces";
 
-export const NoHitboxes: Hitbox[] = []; // default value instead of null or [] -- prevent memory fragmentation issues
+export const NoHitboxes: HitboxSet = []; // default value instead of null or [] -- prevent memory fragmentation issues
 

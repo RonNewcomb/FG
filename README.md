@@ -1,6 +1,6 @@
-Needs IIS app "FG" pointed to /built folder.
+Needs IIS app "FG" pointed to /built folder. For it, IIS "Mime Types" need to have the extension "." (just a period) as application/javascript
 
-NPM scripts visible in VSCode do the rest. Note the copy of index.html once in built and once in src. Changes need copying over manually. Browser following import statements from there. Typescript compiles to /built folder.
+NPM scripts visible in VSCode do the rest. Note the copy of index.html once in built and once in src. Changes need copying over manually. Browser following import statements from there. Typescript compiles to /built folder. NPM script "copy" moves index.html and removes .js extensions. 
 
 ## Balancing
 
