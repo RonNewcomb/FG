@@ -12,6 +12,7 @@ export type IInputDevice = object;
 export interface IPlatform {
     newFrame(): frameCount;
     drawHitbox(box: Hitbox, color: IColor): void;
+    renderText(x: number, y: number, str: string): void;
     playAudio(clip: IAudio): IAudioClipHandle;
     stopAudio(handle: IAudioClipHandle): boolean;
     renderModel(model: I3DModel, location: I3dPoint, orientation: I3dRotation): void;

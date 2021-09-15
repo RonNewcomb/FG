@@ -29,7 +29,7 @@ visibleFrame.style.display = 'block'; // override class
 
 export function asHexValue(color: IColor): string {
     const rgb = color.R * 256 + ',' + color.G * 256 + ',' + color.B * 256;
-    return color.A ? "rgba(" + rgb + "," + color.A * 256 + ")" : "rgb(" + rgb + ")";
+    return color.A ? "rgba(" + rgb + "," + color.A + ")" : "rgb(" + rgb + ")";
 }
 
 export class PlatformBrowser implements IPlatform {
@@ -47,16 +47,26 @@ export class PlatformBrowser implements IPlatform {
 
     drawHitbox(box: Hitbox, color: IColor): void {
         const sprite = document.createElement('div');
+        sprite.style.position = 'absolute';
         sprite.style.top = (box.y + box.tall) + 'px';
         sprite.style.left = box.x + 'px';
         sprite.style.width = box.wide + 'px';
         sprite.style.height = box.tall + 'px';
-        color.A = 0.25;
+        color.A = 0.5;
         sprite.style.backgroundColor = asHexValue(color);
         color.A = undefined;
-        sprite.style.borderColor = asHexValue(color);
-        sprite.style.borderWidth = '1px';
+        sprite.style.border = '1px solid ' + asHexValue(color);
         incompleteFrame.appendChild(sprite);
+    }
+
+    renderText(x: number, y: number, str: string): void {
+        const label = document.createElement("span");
+        label.innerText = str;
+        label.style.position = 'absolute';
+        label.style.left = x + 'px';
+        label.style.top = y + 'px';
+        label.style.fontSize = 'large';
+        incompleteFrame.appendChild(label);
     }
 
     playAudio(clip: object): object {
