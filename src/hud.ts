@@ -27,7 +27,7 @@ export class HUD {
         platformApi = platform;
     }
 
-    render(currentFrame: number, p1: Character, p2: Character): void {
+    render(currentFrame: number, p1: Character, p2: Character, hits: number): void {
         const secondsLeft = (99 - Math.floor(currentFrame / 20));
         platformApi.drawHitbox(timerSpace);
         platformApi.renderText(timerSpace.x, timerSpace.y, secondsLeft.toString());
@@ -35,6 +35,6 @@ export class HUD {
         platformApi.drawHitbox(p1Lifebar);
         const p2Lifebar = translateToWorldCoordinates(lifebar, halfmillion + timerspaceWide + 5000, 0, true);
         platformApi.drawHitbox(p2Lifebar);
-        platformApi.renderText(800000, 100000, currentFrame + " hits!");
+        platformApi.renderText(800000, 100000, hits + " hits!");
     }
 }

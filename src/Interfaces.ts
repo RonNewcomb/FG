@@ -40,6 +40,12 @@ export enum HitboxProperties { // bit flags
     Blocking = 524288,
 }
 
+/** index into FrameData.moves */
+export const enum SystemMove {
+    StandIdle = 0,
+    Hit = 1,
+}
+
 export interface Hitbox {
     x: PPM;
     y: PPM;
@@ -76,7 +82,7 @@ export interface CharacterMove {
 }
 
 export interface FrameData {
-    moves: CharacterMove[];
+    moves: CharacterMove[]; // index is SystemMove or more
 }
 
 /** a hitbox touched a hurtbox, via property strike/grab/projectile/counter/reflect */

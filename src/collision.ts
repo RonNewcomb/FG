@@ -2,8 +2,8 @@ import { CharacterMove, Connected, frameCount, Hitbox, HitboxProperties, HitboxS
 
 // frameCount MUST be within the move's duration
 export function hits(attack: CharacterMove, attackFrame: frameCount, target: CharacterMove, targetFrame: frameCount): Connected | null {
-    const attackBoxes: HitboxSet = attack.hitboxes[attackFrame - 1];
-    const targetBoxes: HitboxSet = target.hitboxes[targetFrame - 1];
+    const attackBoxes: HitboxSet = attack.hitboxes[attackFrame];
+    const targetBoxes: HitboxSet = target.hitboxes[targetFrame];
     return checkBoxes(attackBoxes, targetBoxes);
 }
 

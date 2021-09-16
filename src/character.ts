@@ -1,4 +1,4 @@
-import { damagePoints, meterPoints, FrameData, PPM, HitboxSet, CharacterMove, halfmillion, quartermillion, million } from "./interfaces";
+import { damagePoints, meterPoints, FrameData, PPM, HitboxSet, CharacterMove, halfmillion, quartermillion, million, SystemMove } from "./interfaces";
 import { I3DModel, IAudio, IPlatform } from "./IPlatform";
 import { translateToWorldCoordinates } from "./util";
 
@@ -57,6 +57,11 @@ export class Character {
 
     getCurrentBoxes(): HitboxSet {
         return this.getCurrentMove().hitboxes[this.currentTick];
+    }
+
+    setCurrentMove(moveId: SystemMove): void {
+        this.currentMove = moveId;
+        this.currentTick = 0;
     }
 
     render(platformApi: IPlatform): void {

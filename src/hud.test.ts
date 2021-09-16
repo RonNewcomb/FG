@@ -8,7 +8,7 @@ test('hud.render renders some text and boxes', () => {
     const hud = new HUD(platformMock);
     const char = new Character([], [], { moves: [] }, "");
 
-    hud.render(1, char, char);
+    hud.render(1, char, char, 0);
 
     expect(platformMock.renderText).toHaveBeenCalled();
     expect(platformMock.drawHitbox).toHaveBeenCalled();

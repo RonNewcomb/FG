@@ -1,4 +1,4 @@
-import { FrameData, HitboxProperties, HitboxSet, PerFrameMoveEffects } from "./interfaces";
+import { FrameData, HitboxProperties, HitboxSet, PerFrameMoveEffects, SystemMove } from "./interfaces";
 
 export const standIdle: HitboxSet = [
     { x: 50000, y: 0, tall: 50000, wide: 115000, props: HitboxProperties.Hurtbox },
@@ -31,6 +31,11 @@ export const fdata1: FrameData = {
         // stand idle
         {
             hitboxes: [standIdle, standIdle, standIdle, standIdle,],
+        },
+        // HIT
+        {
+            hitboxes: [standIdle, standIdle, standIdle, standIdle, standIdle, standIdle,],
+            effects: [backward, backward, backward, backward],
         },
         // walk to
         {
