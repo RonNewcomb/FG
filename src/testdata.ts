@@ -12,11 +12,11 @@ export const aWindup: HitboxSet = [
 ];
 
 export const aGrab: HitboxSet = standIdle.concat([
-    { x: 50000, y: 0, tall: 50000, wide: 150000, props: HitboxProperties.Grab }
+    { x: 50000, y: 0, tall: 50000, wide: 150000, props: HitboxProperties.Grab, effects: { damage: 100 } }
 ]);
 
 export const aStrike: HitboxSet = standIdle.concat([
-    { x: 50000, y: 0, tall: 45000, wide: 300000, props: HitboxProperties.Strike },
+    { x: 50000, y: 0, tall: 45000, wide: 300000, props: HitboxProperties.Strike, effects: { damage: 40 } },
 ]);
 
 export const aRecovery: HitboxSet = [
@@ -47,6 +47,6 @@ export const fdata1: FrameData = {
     ]
 }
 
-export const character1 = new Character([], [], fdata1);
-export const character2 = new Character([], [], fdata1);
+export const character1 = new Character([], [], fdata1, "Kyu");
+export const character2 = new Character([], [], fdata1, "Ren");
 

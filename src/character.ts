@@ -12,7 +12,7 @@ export class Character {
     currentMove = 0; // index into fdata.moves
     currentTick = 0; // index into fdata.moves[currentMove]
 
-    constructor(public models: I3DModel[], public soundBites: IAudio[], public fdata: FrameData) {
+    constructor(public models: I3DModel[], public soundBites: IAudio[], public fdata: FrameData, public name: string) {
     }
 
     reset(player1side: boolean) {

@@ -36,6 +36,8 @@ export enum HitboxProperties { // bit flags
     ReelingFromCouterclockwiseX = 65536,
     ReelingFromOverhead = 131072,
     ReelingFromUnderhand = 262144,
+
+    Blocking = 524288,
 }
 
 export interface Hitbox {

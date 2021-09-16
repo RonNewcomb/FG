@@ -1,5 +1,6 @@
-import { rectanglesIntersect, checkBoxes } from './collision';
+import { rectanglesIntersect, checkBoxes, hasAny } from './collision';
 import { Hitbox, HitboxProperties } from './interfaces';
+import { character1 } from './testdata';
 
 test('exactly equal boxes intersect', () => {
     const attack: Hitbox = { x: 50, y: 0, tall: 30, wide: 20, props: HitboxProperties.Strike };
@@ -67,3 +68,12 @@ test("these boxsets do intersect - strike misses but grab hits", () => {
     expect(a.props).toBe(HitboxProperties.Grab);
 });
 
+test("any frame with a strike/grab/projectile hitbox must have an Effect", () => {
+    const framedata = character1.fdata;
+    for (let move of framedata.moves) {
+        for (let hitboxes of move.hitboxes) {
+            const hasAttackNoEffect = hitboxes.some(hb => !hb.effects && hasAny(hb, HitboxProperties.Grab | HitboxProperties.Strike | HitboxProperties.Projectile));
+            expect(hasAttackNoEffect).toBeFalsy();
+        }
+    }
+});
