@@ -67,8 +67,8 @@ export interface PerFrameMoveEffects {
 }
 
 export interface CharacterMove {
-    models: I3DModel[];
-    animationAt: number;
+    models?: I3DModel[];
+    animationAt?: number;
     sound?: IAudio;
     hitboxes: HitboxSet[]; // index is the Nth Frame of the move 
     effects?: PerFrameMoveEffects[];// index is the Nth Frame of the move 

@@ -44,12 +44,10 @@ export class Character {
         const moveInProgress = this.getCurrentMove();
         const effects = moveInProgress.effects?.[this.currentTick];
         if (effects) {
-            console.log("move", this.currentMove, "has effects");
             if (effects.xOffset) this.x += effects.xOffset * this.facingRight;
             if (effects.yOffset) this.y += effects.yOffset;
             if (effects.xVelocity !== undefined) this.xv = effects.xVelocity * this.facingRight;
             if (effects.yVelocity !== undefined) this.yv = effects.yVelocity;
-            console.log("x", this.x, "y", this.y);
         }
     }
 
@@ -63,8 +61,9 @@ export class Character {
 
     render(platformApi: IPlatform): void {
         const move = this.getCurrentMove();
-        for (let model of move.models)
-            platformApi.renderModel(model, { x: this.x, y: this.y }, {});
+        if (move.models)
+            for (let model of move.models)
+                platformApi.renderModel(model, { x: this.x, y: this.y }, {});
 
         const boxes = this.getCurrentBoxes();
         for (let box of boxes) {

@@ -30,8 +30,6 @@ export const fdata1: FrameData = {
     moves: [
         // stand idle
         {
-            models: [],
-            animationAt: 0,
             hitboxes: [standIdle, standIdle, standIdle, standIdle,],
         },
         // walk to
@@ -43,21 +41,15 @@ export const fdata1: FrameData = {
         },
         // walk back
         {
-            models: [],
-            animationAt: 0,
             hitboxes: [standIdle, standIdle, standIdle,],
             effects: [backward, backward, backward],
         },
         // grab attack
         {
-            models: [],
-            animationAt: 0,
             hitboxes: [aWindup, aGrab, aGrab, aGrab, aRecovery, aRecovery],
         },
         // strike attack
         {
-            models: [],
-            animationAt: 0,
             hitboxes: [aWindup, aWindup, aStrike, aStrike, aRecovery, aRecovery],
         }
     ]
