@@ -1,5 +1,6 @@
 import { IPlatform } from "./IPlatform";
 import { Hitbox } from "./interfaces";
+import { fdata1 } from "./testdata";
 
 // a cheeky place for useful testiong mocks etc.
 
@@ -15,4 +16,16 @@ export class MockPlatform implements IPlatform {
     readInput = jest.fn((device: object): object => ({}));
 }
 
-test('required by jest', () => void 0);
+test('#/hitboxsets should never be 0 because it implies a 0-frame move', () => {
+    for (let move of fdata1.moves) {
+        expect(move.hitboxes).not.toBeNull();
+        expect(move.hitboxes.length).toBeGreaterThan(0);
+    }
+});
+
+test('#/hitboxsets should be at least as big as #/moveeffects', () => {
+    for (let move of fdata1.moves) {
+        expect(move.hitboxes).not.toBeNull();
+        expect(move.hitboxes.length).toBeGreaterThanOrEqual(move.effects?.length ?? 0);
+    }
+});

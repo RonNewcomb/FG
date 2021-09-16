@@ -10,7 +10,9 @@ const character1 = new Character([], [], fdata1, "Kyu");
 const character2 = new Character([], [], fdata1, "Ren");
 character1.reset(true);
 character2.reset(false);
-let currentFrame = 1; // reset on new round 
+const numMoves1 = character1.fdata.moves.length - 1;
+const numMoves2 = character2.fdata.moves.length - 1;
+let currentFrame = 1; // reset on new round
 
 function drawFrame() {
     // stage 
@@ -19,8 +21,8 @@ function drawFrame() {
     // characters
     const choosesMove1 = Math.random() > 0.75; // 75% he will idle
     const choosesMove2 = Math.random() > 0.60; // 60% he will idle 
-    character1.nextTick(choosesMove1 ? Math.floor(Math.random() * 1.9 + 1) : 0);
-    character2.nextTick(choosesMove2 ? Math.floor(Math.random() * 1.9 + 1) : 0);
+    character1.nextTick(choosesMove1 ? Math.floor(Math.random() * (numMoves1 - 0.1) + 1) : 0);
+    character2.nextTick(choosesMove2 ? Math.floor(Math.random() * (numMoves2 - 0.1) + 1) : 0);
     character1.render(platformApi);
     character2.render(platformApi);
 

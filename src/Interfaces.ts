@@ -59,11 +59,19 @@ export interface ActivationEffects {
 
 export type HitboxSet = Hitbox[]; // one frame has several hitboxes
 
+export interface PerFrameMoveEffects {
+    xOffset?: PPM;
+    yOffset?: PPM;
+    xVelocity?: PPM;
+    yVelocity?: PPM;
+}
+
 export interface CharacterMove {
     models: I3DModel[];
     animationAt: number;
     sound?: IAudio;
-    hitboxes: HitboxSet[]; // most entries in this array will be dups but we have O(1) lookup on nthFrame
+    hitboxes: HitboxSet[]; // index is the Nth Frame of the move 
+    effects?: PerFrameMoveEffects[];// index is the Nth Frame of the move 
     branchOnConnection?: any; // hit-grab, rekkas, chain-cancel, whiff animations.... 
 }
 

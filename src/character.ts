@@ -2,10 +2,15 @@ import { damagePoints, meterPoints, FrameData, PPM, HitboxSet, CharacterMove, ha
 import { I3DModel, IAudio, IPlatform } from "./IPlatform";
 import { translateToWorldCoordinates } from "./util";
 
+const isFacingLeft = +1;
+const isFacingRight = -1;
+
 export class Character {
     x: PPM = 0;
     y: PPM = 0;
-    facingRight: boolean = true;
+    xv: PPM = 0;
+    yv: PPM = 0;
+    private facingRight: -1 | 1 = isFacingRight;
     isAirborne: boolean = false;
     health: damagePoints = million;
     meter: meterPoints = 0;
@@ -16,9 +21,11 @@ export class Character {
     }
 
     reset(player1side: boolean) {
-        this.facingRight = player1side;
-        this.x = halfmillion + (player1side ? -1 : +1) * quartermillion;
+        this.facingRight = (player1side ? -1 : +1);
+        this.x = halfmillion + this.facingRight * quartermillion;
         this.y = million - quartermillion;
+        this.xv = 0;
+        this.yv = 0;
         this.isAirborne = false;
         this.health = <damagePoints>million;
         this.meter = <meterPoints>0;
@@ -28,9 +35,21 @@ export class Character {
 
     nextTick(bufferedNextMove: number) {
         this.currentTick++;
-        if (this.currentTick >= this.fdata.moves[this.currentMove].hitboxes.length) {
+        const lengthOfMoveInFrames = this.fdata.moves[this.currentMove].hitboxes.length;
+        if (this.currentTick >= lengthOfMoveInFrames) {
+            // then move has ended; pick next one if applicable
             this.currentTick = 0;
-            this.currentMove = bufferedNextMove || 0;
+            this.currentMove = bufferedNextMove || 0; // 0 == standIdle
+        }
+        const moveInProgress = this.getCurrentMove();
+        const effects = moveInProgress.effects?.[this.currentTick];
+        if (effects) {
+            console.log("move", this.currentMove, "has effects");
+            if (effects.xOffset) this.x += effects.xOffset * this.facingRight;
+            if (effects.yOffset) this.y += effects.yOffset;
+            if (effects.xVelocity !== undefined) this.xv = effects.xVelocity * this.facingRight;
+            if (effects.yVelocity !== undefined) this.yv = effects.yVelocity;
+            console.log("x", this.x, "y", this.y);
         }
     }
 
@@ -49,7 +68,7 @@ export class Character {
 
         const boxes = this.getCurrentBoxes();
         for (let box of boxes) {
-            const shiftedBox = translateToWorldCoordinates(box, this.x, this.y, this.facingRight);
+            const shiftedBox = translateToWorldCoordinates(box, this.x, this.y, this.facingRight === isFacingRight);
             platformApi.drawHitbox(shiftedBox);
         }
     }
