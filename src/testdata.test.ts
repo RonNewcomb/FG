@@ -5,6 +5,7 @@ import { Hitbox } from "./interfaces";
 
 export class MockPlatform implements IPlatform {
     init = jest.fn((): IPlatform => this);
+    end = jest.fn((): IPlatform => this);
     newFrame = jest.fn((): number => 1);
     drawHitbox = jest.fn((box: Hitbox): void => void 0);
     renderText = jest.fn((x: number, y: number, str: string): void => void 0);

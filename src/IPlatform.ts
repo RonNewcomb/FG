@@ -1,4 +1,4 @@
-import { frameCount, Hitbox, HitboxProperties, PPM } from "./interfaces";
+import { frameCount, Hitbox, PPM } from "./interfaces";
 
 export type I3DModel = object;
 export type IAudio = object;
@@ -11,6 +11,7 @@ export type IInputDevice = object;
 
 export interface IPlatform {
     init(): IPlatform;
+    end(): IPlatform;
     newFrame(): frameCount;
     drawHitbox(box: Hitbox): void;
     renderText(x: PPM, y: PPM, str: string): void;

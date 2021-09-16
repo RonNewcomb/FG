@@ -43,6 +43,12 @@ export class PlatformBrowser implements IPlatform {
         return this;
     }
 
+    end(): IPlatform {
+        this.newFrame = () => 0;
+        document.body.innerHTML = "Thank you for playing";
+        return this;
+    }
+
     newFrame(): frameCount {
         let swap = incompleteFrame;
         incompleteFrame = visibleFrame;

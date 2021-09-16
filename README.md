@@ -1,6 +1,8 @@
-Needs IIS app "FG" pointed to /built folder. For it, IIS "Mime Types" need to have the extension "." (just a period) as application/javascript
+## Setup
 
-NPM scripts visible in VSCode do the rest. Note the copy of index.html once in built and once in src. Changes need copying over manually. Browser following import statements from there. Typescript compiles to /built folder. NPM script "copy" moves index.html and removes .js extensions. 
+Needs IIS app "FG" pointed to /built folder. For it, IIS "Mime Types" need to have the extension "." (just a period) as `application/javascript` because we aren't using a module loader, and typescript doesn't add .js to import statements.
+
+The NPM scripts in package.json (visible in VSCode) do the rest. Typescript compiles to /built folder. NPM script "copy" moves `index.html` and removes .js extensions. Browser follows import statements from there.
 
 ## Balancing
 
@@ -8,7 +10,7 @@ Think about rollback netcode.
 
 - requires re-running the game for several frames within one frame.
 - Re-running shouldn't affect or ask for I/O
-- effectively a pure computation
+- effectively a pure computation on gamepad inputs
 
 Stick into nested loops to generate which move beats/trades with which other move for the whole moveset, for every possible frame advantage/disadvantage, for every possible range.
 

@@ -1,4 +1,3 @@
-import { Character } from "./character";
 import { FrameData, HitboxProperties, HitboxSet } from "./interfaces";
 
 export const standIdle: HitboxSet = [
@@ -46,7 +45,4 @@ export const fdata1: FrameData = {
         }
     ]
 }
-
-export const character1 = new Character([], [], fdata1, "Kyu");
-export const character2 = new Character([], [], fdata1, "Ren");
 

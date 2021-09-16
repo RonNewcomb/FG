@@ -1,10 +1,13 @@
 import { IPlatform } from "./IPlatform";
 import { PlatformBrowser } from "./PlatformBrowser";
-import { character1, character2 } from "./testdata";
 import { HUD } from "./hud";
+import { Character } from "./character";
+import { fdata1 } from "./testdata";
 
 const platformApi: IPlatform = new PlatformBrowser().init();
 const hud = new HUD(platformApi);
+const character1 = new Character([], [], fdata1, "Kyu");
+const character2 = new Character([], [], fdata1, "Ren");
 character1.reset(true);
 character2.reset(false);
 let currentFrame = 1; // reset on new round 
