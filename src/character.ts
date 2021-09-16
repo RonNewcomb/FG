@@ -1,12 +1,13 @@
-import { damagePoints, meterPoints, FrameData, PPM, Hitbox, HitboxSet, CharacterMove, halfmillion, quartermillion, million } from "./interfaces";
+import { damagePoints, meterPoints, FrameData, PPM, HitboxSet, CharacterMove, halfmillion, quartermillion, million } from "./interfaces";
 import { I3DModel, IAudio, IPlatform } from "./IPlatform";
+import { translateToWorldCoordinates } from "./util";
 
 export class Character {
     x: PPM = 0;
     y: PPM = 0;
     facingRight: boolean = true;
     isAirborne: boolean = false;
-    health: damagePoints = 1000;
+    health: damagePoints = million;
     meter: meterPoints = 0;
     currentMove = 0; // index into fdata.moves
     currentTick = 0; // index into fdata.moves[currentMove]
@@ -19,7 +20,7 @@ export class Character {
         this.x = halfmillion + (player1side ? -1 : +1) * quartermillion;
         this.y = million - quartermillion;
         this.isAirborne = false;
-        this.health = <damagePoints>1000;
+        this.health = <damagePoints>million;
         this.meter = <meterPoints>0;
         this.currentMove = 0;
         this.currentTick = 0;
@@ -53,16 +54,3 @@ export class Character {
         }
     }
 }
-
-export function translateToWorldCoordinates(box: Hitbox, x: number, y: number, facingRight: boolean): Hitbox {
-    const translatedBox: Hitbox = {
-        x: facingRight ? (x + box.x) : (x - box.x - box.wide),
-        y: box.y + y,
-        tall: box.tall,
-        wide: box.wide,
-        props: box.props,
-        effects: box.effects,
-    };
-    return translatedBox;
-}
-

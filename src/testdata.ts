@@ -2,26 +2,26 @@ import { Character } from "./character";
 import { FrameData, HitboxProperties, HitboxSet } from "./interfaces";
 
 export const standIdle: HitboxSet = [
-    { x: 50000, y: 0, tall: 10000, wide: 23000, props: HitboxProperties.Hurtbox },
-    { x: 50000, y: 10000, tall: 20000, wide: 20000, props: HitboxProperties.Hurtbox }
+    { x: 50000, y: 0, tall: 50000, wide: 115000, props: HitboxProperties.Hurtbox },
+    { x: 50000, y: 50000, tall: 100000, wide: 100000, props: HitboxProperties.Hurtbox }
 ];
 
 export const aWindup: HitboxSet = [
-    { x: 50000, y: -5000, tall: 15000, wide: 20000, props: HitboxProperties.Hurtbox },
-    { x: 50000, y: 10000, tall: 20000, wide: 20000, props: HitboxProperties.Hurtbox }
+    { x: 50000, y: -15000, tall: 90000, wide: 100000, props: HitboxProperties.Hurtbox },
+    { x: 50000, y: 85000, tall: 65000, wide: 100000, props: HitboxProperties.Hurtbox }
 ];
 
 export const aGrab: HitboxSet = standIdle.concat([
-    { x: 50000, y: 0, tall: 10000, wide: 30000, props: HitboxProperties.Grab }
+    { x: 50000, y: 0, tall: 50000, wide: 150000, props: HitboxProperties.Grab }
 ]);
 
 export const aStrike: HitboxSet = standIdle.concat([
-    { x: 50000, y: 0, tall: 9000, wide: 60000, props: HitboxProperties.Strike },
+    { x: 50000, y: 0, tall: 45000, wide: 300000, props: HitboxProperties.Strike },
 ]);
 
 export const aRecovery: HitboxSet = [
-    { x: 50000, y: 0, tall: 10000, wide: 30000, props: HitboxProperties.Hurtbox },
-    { x: 50000, y: 10000, tall: 20000, wide: 40000, props: HitboxProperties.Hurtbox }
+    { x: 50000, y: 0, tall: 50000, wide: 150000, props: HitboxProperties.Hurtbox },
+    { x: 50000, y: 50000, tall: 100000, wide: 200000, props: HitboxProperties.Hurtbox }
 ];
 
 export const fdata1: FrameData = {

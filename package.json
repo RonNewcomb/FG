@@ -8,8 +8,8 @@
   "scripts": {
     "start": "http://localhost/FG",
     "build, test, deploy": "tsc && jest && cmd /c building.bat",
-    "build and deploy": "tsc && cmd /c building.bat",
-    "build and test": "tsc && jest",
+    "build & deploy": "tsc && cmd /c building.bat",
+    "build & test": "tsc && jest",
     "build": "tsc",
     "test": "jest",
     "deploy": "cmd /c building.bat",
