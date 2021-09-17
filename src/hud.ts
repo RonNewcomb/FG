@@ -23,18 +23,20 @@ export const lifebar: Hitbox = {
 let platformApi: IPlatform;
 
 export class HUD {
+
     constructor(platform: IPlatform) {
         platformApi = platform;
     }
 
-    render(currentFrame: number, p1: Character, p2: Character, hits: number): void {
-        const secondsLeft = (99 - Math.floor(currentFrame / 20));
+    render(currentFrame: number, p1: Character, p2: Character): void {
+        const secondsLeft = (99 - Math.floor(currentFrame / 10));
         platformApi.drawHitbox(timerSpace);
-        platformApi.renderText(timerSpace.x, timerSpace.y, secondsLeft.toString());
+        platformApi.renderText(timerSpace.x, timerSpace.y - 3000, secondsLeft.toString());
         const p1Lifebar = translateToWorldCoordinates(lifebar, halfmillion - timerspaceWide - 5000, 0, false);
         platformApi.drawHitbox(p1Lifebar);
         const p2Lifebar = translateToWorldCoordinates(lifebar, halfmillion + timerspaceWide + 5000, 0, true);
         platformApi.drawHitbox(p2Lifebar);
-        platformApi.renderText(800000, 100000, hits + " hits!");
+        if (p1.comboCounter) platformApi.renderText(100000, 100000, p1.comboCounter + " hits!");
+        if (p2.comboCounter) platformApi.renderText(800000, 100000, p2.comboCounter + " hits!");
     }
 }

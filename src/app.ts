@@ -1,6 +1,6 @@
 import { IPlatform } from "./IPlatform";
 import { PlatformBrowser } from "./PlatformBrowser";
-import { HitboxProperties, SystemMove } from "./interfaces";
+import { HitboxProperties, IButtonArray, IControlSource, SystemMove } from "./interfaces";
 import { checkBoxes, hasAll } from "./collision";
 import { AssetLoader } from "./assetLoader";
 import { AIInput } from "./ai";
@@ -8,23 +8,38 @@ import { AIInput } from "./ai";
 const platformApi: IPlatform = new PlatformBrowser().init();
 const assetLoader = new AssetLoader(platformApi);
 
-const hud = await assetLoader.getHudAsset();
+const [hud, stage] = await Promise.all([assetLoader.getHudAsset(), assetLoader.getStageAsset("training")]);
 
 const selected = ["Kyu", "Ren"]; // and also, # chars in play
 const characters = await Promise.all(selected.map(name => assetLoader.getCharacterAsset(name)));
 characters.forEach((c, index) => c.reset(index % 2 === 0));
-const AIs = characters.map(c => new AIInput(c));
+const controlSources: IControlSource[] = characters.map(c => new AIInput(c));
 
-let currentFrame = 1; // reset on new round
-let hitCount = 0;
+let logicalFrame = 0; // reset on new round; can rollback to earlier numbers
+const inputs: IButtonArray[][] = []; // index on frameCount; every item is a tuple, 2-tuple for 2-players, 3-tuple for 3 players, etc
 
-function drawFrame() {
+const enum CollisionResult {
+    Nothing, Grabbed, Hit, ThrowTeched,
+}
+
+
+function eachFrame() {
     // collision detection
     const hitboxes = characters.map(c => c.getCurrentBoxesInWorldCoordinates());
+
+    //let collisions = hitboxes.map((attack, i) => hitboxes.map((target, j) => (i === j) ? null : checkBoxes(attack, target)));
+    // reflect all projectiles
+    // process all clean grabs
+    //  cleanly-grabbed chars nulled out attack (even if they were countering a strike, they can't get anything from it this frame)
+    // resolve simultaneous grabs, since they require either throw-tech or a cinematic
+
     let p1AttacksP2 = checkBoxes(hitboxes[0], hitboxes[1]);
     let p2AttacksP1 = checkBoxes(hitboxes[1], hitboxes[0]);
     if (p1AttacksP2 && p2AttacksP1) {
         // clash / trade / throwtech
+
+        // if character successfully grabs someone who is also successfully grabbing someone, ignore the interaction
+        // unless a third person was involved.
         const p1Grabbed = hasAll(p1AttacksP2[2], HitboxProperties.Grab);
         const p2Grabbed = hasAll(p2AttacksP1[2], HitboxProperties.Grab);
         if (p1Grabbed && p2Grabbed) {
@@ -37,30 +52,31 @@ function drawFrame() {
             p1AttacksP2 = null;
         }
     }
-    if (p1AttacksP2) characters[1].setCurrentMove(SystemMove.Hit);
-    if (p2AttacksP1) characters[0].setCurrentMove(SystemMove.Hit);
+    if (p1AttacksP2) { characters[1].setCurrentMove(SystemMove.Hit); characters[0].comboCounter++; }
+    if (p2AttacksP1) { characters[0].setCurrentMove(SystemMove.Hit); characters[1].comboCounter++; }
 
     // read input
-    const choosesMove = AIs.map(x => x.getButtons());
+    inputs[logicalFrame] = controlSources.map(x => x.getButtons());
 
     // advance characters 1 frame
-    characters.forEach((c, i) => c.nextTick(choosesMove[i]));
+    characters.forEach((c, i) => c.nextTick(inputs[logicalFrame][i]));
+
+
+    // Rendering, frame advance ///////////////
 
     // render stage @ characters' new position
-    // ...
+    stage.render(logicalFrame);
 
     // render characters
     characters.forEach(c => c.render(platformApi));
 
     // render UI
-    if (p1AttacksP2) hitCount++;
-    if (p2AttacksP1) hitCount++;
-    hud.render(currentFrame, characters[0], characters[1], hitCount);
+    hud.render(logicalFrame, characters[0], characters[1]);
 
-    // end frame
+    // end the frame, schedule the next
     platformApi.newFrame();
-    currentFrame++;
-    setTimeout(drawFrame, 1000 / 10); // 1000/60 is 60fps // schedule next frame
+    logicalFrame++;
+    setTimeout(eachFrame, 1000 / 10); // 1000/60 is 60fps
 }
 
-drawFrame();
+eachFrame();
