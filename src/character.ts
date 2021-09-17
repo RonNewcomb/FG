@@ -17,14 +17,10 @@ export class Character {
     currentMove = 0; // index into fdata.moves
     currentTick = 0; // index into fdata.moves[currentMove]
 
-    getIsFacingRight(): boolean {
-        return this.facingDirection === isFacingRight;
-    }
-
     constructor(public models: I3DModel[], public soundBites: IAudio[], public fdata: FrameData, public name: string) {
     }
 
-    reset(player1side: boolean) {
+    reset(player1side: boolean): void {
         this.facingDirection = (player1side ? isFacingRight : isFacingLeft);
         this.x = halfmillion + -this.facingDirection * quartermillion / 2;
         this.y = million - quartermillion;
@@ -37,7 +33,7 @@ export class Character {
         this.currentTick = 0;
     }
 
-    nextTick(bufferedNextMove: number) {
+    nextTick(bufferedNextMove: number): void {
         this.currentTick++;
         const lengthOfMoveInFrames = this.fdata.moves[this.currentMove].hitboxes.length;
         if (this.currentTick >= lengthOfMoveInFrames) {
@@ -59,8 +55,8 @@ export class Character {
         return this.fdata.moves[this.currentMove];
     }
 
-    getCurrentBoxes(): HitboxSet {
-        return this.getCurrentMove().hitboxes[this.currentTick];
+    getCurrentBoxesInWorldCoordinates(): HitboxSet {
+        return this.getCurrentMove().hitboxes[this.currentTick].map(b => translateToWorldCoordinates(b, this.x, this.y, this.facingDirection === isFacingRight));
     }
 
     setCurrentMove(moveId: SystemMove): void {
@@ -76,10 +72,9 @@ export class Character {
 
         //platformApi.drawHitbox({ x: this.x, y: this.y, tall: million, wide: 5000, props: 0 }); // axis
 
-        const boxes = this.getCurrentBoxes();
-        for (let box of boxes) {
-            const shiftedBox = translateToWorldCoordinates(box, this.x, this.y, this.facingDirection === isFacingRight);
-            platformApi.drawHitbox(shiftedBox);
-        }
+        const boxes = this.getCurrentBoxesInWorldCoordinates();
+        for (let box of boxes)
+            platformApi.drawHitbox(box);
     }
+
 }

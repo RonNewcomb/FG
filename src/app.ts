@@ -3,8 +3,8 @@ import { PlatformBrowser } from "./PlatformBrowser";
 import { HUD } from "./hud";
 import { Character } from "./character";
 import { fdata1 } from "./testdata";
-import { hasAll, hits } from "./collision";
-import { Connected, HitboxProperties, SystemMove } from "./interfaces";
+import { HitboxProperties, SystemMove } from "./interfaces";
+import { checkBoxes } from "./collision";
 
 const platformApi: IPlatform = new PlatformBrowser().init();
 const hud = new HUD(platformApi);
@@ -19,8 +19,10 @@ let hitCount = 0;
 
 function drawFrame() {
     // collision detection
-    let p1AttacksP2: Connected | null = hits(character1, character2);
-    let p2AttacksP1: Connected | null = hits(character2, character1);
+    const p1Boxes = character1.getCurrentBoxesInWorldCoordinates();
+    const p2Boxes = character2.getCurrentBoxesInWorldCoordinates();
+    let p1AttacksP2 = checkBoxes(p1Boxes, p2Boxes);
+    let p2AttacksP1 = checkBoxes(p2Boxes, p1Boxes);
     if (p1AttacksP2 && p2AttacksP1) {
         // clash / trade / throwtech
         const p1Grabbed = (p1AttacksP2[2] & HitboxProperties.Grab) > 0;
