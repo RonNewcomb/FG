@@ -1,15 +1,14 @@
 import { IPlatform } from "./IPlatform";
 import { PlatformBrowser } from "./PlatformBrowser";
-import { HUD } from "./hud";
-import { Character } from "./character";
-import { fdata1 } from "./testdata";
 import { HitboxProperties, SystemMove } from "./interfaces";
 import { checkBoxes } from "./collision";
+import { Loader } from "./loader";
+
 
 const platformApi: IPlatform = new PlatformBrowser().init();
-const hud = new HUD(platformApi);
-const character1 = new Character([], [], fdata1, "Kyu");
-const character2 = new Character([], [], fdata1, "Ren");
+const loader = new Loader(platformApi);
+const [hud, character1, character2] = await Promise.all([loader.getHudAsset(), loader.getCharacterAsset("Kyu"), loader.getCharacterAsset("Ren")]);
+
 character1.reset(true);
 character2.reset(false);
 const numMoves1 = character1.fdata.moves.length - 1;

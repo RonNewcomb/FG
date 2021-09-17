@@ -1,6 +1,6 @@
 import { hasAll } from "./collision";
 import { frameCount, halfmillion, Hitbox, HitboxProperties, million } from "./interfaces";
-import { IColor, IPlatform } from "./IPlatform";
+import { AssetType, IAsset, IColor, IPlatform } from "./IPlatform";
 
 document.body.innerHTML = `
 <div id=framebuffer1 class=framebuffer>
@@ -115,6 +115,9 @@ export class PlatformBrowser implements IPlatform {
         throw new Error("Method not implemented.");
     }
 
+    async loadAsset(type: AssetType, name: string): Promise<IAsset> {
+        return {} as IAsset;
+    }
 }
 
 export function asHexValue(color: IColor): string {

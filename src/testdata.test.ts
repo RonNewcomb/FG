@@ -14,6 +14,7 @@ export class MockPlatform implements IPlatform {
     stopAudio = jest.fn((handle: object): boolean => true);
     renderModel = jest.fn((model: object, location: object, orientation: object): void => void 0);
     readInput = jest.fn((device: object): object => ({}));
+    loadAsset = jest.fn((...args) => Promise.resolve({}));
 }
 
 test('#/hitboxsets should never be 0 because it implies a 0-frame move', () => {

@@ -8,6 +8,8 @@ export type I3dPoint = object;
 export type I3dRotation = object;
 export type IInputResult = object;
 export type IInputDevice = object;
+export type IAsset = object;
+export const enum AssetType { Character, Stage, Settings, UI }
 
 export interface IPlatform {
     init(): IPlatform;
@@ -19,5 +21,6 @@ export interface IPlatform {
     stopAudio(handle: IAudioClipHandle): boolean;
     renderModel(model: I3DModel, location: I3dPoint, orientation: I3dRotation): void;
     readInput(device: IInputDevice): IInputResult;
+    loadAsset(type: AssetType, name: string): Promise<IAsset>;
 }
 
