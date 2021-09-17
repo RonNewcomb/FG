@@ -1,9 +1,15 @@
+import { Character } from "./character";
 import { CharacterMove, Connected, frameCount, Hitbox, HitboxProperties, HitboxSet } from "./interfaces";
+import { translateToWorldCoordinates } from "./util";
 
 // frameCount MUST be within the move's duration
-export function hits(attack: CharacterMove, attackFrame: frameCount, target: CharacterMove, targetFrame: frameCount): Connected | null {
-    const attackBoxes: HitboxSet = attack.hitboxes[attackFrame];
-    const targetBoxes: HitboxSet = target.hitboxes[targetFrame];
+export function hits(attacker: Character, defender: Character): Connected | null {
+    const attack: CharacterMove = attacker.getCurrentMove();
+    const attackFrame: frameCount = attacker.currentTick;
+    const target: CharacterMove = defender.getCurrentMove();
+    const targetFrame: frameCount = defender.currentTick;
+    const attackBoxes: HitboxSet = attack.hitboxes[attackFrame].map(b => translateToWorldCoordinates(b, attacker.x, attacker.y, attacker.getIsFacingRight()));
+    const targetBoxes: HitboxSet = target.hitboxes[targetFrame].map(b => translateToWorldCoordinates(b, defender.x, defender.y, defender.getIsFacingRight()));
     return checkBoxes(attackBoxes, targetBoxes);
 }
 

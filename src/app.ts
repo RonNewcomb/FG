@@ -19,8 +19,8 @@ let hitCount = 0;
 
 function drawFrame() {
     // collision detection
-    let p1AttacksP2: Connected | null = hits(character1.getCurrentMove(), character1.currentTick, character2.getCurrentMove(), character2.currentTick);
-    let p2AttacksP1: Connected | null = hits(character2.getCurrentMove(), character2.currentTick, character1.getCurrentMove(), character1.currentTick);
+    let p1AttacksP2: Connected | null = hits(character1, character2);
+    let p2AttacksP1: Connected | null = hits(character2, character1);
     if (p1AttacksP2 && p2AttacksP1) {
         // clash / trade / throwtech
         const p1Grabbed = (p1AttacksP2[2] & HitboxProperties.Grab) > 0;
@@ -40,7 +40,7 @@ function drawFrame() {
 
     // read input
     const choosesMove1 = Math.random() > 0.75; // 75% he will idle
-    const choosesMove2 = Math.random() > 0.60; // 60% he will idle 
+    const choosesMove2 = Math.random() > 0.60; // 60% he will idle
 
     // advance characters 1 frame
     character1.nextTick(choosesMove1 ? Math.floor(Math.random() * (numMoves1 - 0.1) + 1) : SystemMove.StandIdle);

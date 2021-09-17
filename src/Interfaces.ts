@@ -42,8 +42,10 @@ export enum HitboxProperties { // bit flags
 
 /** index into FrameData.moves */
 export const enum SystemMove {
-    StandIdle = 0,
-    Hit = 1,
+    // cannot be chosen by player
+    Hit = 0,
+    // can be chosen by player
+    StandIdle = 1,
 }
 
 export interface Hitbox {
