@@ -1,4 +1,38 @@
-import { Connected, Hitbox, HitboxProperties } from "./interfaces";
+import { Connected, Hitbox, HitboxProperties, SystemMove } from "./interfaces";
+import { Character } from "./character";
+
+export function collisionDetection(characters: Character[]): void {
+    // collision detection
+    const hitboxes = characters.map(c => c.getCurrentBoxesInWorldCoordinates());
+
+    //let collisions = hitboxes.map((attack, i) => hitboxes.map((target, j) => (i === j) ? null : checkBoxes(attack, target)));
+    // reflect all projectiles
+    // process all clean grabs
+    //  cleanly-grabbed chars nulled out attack (even if they were countering a strike, they can't get anything from it this frame)
+    // resolve simultaneous grabs, since they require either throw-tech or a cinematic
+
+    let p1AttacksP2 = checkBoxes(hitboxes[0], hitboxes[1]);
+    let p2AttacksP1 = checkBoxes(hitboxes[1], hitboxes[0]);
+    if (p1AttacksP2 && p2AttacksP1) {
+        // clash / trade / throwtech
+
+        // if character successfully grabs someone who is also successfully grabbing someone, ignore the interaction
+        // unless a third person was involved.
+        const p1Grabbed = hasAll(p1AttacksP2[2], HitboxProperties.Grab);
+        const p2Grabbed = hasAll(p2AttacksP1[2], HitboxProperties.Grab);
+        if (p1Grabbed && p2Grabbed) {
+            // throw tech, or just ignore
+            p1AttacksP2 = null;
+            p2AttacksP1 = null;
+        } else if (p1Grabbed) {
+            p2AttacksP1 = null;
+        } else if (p2Grabbed) {
+            p1AttacksP2 = null;
+        }
+    }
+    if (p1AttacksP2) { characters[1].setCurrentMove(SystemMove.Hit); characters[0].comboCounter++; }
+    if (p2AttacksP1) { characters[0].setCurrentMove(SystemMove.Hit); characters[1].comboCounter++; }
+}
 
 export const hasAll = (boxProp: HitboxProperties, properties: HitboxProperties) => (boxProp & properties) === properties;
 export const hasAny = (boxProp: HitboxProperties, properties: HitboxProperties) => (boxProp & properties) !== 0;

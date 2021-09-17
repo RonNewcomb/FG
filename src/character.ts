@@ -40,8 +40,8 @@ export class Character {
         const lengthOfMoveInFrames = this.fdata.moves[this.currentMove].hitboxes.length;
         if (this.currentTick >= lengthOfMoveInFrames) {
             // then move has ended; pick next one if applicable
+            this.currentMove = bufferedNextMove || SystemMove.StandIdle;
             this.currentTick = 0;
-            this.currentMove = bufferedNextMove || 0; // 0 == standIdle
         }
         const moveInProgress = this.getCurrentMove();
         const effects = moveInProgress.effects?.[this.currentTick];
