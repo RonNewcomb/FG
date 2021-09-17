@@ -1,8 +1,8 @@
 import { Connected, Hitbox, HitboxProperties } from "./interfaces";
 
-export const hasAll = (box: Hitbox, property: HitboxProperties) => (box.props & property) === property;
-export const hasAny = (box: Hitbox, property: HitboxProperties) => (box.props & property) !== 0;
-export const hasNone = (box: Hitbox, property: HitboxProperties) => (box.props & property) === 0;
+export const hasAll = (boxProp: HitboxProperties, properties: HitboxProperties) => (boxProp & properties) === properties;
+export const hasAny = (boxProp: HitboxProperties, properties: HitboxProperties) => (boxProp & properties) !== 0;
+export const hasNone = (boxProp: HitboxProperties, properties: HitboxProperties) => (boxProp & properties) === 0;
 
 // nested loops instead of .filter(lambda) are ugly but more efficient - no space allocation except return value
 export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connected | null {
@@ -11,7 +11,7 @@ export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connec
     for (let attack of attackBoxes)
         if ((attack.props & HitboxProperties.Strike) > 0)
             for (let target of targetBoxes)
-                if ((target.props & HitboxProperties.Hurtbox) > 0 && (target.props & HitboxProperties.ImmuneStrike) === 0)
+                if (hasAll(target.props, HitboxProperties.Hurtbox) && hasNone(target.props, HitboxProperties.ImmuneStrike))
                     if (rectanglesIntersect(attack, target))
                         return [attack, target, HitboxProperties.Strike];
 
@@ -19,7 +19,7 @@ export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connec
     for (let attack of attackBoxes)
         if (attack.props & HitboxProperties.Grab)
             for (let target of targetBoxes)
-                if (target.props & HitboxProperties.Hurtbox && !(target.props & HitboxProperties.ImmuneGrab))
+                if (hasAll(target.props, HitboxProperties.Hurtbox) && hasNone(target.props, HitboxProperties.ImmuneGrab))
                     if (rectanglesIntersect(attack, target))
                         return [attack, target, HitboxProperties.Grab];
 
@@ -27,7 +27,7 @@ export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connec
     for (let attack of attackBoxes)
         if (attack.props & HitboxProperties.Projectile)
             for (let target of targetBoxes)
-                if (target.props & HitboxProperties.Hurtbox && !(target.props & HitboxProperties.ImmuneProjectile))
+                if (hasAll(target.props, HitboxProperties.Hurtbox) && hasNone(target.props, HitboxProperties.ImmuneProjectile))
                     if (rectanglesIntersect(attack, target))
                         return [attack, target, HitboxProperties.Projectile];
 
@@ -35,7 +35,7 @@ export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connec
     for (let attack of attackBoxes)
         if (attack.props & HitboxProperties.Counter)
             for (let target of targetBoxes)
-                if (target.props & HitboxProperties.Strike || target.props & HitboxProperties.Projectile)
+                if (hasAny(target.props, HitboxProperties.Strike | HitboxProperties.Projectile))
                     if (rectanglesIntersect(attack, target))
                         return [attack, target, HitboxProperties.Counter];
 
@@ -43,7 +43,7 @@ export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connec
     for (let attack of attackBoxes)
         if (attack.props & HitboxProperties.Reflect)
             for (let target of targetBoxes)
-                if (target.props & HitboxProperties.Projectile)
+                if (hasAll(target.props, HitboxProperties.Projectile))
                     if (rectanglesIntersect(attack, target))
                         return [attack, target, HitboxProperties.Reflect];
 

@@ -3,7 +3,7 @@ import { HUD } from "./hud";
 import { IPlatform, AssetType } from "./IPlatform";
 import { fdata1 } from "./testdata";
 
-export class Loader {
+export class AssetLoader {
     constructor(private platformApi: IPlatform) {
 
     }

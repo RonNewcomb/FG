@@ -93,3 +93,16 @@ export interface Connected {
     1: Hitbox; // tagged hurtbox
     2: HitboxProperties; // type of attack (since [0] may have multiple properties i.e. both counter and reflector)
 }
+
+export type IButtonArray = number; // as bitfield
+
+export interface IControlSource {
+    getButtons(): IButtonArray;
+}
+
+export interface IControllerInput extends IControlSource {
+}
+
+export interface IAiInput extends IControlSource {
+}
+

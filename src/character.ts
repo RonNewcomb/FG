@@ -16,6 +16,7 @@ export class Character {
     meter: meterPoints = 0;
     currentMove = 0; // index into fdata.moves
     currentTick = 0; // index into fdata.moves[currentMove]
+    comboCounter = 0;
 
     constructor(public models: I3DModel[], public soundBites: IAudio[], public fdata: FrameData, public name: string) {
     }
@@ -31,6 +32,7 @@ export class Character {
         this.meter = <meterPoints>0;
         this.currentMove = 0;
         this.currentTick = 0;
+        this.comboCounter = 0;
     }
 
     nextTick(bufferedNextMove: number): void {

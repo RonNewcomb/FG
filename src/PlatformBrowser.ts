@@ -75,9 +75,9 @@ export class PlatformBrowser implements IPlatform {
         sprite.style.left = box.x * PPMtoPixels + 'px';
         sprite.style.width = box.wide * PPMtoPixels + 'px';
         sprite.style.height = box.tall * PPMtoPixels + 'px';
-        const as = hasAll(box, HitboxProperties.Strike) ? HitboxProperties.Strike
-            : hasAll(box, HitboxProperties.Grab) ? HitboxProperties.Grab
-                : hasAll(box, HitboxProperties.Hurtbox) ? HitboxProperties.Hurtbox
+        const as = hasAll(box.props, HitboxProperties.Strike) ? HitboxProperties.Strike
+            : hasAll(box.props, HitboxProperties.Grab) ? HitboxProperties.Grab
+                : hasAll(box.props, HitboxProperties.Hurtbox) ? HitboxProperties.Hurtbox
                     : HitboxProperties.Pushbox;
         let color = this.hitboxColors.get(as) || this.unknownHitboxColor;
         color.A = halfmillion;

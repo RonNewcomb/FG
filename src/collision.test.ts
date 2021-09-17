@@ -74,7 +74,7 @@ test("any frame with a strike/grab/projectile hitbox must have an Effect", () =>
     const framedata = char.fdata;
     for (let move of framedata.moves) {
         for (let hitboxes of move.hitboxes) {
-            const hasAttackNoEffect = hitboxes.some(hb => !hb.effects && hasAny(hb, HitboxProperties.Grab | HitboxProperties.Strike | HitboxProperties.Projectile));
+            const hasAttackNoEffect = hitboxes.some(hb => !hb.effects && hasAny(hb.props, HitboxProperties.Grab | HitboxProperties.Strike | HitboxProperties.Projectile));
             expect(hasAttackNoEffect).toBeFalsy();
         }
     }

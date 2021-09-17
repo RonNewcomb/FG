@@ -1,31 +1,32 @@
 import { IPlatform } from "./IPlatform";
 import { PlatformBrowser } from "./PlatformBrowser";
 import { HitboxProperties, SystemMove } from "./interfaces";
-import { checkBoxes } from "./collision";
-import { Loader } from "./loader";
-
+import { checkBoxes, hasAll } from "./collision";
+import { AssetLoader } from "./assetLoader";
+import { AIInput } from "./ai";
 
 const platformApi: IPlatform = new PlatformBrowser().init();
-const loader = new Loader(platformApi);
-const [hud, character1, character2] = await Promise.all([loader.getHudAsset(), loader.getCharacterAsset("Kyu"), loader.getCharacterAsset("Ren")]);
+const assetLoader = new AssetLoader(platformApi);
 
-character1.reset(true);
-character2.reset(false);
-const numMoves1 = character1.fdata.moves.length - 1;
-const numMoves2 = character2.fdata.moves.length - 1;
+const hud = await assetLoader.getHudAsset();
+
+const selected = ["Kyu", "Ren"]; // and also, # chars in play
+const characters = await Promise.all(selected.map(name => assetLoader.getCharacterAsset(name)));
+characters.forEach((c, index) => c.reset(index % 2 === 0));
+const AIs = characters.map(c => new AIInput(c));
+
 let currentFrame = 1; // reset on new round
 let hitCount = 0;
 
 function drawFrame() {
     // collision detection
-    const p1Boxes = character1.getCurrentBoxesInWorldCoordinates();
-    const p2Boxes = character2.getCurrentBoxesInWorldCoordinates();
-    let p1AttacksP2 = checkBoxes(p1Boxes, p2Boxes);
-    let p2AttacksP1 = checkBoxes(p2Boxes, p1Boxes);
+    const hitboxes = characters.map(c => c.getCurrentBoxesInWorldCoordinates());
+    let p1AttacksP2 = checkBoxes(hitboxes[0], hitboxes[1]);
+    let p2AttacksP1 = checkBoxes(hitboxes[1], hitboxes[0]);
     if (p1AttacksP2 && p2AttacksP1) {
         // clash / trade / throwtech
-        const p1Grabbed = (p1AttacksP2[2] & HitboxProperties.Grab) > 0;
-        const p2Grabbed = (p2AttacksP1[2] & HitboxProperties.Grab) > 0;
+        const p1Grabbed = hasAll(p1AttacksP2[2], HitboxProperties.Grab);
+        const p2Grabbed = hasAll(p2AttacksP1[2], HitboxProperties.Grab);
         if (p1Grabbed && p2Grabbed) {
             // throw tech, or just ignore
             p1AttacksP2 = null;
@@ -36,28 +37,25 @@ function drawFrame() {
             p1AttacksP2 = null;
         }
     }
-    if (p1AttacksP2) character2.setCurrentMove(SystemMove.Hit);
-    if (p2AttacksP1) character1.setCurrentMove(SystemMove.Hit);
+    if (p1AttacksP2) characters[1].setCurrentMove(SystemMove.Hit);
+    if (p2AttacksP1) characters[0].setCurrentMove(SystemMove.Hit);
 
     // read input
-    const choosesMove1 = Math.random() > 0.75; // 75% he will idle
-    const choosesMove2 = Math.random() > 0.60; // 60% he will idle
+    const choosesMove = AIs.map(x => x.getButtons());
 
     // advance characters 1 frame
-    character1.nextTick(choosesMove1 ? Math.floor(Math.random() * (numMoves1 - 0.1) + 1) : SystemMove.StandIdle);
-    character2.nextTick(choosesMove2 ? Math.floor(Math.random() * (numMoves2 - 0.1) + 1) : SystemMove.StandIdle);
+    characters.forEach((c, i) => c.nextTick(choosesMove[i]));
 
     // render stage @ characters' new position
     // ...
 
     // render characters
-    character1.render(platformApi);
-    character2.render(platformApi);
+    characters.forEach(c => c.render(platformApi));
 
     // render UI
     if (p1AttacksP2) hitCount++;
     if (p2AttacksP1) hitCount++;
-    hud.render(currentFrame, character1, character2, hitCount);
+    hud.render(currentFrame, characters[0], characters[1], hitCount);
 
     // end frame
     platformApi.newFrame();
