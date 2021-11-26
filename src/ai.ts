@@ -1,12 +1,12 @@
-import { Character } from "./character";
-import { IAiInput, IButtonArray, SystemMove } from "./interfaces";
+import { IAiInput, IButtonArray, ICharacter, IControlSource, SystemMove } from "./interfaces";
 
 
 export class AIInput implements IAiInput {
     numMoves: number;
 
-    constructor(public char: Character) {
+    constructor(public char: ICharacter) {
         this.numMoves = char.fdata.moves.length - 1;
+        return this;
     }
 
     getButtons(): IButtonArray {

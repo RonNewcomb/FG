@@ -1,11 +1,11 @@
-import { damagePoints, meterPoints, FrameData, PPM, HitboxSet, CharacterMove, halfmillion, quartermillion, million, SystemMove } from "./interfaces";
+import { damagePoints, meterPoints, FrameData, PPM, HitboxSet, CharacterMove, halfmillion, quartermillion, million, SystemMove, ICharacter } from "./interfaces";
 import { I3DModel, IAudio, IPlatform } from "./IPlatform";
 import { translateToWorldCoordinates } from "./util";
 
 const isFacingRight = +1; // p1 side
 const isFacingLeft = -1;  // p2 side -- x coordinates are flipped
 
-export class Character {
+export class Character implements ICharacter {
     x: PPM = 0;
     y: PPM = 0;
     xv: PPM = 0;

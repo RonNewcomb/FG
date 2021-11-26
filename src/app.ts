@@ -1,23 +1,31 @@
 import { IPlatform } from "./IPlatform";
 import { PlatformBrowser } from "./PlatformBrowser";
-import { IButtonArray, IControlSource } from "./interfaces";
-import { AssetLoader } from "./assetLoader";
+import { IButtonArray, IControlSource, IControlSourceType } from "./interfaces";
 import { collisionDetection } from "./collision";
+import { AssetLoader } from "./assetLoader";
+import { HUD } from "./hud";
 import { AIInput } from "./ai";
+
+// app constants
+const oneSecond = 1000;
+const fps = 10;
 
 // app init
 const platformApi: IPlatform = new PlatformBrowser().init();
 const assetLoader = new AssetLoader(platformApi);
-const hud = await assetLoader.getHudAsset();
+const hud = new HUD(platformApi, await assetLoader.getHudAsset());
+
+// mode select
+const controlSourceTypes: IControlSourceType[] = [AIInput, AIInput];
 
 // stage select
 const stage = await assetLoader.getStageAsset("training");
 
 // char select
 const selected = ["Kyu", "Ren"]; // and also, # chars in play
-const characters = await Promise.all(selected.map(name => assetLoader.getCharacterAsset(name)));
-characters.forEach((c, index) => c.reset(index % 2 === 0));
-const controlSources: IControlSource[] = characters.map(c => new AIInput(c));
+const characters = await Promise.all(selected.map(assetLoader.getCharacterAsset));
+characters.forEach((character, index) => character.reset(index % 2 === 0));
+const controlSources: IControlSource[] = characters.map((character, i) => new controlSourceTypes[i](character));
 
 // battle begin
 let logicalFrame = 0; // reset on new round; can rollback to earlier numbers
@@ -42,7 +50,8 @@ function advanceFrame() {
     collisionDetection(characters);
 
     // advance characters 1 frame
-    characters.forEach((character, i) => character.nextTick(inputs[logicalFrame][i]));
+    const current = inputs[logicalFrame];
+    characters.forEach((character, i) => character.nextTick(current[i]));
 
     logicalFrame++;
 }
@@ -57,11 +66,11 @@ function render() {
     characters.forEach(character => character.render(platformApi));
 
     // render UI
-    hud.render(logicalFrame, characters[0], characters[1]);
+    hud.render(logicalFrame, characters, fps);
 
     // end the frame, schedule the next
     platformApi.newFrame();
-    setTimeout(eachFrame, 1000 / 10); // 1000/60 is 60fps
+    setTimeout(eachFrame, oneSecond / fps);
 }
 
 eachFrame();

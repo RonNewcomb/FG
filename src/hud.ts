@@ -17,26 +17,27 @@ export const lifebar: Hitbox = {
     y: 20000,
     tall: 20000,
     wide: 450000,
-    props: HitboxProperties.Grab
+    props: HitboxProperties.Grab, // for color
 };
 
-let platformApi: IPlatform;
 
 export class HUD {
+    private platformApi: IPlatform;
 
-    constructor(platform: IPlatform) {
-        platformApi = platform;
+    constructor(platform: IPlatform, assets: object) {
+        this.platformApi = platform;
     }
 
-    render(currentFrame: number, p1: Character, p2: Character): void {
-        const secondsLeft = (99 - Math.floor(currentFrame / 10));
-        platformApi.drawHitbox(timerSpace);
-        platformApi.renderText(timerSpace.x, timerSpace.y - 3000, secondsLeft.toString());
+    render(currentFrame: number, characters: Character[], fps: number): void {
+        const secondsLeft = (99 - Math.floor(currentFrame / fps));
+        this.platformApi.drawHitbox(timerSpace);
+        this.platformApi.renderText(timerSpace.x, timerSpace.y - 3000, secondsLeft.toString());
         const p1Lifebar = translateToWorldCoordinates(lifebar, halfmillion - timerspaceWide - 5000, 0, false);
-        platformApi.drawHitbox(p1Lifebar);
+        this.platformApi.drawHitbox(p1Lifebar);
         const p2Lifebar = translateToWorldCoordinates(lifebar, halfmillion + timerspaceWide + 5000, 0, true);
-        platformApi.drawHitbox(p2Lifebar);
-        if (p1.comboCounter) platformApi.renderText(100000, 100000, p1.comboCounter + " hits!");
-        if (p2.comboCounter) platformApi.renderText(800000, 100000, p2.comboCounter + " hits!");
+        this.platformApi.drawHitbox(p2Lifebar);
+        for (let character of characters)
+            if (character.comboCounter)
+                this.platformApi.renderText(450000 + (character.facingDirection * 350000), 100000, character.comboCounter + " hits!");
     }
 }

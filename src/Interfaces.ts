@@ -94,9 +94,18 @@ export interface Connected {
     2: HitboxProperties; // type of attack (since [0] may have multiple properties i.e. both counter and reflector)
 }
 
+export interface ICharacter {
+    // for control types ctor
+    fdata: FrameData;
+}
+
 // input ///////
 
 export type IButtonArray = number; // as bitfield
+
+export interface IControlSourceType {
+    new(character: ICharacter): IControlSource;
+}
 
 export interface IControlSource {
     getButtons(): IButtonArray;
