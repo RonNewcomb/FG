@@ -25,11 +25,17 @@ const inputs: IButtonArray[][] = []; // index on frameCount; every item is a tup
 
 // battle loop
 function eachFrame() {
+    getInputs();
+    advanceFrame();
+    render();
+}
 
+function getInputs() {
     // Inputs ///////////////
     inputs[logicalFrame] = controlSources.map(source => source.getButtons());
+}
 
-
+function advanceFrame() {
     // Computation //////////
 
     // collision detection; sets "Hit" on a character if applicable but otherwise does nothing
@@ -38,7 +44,10 @@ function eachFrame() {
     // advance characters 1 frame
     characters.forEach((character, i) => character.nextTick(inputs[logicalFrame][i]));
 
+    logicalFrame++;
+}
 
+function render() {
     // Outputs ///////////////
 
     // render stage @ characters' new position
@@ -52,7 +61,6 @@ function eachFrame() {
 
     // end the frame, schedule the next
     platformApi.newFrame();
-    logicalFrame++;
     setTimeout(eachFrame, 1000 / 10); // 1000/60 is 60fps
 }
 
