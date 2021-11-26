@@ -1,11 +1,13 @@
-import { damagePoints, meterPoints, FrameData, PPM, HitboxSet, CharacterMove, halfmillion, quartermillion, million, SystemMove, ICharacter } from "./interfaces";
-import { I3DModel, IAudio, IPlatform } from "./IPlatform";
+import { CharacterTemplate } from "./charaterTemplate";
+import { damagePoints, meterPoints, PPM, HitboxSet, CharacterMove, halfmillion, quartermillion, million, SystemMove, IControlSource, IControlSourceType } from "./interfaces";
+import { IPlatform } from "./IPlatform";
 import { translateToWorldCoordinates } from "./util";
 
 const isFacingRight = +1; // p1 side
 const isFacingLeft = -1;  // p2 side -- x coordinates are flipped
 
-export class Character implements ICharacter {
+export class Character {
+    controlSource: IControlSource;
     x: PPM = 0;
     y: PPM = 0;
     xv: PPM = 0;
@@ -18,7 +20,10 @@ export class Character implements ICharacter {
     currentTick = 0; // index into fdata.moves[currentMove]
     comboCounter = 0;
 
-    constructor(public models: I3DModel[], public soundBites: IAudio[], public fdata: FrameData, public name: string) {
+    constructor(public assets: CharacterTemplate, controlSourceType: IControlSourceType, player1side: boolean) {
+        this.reset(player1side);
+        this.controlSource = new controlSourceType(assets.fdata);
+        this.controlSource.matchReset();
     }
 
     reset(player1side: boolean): void {
@@ -37,7 +42,7 @@ export class Character implements ICharacter {
 
     nextTick(bufferedNextMove: number): void {
         this.currentTick++;
-        const lengthOfMoveInFrames = this.fdata.moves[this.currentMove].hitboxes.length;
+        const lengthOfMoveInFrames = this.assets.fdata.moves[this.currentMove].hitboxes.length;
         if (this.currentTick >= lengthOfMoveInFrames) {
             // then move has ended; pick next one if applicable
             this.currentMove = bufferedNextMove || SystemMove.StandIdle;
@@ -54,7 +59,7 @@ export class Character implements ICharacter {
     }
 
     getCurrentMove(): CharacterMove {
-        return this.fdata.moves[this.currentMove];
+        return this.assets.fdata.moves[this.currentMove];
     }
 
     getCurrentBoxesInWorldCoordinates(): HitboxSet {

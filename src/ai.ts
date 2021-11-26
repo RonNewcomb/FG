@@ -1,12 +1,18 @@
-import { IAiInput, IButtonArray, ICharacter, IControlSource, SystemMove } from "./interfaces";
-
+import { FrameData, IAiInput, IButtonArray, SystemMove } from "./interfaces";
 
 export class AIInput implements IAiInput {
     numMoves: number;
 
-    constructor(public char: ICharacter) {
-        this.numMoves = char.fdata.moves.length - 1;
-        return this;
+    constructor(public fdata: FrameData) {
+        this.numMoves = fdata.moves.length - 1;
+    }
+
+    roundReset(): void {
+        // no "memory" to reset
+    }
+
+    matchReset(): void {
+        // no "memory" to reset
     }
 
     getButtons(): IButtonArray {

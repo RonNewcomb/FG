@@ -1,10 +1,11 @@
 import { IPlatform } from "./IPlatform";
 import { PlatformBrowser } from "./PlatformBrowser";
-import { IButtonArray, IControlSource, IControlSourceType } from "./interfaces";
+import { IButtonArray, IControlSourceType } from "./interfaces";
 import { collisionDetection } from "./collision";
 import { AssetLoader } from "./assetLoader";
 import { HUD } from "./hud";
 import { AIInput } from "./ai";
+import { Character } from "./character";
 
 // app constants
 const oneSecond = 1000;
@@ -13,19 +14,26 @@ const fps = 10;
 // app init
 const platformApi: IPlatform = new PlatformBrowser().init();
 const assetLoader = new AssetLoader(platformApi);
-const hud = new HUD(platformApi, await assetLoader.getHudAsset());
+const hud = new HUD(platformApi, await assetLoader.getHudAssets());
 
 // mode select
-const controlSourceTypes: IControlSourceType[] = [AIInput, AIInput];
+const modes: { [key: string]: IControlSourceType[] } = {
+    demo: [AIInput, AIInput],
+    // arcade: [ControllerInput, AIInput],
+    // localVs: [ControllerInput, ControllerInput],
+    // onlineVs: [ControllerInput, NetworkInput],
+    // spectator: [NetworkInput, NetworkInput],
+    // localReplay: [ReplayInput, ReplayInput],
+}
+const controlSourceTypes = modes.demo;
 
 // stage select
-const stage = await assetLoader.getStageAsset("training");
+const stage = await assetLoader.getStageAssets("training");
 
 // char select
 const selected = ["Kyu", "Ren"]; // and also, # chars in play
-const characters = await Promise.all(selected.map(assetLoader.getCharacterAsset));
-characters.forEach((character, index) => character.reset(index % 2 === 0));
-const controlSources: IControlSource[] = characters.map((character, i) => new controlSourceTypes[i](character));
+const characterAssets = await Promise.all(selected.map(assetLoader.getCharacterAssets));
+const characters = characterAssets.map((assets, i) => new Character(assets, controlSourceTypes[i], i % 2 === 0));
 
 // battle begin
 let logicalFrame = 0; // reset on new round; can rollback to earlier numbers
@@ -40,7 +48,7 @@ function eachFrame() {
 
 function getInputs() {
     // Inputs ///////////////
-    inputs[logicalFrame] = controlSources.map(source => source.getButtons());
+    inputs[logicalFrame] = characters.map(character => character.controlSource.getButtons());
 }
 
 function advanceFrame() {

@@ -1,4 +1,6 @@
+import { AIInput } from './ai';
 import { Character } from './character';
+import { CharacterTemplate } from './charaterTemplate';
 import { rectanglesIntersect, checkBoxes, hasAny } from './collision';
 import { Hitbox, HitboxProperties } from './interfaces';
 import { fdata1 } from './testdata';
@@ -70,8 +72,8 @@ test("these boxsets do intersect - strike misses but grab hits", () => {
 });
 
 test("any frame with a strike/grab/projectile hitbox must have an Effect", () => {
-    const char = new Character([], [], fdata1, "name");
-    const framedata = char.fdata;
+    const template = new CharacterTemplate([], [], fdata1, "Name");
+    const framedata = template.fdata;
     for (let move of framedata.moves) {
         for (let hitboxes of move.hitboxes) {
             const hasAttackNoEffect = hitboxes.some(hb => !hb.effects && hasAny(hb.props, HitboxProperties.Grab | HitboxProperties.Strike | HitboxProperties.Projectile));
