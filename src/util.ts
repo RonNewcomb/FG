@@ -1,5 +1,7 @@
 import { Hitbox, HitboxSet } from "./interfaces";
 
+export type Dictionary<T> = { [key: string]: T };
+
 export const NoHitboxes: HitboxSet = []; // default value instead of null or [] -- prevent memory fragmentation issues
 
 export function translateToWorldCoordinates(box: Hitbox, x: number, y: number, facingRight: boolean): Hitbox {

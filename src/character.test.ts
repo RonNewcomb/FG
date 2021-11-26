@@ -2,13 +2,12 @@ import { AIInput } from "./ai";
 import { Character } from "./character";
 import { CharacterTemplate } from "./charaterTemplate";
 import { fdata1 } from "./testdata";
-
-type Dictionary = { [key: string]: any };
+import { Dictionary } from "./util";
 
 test('reset changes all character properties except functions and ctor inputs', () => {
     const flaggedProperty = 4298;
     const template = new CharacterTemplate([], [], fdata1, "Name");
-    const character = new Character(template, AIInput, true) as Character & Dictionary;
+    const character = new Character(template, AIInput, true) as Character & Dictionary<any>;
     for (let propertyName in character)
         if (!["assets", "controlSource"].includes(propertyName) && typeof character[propertyName] !== 'function')
             character[propertyName] = flaggedProperty; // dirty up the model
@@ -23,7 +22,7 @@ test('reset changes all character properties except functions and ctor inputs', 
 test('reset changes all character properties except functions and ctor inputs -- if a new prop was forgotten...', () => {
     const flaggedProperty = 4298;
     const template = new CharacterTemplate([], [], fdata1, "Name");
-    const character = new Character(template, AIInput, true) as Character & Dictionary;
+    const character = new Character(template, AIInput, true) as Character & Dictionary<any>;
     character.someNewlyAddedProperty = 255;
     for (let propertyName in character)
         if (!["assets", "controlSource"].includes(propertyName) && typeof character[propertyName] !== 'function')

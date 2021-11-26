@@ -6,6 +6,7 @@ import { AssetLoader } from "./assetLoader";
 import { HUD } from "./hud";
 import { AIInput } from "./ai";
 import { Character } from "./character";
+import { Dictionary } from "./util";
 
 // app constants
 const oneSecond = 1000;
@@ -17,13 +18,15 @@ const assetLoader = new AssetLoader(platformApi);
 const hud = new HUD(platformApi, await assetLoader.getHudAssets());
 
 // mode select
-const modes: { [key: string]: IControlSourceType[] } = {
+const modes: Dictionary<IControlSourceType[]> = {
     demo: [AIInput, AIInput],
     // arcade: [ControllerInput, AIInput],
     // localVs: [ControllerInput, ControllerInput],
     // onlineVs: [ControllerInput, NetworkInput],
     // spectator: [NetworkInput, NetworkInput],
     // localReplay: [ReplayInput, ReplayInput],
+    // dramaticBattle: [ControllerInput, AIInput, AIInput]
+    // dramaticBattleCoop: [ControllerInput, AIInput, ControllerInput]
 }
 const controlSourceTypes = modes.demo;
 
@@ -34,6 +37,7 @@ const stage = await assetLoader.getStageAssets("training");
 const selected = ["Kyu", "Ren"]; // and also, # chars in play
 const characterAssets = await Promise.all(selected.map(assetLoader.getCharacterAssets));
 const characters = characterAssets.map((assets, i) => new Character(assets, controlSourceTypes[i], i % 2 === 0));
+
 
 // battle begin
 let logicalFrame = 0; // reset on new round; can rollback to earlier numbers
