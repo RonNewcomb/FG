@@ -2,7 +2,7 @@ import { hasAll } from "./collision";
 import { frameCount, halfmillion, Hitbox, HitboxProperties, million } from "../interfaces/interfaces";
 import { AssetType, IAsset, IColor, IPlatform } from "../interfaces/IPlatform";
 
-document.body.innerHTML = `
+const innerHtml = `
 <div id=framebuffer1 class=framebuffer>
 </div>
 <div id=framebuffer2 class=framebuffer>
@@ -20,7 +20,7 @@ document.body.innerHTML = `
       position: absolute;
   }
 </style>`;
-document.body.setAttribute('style', "background-color: lightgray; color: white");
+const styles = "background-color: lightgray; color: white";
 
 const ratioPPMto255 = 256 / million;
 const ratioPPMto0_1 = 1 / million;
@@ -28,14 +28,19 @@ let tall = 0;
 let wide = 0;
 let PPMtoPixels = 0;
 let FrameCount: frameCount = 1;
-const framebuffer1 = document.getElementById('framebuffer1')!;
-const framebuffer2 = document.getElementById('framebuffer2')!;
-let incompleteFrame = framebuffer2;
-let visibleFrame = framebuffer1;
-visibleFrame.style.display = 'block'; // override class
+let incompleteFrame: HTMLElement;
+let visibleFrame: HTMLElement;
 
 export class PlatformBrowser implements IPlatform {
+
     init(): IPlatform {
+        document.body.innerHTML = innerHtml;
+        document.body.setAttribute('style', styles);
+        const framebuffer1 = document.getElementById('framebuffer1')!;
+        const framebuffer2 = document.getElementById('framebuffer2')!;
+        incompleteFrame = framebuffer2;
+        visibleFrame = framebuffer1;
+        visibleFrame.style.display = 'block'; // override class
         tall = document.body.clientHeight;
         wide = document.body.clientWidth;
         const smaller = Math.min(tall, wide);
