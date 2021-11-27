@@ -157,11 +157,11 @@ export default async function MatchupsFinder() {
                 const label = relativeFrameAdvantage > 0 ? "+" + relativeFrameAdvantage : relativeFrameAdvantage;
                 fs.appendFileSync(fn, "<tr><th>" + label + "</th>");
                 const len4 = report[p1move][p2move].matchup[frameAdv]?.length || 0;
-                for (var distance = 0; distance < len4; distance++) {
+                for (let distance = 0; distance < len4; distance++) {
                     const result = report[p1move][p2move].matchup[frameAdv][distance] || 0;
                     fs.appendFileSync(fn, "<td style='background-color:" + colors[result] + "'> </td>");
                 }
-                if (distance > maxDistance) maxDistance = distance;
+                if (len4 > maxDistance) maxDistance = len4;
                 fs.appendFileSync(fn, "</tr>\n");
             }
             fs.appendFileSync(fn, `<tr><th>Dist:</th></tr>\n
