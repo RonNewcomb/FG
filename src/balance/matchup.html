@@ -1,48 +1,5 @@
 <head>
-  <script type="module">
-    const report = await fetch("./MatchupResults.json").then(res => res.json());
-    console.log(report);
-
-    const colors = ["lightgray", "red", "blue", "gold"];
-
-    let output = "";
-    const len1 = report.length;
-    for (let p1move = 0; p1move < len1; p1move++) {
-      const len2 = report[p1move]?.length || 0;
-      for (let p2move = 0; p2move < len2; p2move++) {
-        output += `<h2>P1 move ${p1move} vs P2 move ${p2move}</h2>
-            <div class=flexrow>
-                <div class=photo>
-                    <div>${report[p1move][p2move].p1Photo}</div>
-                    <div class=timeline>${report[p1move][p2move].p1FrameVisual}</div>
-                </div>
-                <table>`;
-        const baseFrameAdvantage = report[p1move][p2move].frameAdvantage || 0;
-        const len3 = report[p1move][p2move]?.matchup?.length || 0;
-        for (let frameAdv = 0; frameAdv < len3; frameAdv++) {
-          const relativeFrameAdvantage = baseFrameAdvantage - frameAdv;
-          const label = relativeFrameAdvantage > 0 ? "+" + relativeFrameAdvantage : relativeFrameAdvantage;
-          output += "<tr><th>" + label + "</th>";
-          const len4 = report[p1move][p2move].matchup[frameAdv]?.length || 0;
-          for (let distance = 0; distance < len4; distance++) {
-            const result = report[p1move][p2move].matchup[frameAdv][distance] || 0;
-            output += `<td class=${colors[result]}> </td>`;
-          }
-          output += "</tr>";
-        }
-        output += `<tr><th>Dist:</th></tr>
-                </table>
-                <div class=photo>
-                    <div style="transform: scaleX(-1);">${report[p1move][p2move].p2Photo}</div>
-                    <div class=timeline>${report[p1move][p2move].p2FrameVisual}</div>
-                </div>
-            </div>`;
-      }
-    }
-    document.getElementById("report").innerHTML = output;
-  </script>
-</head>
-<body>
+  <script type="module" src="matchupViewer.js"></script>
   <style>
     td {
       width: 2.5em;
@@ -90,6 +47,8 @@
       background-color: gold;
     }
   </style>
+</head>
+<body>
   <h1>Results</h1>
   <br />
   <div id="report"></div>

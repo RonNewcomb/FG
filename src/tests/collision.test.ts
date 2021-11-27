@@ -1,9 +1,8 @@
-import { AIInput } from '../game/ai';
-import { Character } from '../game/character';
 import { CharacterTemplate } from '../game/charaterTemplate';
-import { rectanglesIntersect, checkBoxes, hasAny } from '../game/collision';
+import { rectanglesIntersect, checkBoxes } from '../game/collision';
 import { Hitbox, HitboxProperties } from '../interfaces/interfaces';
 import { fdata1 } from '../game/testdata';
+import { hasAny } from '../game/util';
 
 test('exactly equal boxes intersect', () => {
     const attack: Hitbox = { x: 50, y: 0, tall: 30, wide: 20, props: HitboxProperties.Strike };

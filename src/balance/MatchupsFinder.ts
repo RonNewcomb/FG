@@ -1,4 +1,4 @@
-import { CharacterMove, SystemMove } from "../interfaces/interfaces";
+import { CharacterMove, FullReport, MoveVsMove, SystemMove } from "../interfaces/interfaces";
 import { AssetLoader } from "../game/assetLoader";
 import { Character } from "../game/character";
 import { collisionDetection } from "../game/collision";
@@ -37,14 +37,6 @@ function getFramedataVisualization(move: CharacterMove): string {
     return retval;
 }
 
-interface MoveVsMove {
-    frameAdvantage: number;
-    p1Photo: string;
-    p2Photo: string;
-    p1FrameVisual: string;
-    p2FrameVisual: string;
-    matchup: number[][];
-}
 
 export default async function MatchupsFinder() {
     console.log("running MatchupsFinder...");
@@ -120,7 +112,11 @@ export default async function MatchupsFinder() {
     }
 
     console.log("writing results....");
-    fs.writeFileSync("built\\balance\\MatchupResults.json", JSON.stringify(report));
+    const fullreport: FullReport = {
+        report: report,
+        moves: characters.map(c => c.assets.fdata.moves),
+    };
+    fs.writeFileSync("built\\balance\\MatchupResults.json", JSON.stringify(fullreport));
 
     const colors = ['lightgray', 'red', 'blue', 'gold'];
 

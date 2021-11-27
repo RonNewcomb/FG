@@ -1,4 +1,4 @@
-import { hasAll } from "./collision";
+import { hasAll } from "./util";
 import { halfmillion, Hitbox, HitboxProperties, million } from "../interfaces/interfaces";
 import { IColor } from "../interfaces/IPlatform";
 

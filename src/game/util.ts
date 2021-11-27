@@ -1,6 +1,10 @@
-import { Hitbox, HitboxSet, IControlSource } from "../interfaces/interfaces";
+import { Hitbox, HitboxProperties, HitboxSet, IControlSource } from "../interfaces/interfaces";
 
 export const NoHitboxes: HitboxSet = []; // default value instead of null or [] -- prevent memory fragmentation issues
+
+export const hasAll = (boxProp: HitboxProperties, properties: HitboxProperties) => (boxProp & properties) === properties;
+export const hasAny = (boxProp: HitboxProperties, properties: HitboxProperties) => (boxProp & properties) !== 0;
+export const hasNone = (boxProp: HitboxProperties, properties: HitboxProperties) => (boxProp & properties) === 0;
 
 export class NullInput implements IControlSource {
     constructor(framedata: any) { }

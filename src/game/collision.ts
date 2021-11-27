@@ -1,5 +1,6 @@
 import { Connected, Hitbox, HitboxProperties } from "../interfaces/interfaces";
 import { Character } from "./character";
+import { hasAll, hasAny, hasNone } from "./util";
 
 export function collisionDetection(characters: Character[]): (Connected | null)[][] {
     // collision detection
@@ -48,10 +49,6 @@ export function collisionDetection(characters: Character[]): (Connected | null)[
 
     return matrix;
 }
-
-export const hasAll = (boxProp: HitboxProperties, properties: HitboxProperties) => (boxProp & properties) === properties;
-export const hasAny = (boxProp: HitboxProperties, properties: HitboxProperties) => (boxProp & properties) !== 0;
-export const hasNone = (boxProp: HitboxProperties, properties: HitboxProperties) => (boxProp & properties) === 0;
 
 // nested loops instead of .filter(lambda) are ugly but more efficient - no space allocation except return value
 export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connected | null {

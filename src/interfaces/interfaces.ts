@@ -133,3 +133,18 @@ export interface IGameState {
     states?: ICharacterRecord[];
 }
 
+// reporting /////
+
+export interface FullReport {
+    report: Array<Array<MoveVsMove>>;
+    moves: CharacterMove[][];
+}
+
+export interface MoveVsMove {
+    frameAdvantage: number;
+    p1Photo: string;
+    p2Photo: string;
+    p1FrameVisual: string;
+    p2FrameVisual: string;
+    matchup: number[][];
+}

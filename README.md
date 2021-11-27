@@ -4,6 +4,8 @@ Needs IIS app "FG" pointed to /built folder. For it, IIS "Mime Types" need to ha
 
 The NPM scripts in package.json (visible in VSCode) do the rest. Typescript compiles to /built folder. NPM script "copy" moves `index.html` and removes .js extensions. Browser follows import statements from there.
 
+Go to http://localhost/fg/ for the game or http://localhost/fg/balance/matchup.html for the post-build move matchup charts.
+
 ## Balancing
 
 Think about rollback netcode.
