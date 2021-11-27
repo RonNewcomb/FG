@@ -1,4 +1,4 @@
-import { FrameData, HitboxProperties, HitboxSet, PerFrameMoveEffects, SystemMove } from "./interfaces";
+import { FrameData, HitboxProperties, HitboxSet, PerFrameMoveEffects, SystemMove } from "../interfaces/interfaces";
 
 export const standIdle: HitboxSet = [
     { x: -50000, y: 0, tall: 50000, wide: 115000, props: HitboxProperties.Hurtbox },

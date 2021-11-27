@@ -1,9 +1,9 @@
-import { AIInput } from "./ai";
-import { Character } from "./character";
-import { CharacterTemplate } from "./charaterTemplate";
-import { HUD } from "./hud";
-import { IPlatform } from "./IPlatform";
-import { fdata1 } from "./testdata";
+import { AIInput } from "../game/ai";
+import { Character } from "../game/character";
+import { CharacterTemplate } from "../game/charaterTemplate";
+import { HUD } from "../game/hud";
+import { IPlatform } from "../interfaces/IPlatform";
+import { fdata1 } from "../game/testdata";
 import { MockPlatform } from "./testdata.test";
 
 test('hud.render renders some text and boxes', () => {

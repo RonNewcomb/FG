@@ -1,6 +1,6 @@
 import { Character } from "./character";
-import { Hitbox, halfmillion, HitboxProperties } from "./interfaces";
-import { IPlatform } from "./IPlatform";
+import { Hitbox, halfmillion, HitboxProperties } from "../interfaces/interfaces";
+import { IPlatform } from "../interfaces/IPlatform";
 import { translateToWorldCoordinates } from "./util";
 
 export const timerspaceWide = 20000;

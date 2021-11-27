@@ -1,5 +1,5 @@
-import { IColor } from "./IPlatform";
-import { asHexValue } from "./PlatformBrowser";
+import { IColor } from "../interfaces/IPlatform";
+import { asHexValue } from "../game/PlatformBrowser";
 
 test('asHexValue creates valid RGB for browser', () => {
     const color: IColor = { R: 500000, G: 0, B: 500000 };

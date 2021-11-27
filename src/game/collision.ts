@@ -1,4 +1,4 @@
-import { Connected, Hitbox, HitboxProperties, SystemMove } from "./interfaces";
+import { Connected, Hitbox, HitboxProperties, SystemMove } from "../interfaces/interfaces";
 import { Character } from "./character";
 
 export function collisionDetection(characters: Character[]): (Connected | null)[] {

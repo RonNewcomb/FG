@@ -1,6 +1,6 @@
 import { hasAll } from "./collision";
-import { frameCount, halfmillion, Hitbox, HitboxProperties, million } from "./interfaces";
-import { AssetType, IAsset, IColor, IPlatform } from "./IPlatform";
+import { frameCount, halfmillion, Hitbox, HitboxProperties, million } from "../interfaces/interfaces";
+import { AssetType, IAsset, IColor, IPlatform } from "../interfaces/IPlatform";
 
 document.body.innerHTML = `
 <div id=framebuffer1 class=framebuffer>
@@ -20,6 +20,7 @@ document.body.innerHTML = `
       position: absolute;
   }
 </style>`;
+document.body.setAttribute('style', "background-color: lightgray; color: white");
 
 const ratioPPMto255 = 256 / million;
 const ratioPPMto0_1 = 1 / million;

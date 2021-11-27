@@ -1,6 +1,6 @@
 import { CharacterTemplate } from "./charaterTemplate";
 import { HUD } from "./hud";
-import { IPlatform, AssetType } from "./IPlatform";
+import { IPlatform, AssetType } from "../interfaces/IPlatform";
 import { changeStage, IStage } from "./stage";
 import { fdata1 } from "./testdata";
 

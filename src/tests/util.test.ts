@@ -1,5 +1,5 @@
-import { Hitbox, HitboxProperties } from "./interfaces";
-import { translateToWorldCoordinates } from "./util";
+import { Hitbox, HitboxProperties } from "../interfaces/interfaces";
+import { translateToWorldCoordinates } from "../game/util";
 
 test('translate to world coordinates - no player2-side flip', () => {
     const noFlip = true;

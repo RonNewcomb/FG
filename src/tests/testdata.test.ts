@@ -1,6 +1,6 @@
-import { IPlatform } from "./IPlatform";
-import { Hitbox } from "./interfaces";
-import { fdata1 } from "./testdata";
+import { IPlatform } from "../interfaces/IPlatform";
+import { Hitbox } from "../interfaces/interfaces";
+import { fdata1 } from "../game/testdata";
 
 // a cheeky place for useful testiong mocks etc.
 

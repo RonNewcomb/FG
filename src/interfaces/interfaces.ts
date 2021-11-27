@@ -1,4 +1,4 @@
-import { ICharacterRecord } from "./character";
+import { ICharacterRecord } from "../game/character";
 import { I3DModel, IAudio } from "./IPlatform";
 
 export type Dictionary<T> = { [key: string]: T };

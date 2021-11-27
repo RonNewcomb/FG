@@ -1,4 +1,4 @@
-import { FrameData, IAiInput, IButtonArray, SystemMove } from "./interfaces";
+import { FrameData, IAiInput, IButtonArray, SystemMove } from "../interfaces/interfaces";
 
 export class AIInput implements IAiInput {
     readonly numMoves: number;

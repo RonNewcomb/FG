@@ -1,5 +1,5 @@
-import { Dictionary, IControlSourceType, IGameState, SystemMove } from "./interfaces";
-import { IPlatform } from "./IPlatform";
+import { Dictionary, IControlSourceType, IGameState, SystemMove } from "../interfaces/interfaces";
+import { IPlatform } from "../interfaces/IPlatform";
 import { PlatformBrowser } from "./PlatformBrowser";
 import { collisionDetection } from "./collision";
 import { AssetLoader } from "./assetLoader";

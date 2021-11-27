@@ -1,8 +1,8 @@
-import { AIInput } from "./ai";
-import { Character } from "./character";
-import { CharacterTemplate } from "./charaterTemplate";
-import { Dictionary } from "./interfaces";
-import { fdata1 } from "./testdata";
+import { AIInput } from "../game/ai";
+import { Character } from "../game/character";
+import { CharacterTemplate } from "../game/charaterTemplate";
+import { Dictionary } from "../interfaces/interfaces";
+import { fdata1 } from "../game/testdata";
 
 test('reset changes all character properties except functions and ctor inputs', () => {
     const flaggedProperty = 4298;

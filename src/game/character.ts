@@ -1,6 +1,6 @@
 import { CharacterTemplate } from "./charaterTemplate";
-import { damagePoints, meterPoints, PPM, HitboxSet, CharacterMove, halfmillion, quartermillion, million, SystemMove, IControlSource, IControlSourceType } from "./interfaces";
-import { IPlatform } from "./IPlatform";
+import { damagePoints, meterPoints, PPM, HitboxSet, CharacterMove, halfmillion, quartermillion, million, SystemMove, IControlSource, IControlSourceType } from "../interfaces/interfaces";
+import { IPlatform } from "../interfaces/IPlatform";
 import { translateToWorldCoordinates } from "./util";
 
 const isFacingRight = +1; // p1 side
