@@ -6,13 +6,27 @@ import { translateToWorldCoordinates } from "./util";
 const isFacingRight = +1; // p1 side
 const isFacingLeft = -1;  // p2 side -- x coordinates are flipped
 
-export class Character {
+export interface ICharacterRecord {
+    x: PPM;
+    y: PPM;
+    xv: PPM;
+    yv: PPM;
+    facingDirection: -1 | 1;
+    isAirborne: boolean;
+    health: damagePoints;
+    meter: meterPoints;
+    currentMove: number;
+    currentTick: number;
+    comboCounter: number;
+}
+
+export class Character implements ICharacterRecord {
     readonly controlSource: IControlSource;
     x: PPM = 0;
     y: PPM = 0;
     xv: PPM = 0;
     yv: PPM = 0;
-    facingDirection = isFacingRight;
+    facingDirection: -1 | 1 = isFacingRight;
     isAirborne: boolean = false;
     health: damagePoints = million;
     meter: meterPoints = 0;
@@ -40,7 +54,7 @@ export class Character {
         this.comboCounter = 0;
     }
 
-    nextTick(bufferedNextMove: number): void {
+    nextTick(bufferedNextMove: number): ICharacterRecord {
         this.currentTick++;
         const lengthOfMoveInFrames = this.assets.fdata.moves[this.currentMove].hitboxes.length;
         if (this.currentTick >= lengthOfMoveInFrames) {
@@ -56,6 +70,20 @@ export class Character {
             if (effects.xVelocity !== undefined) this.xv = effects.xVelocity * this.facingDirection;
             if (effects.yVelocity !== undefined) this.yv = effects.yVelocity;
         }
+        const record: ICharacterRecord = {
+            x: this.x,
+            y: this.y,
+            xv: this.xv,
+            yv: this.yv,
+            facingDirection: this.facingDirection,
+            isAirborne: this.isAirborne,
+            health: this.health,
+            meter: this.meter,
+            currentMove: this.currentMove,
+            currentTick: this.currentTick,
+            comboCounter: this.comboCounter,
+        }
+        return record;
     }
 
     getCurrentMove(): CharacterMove {

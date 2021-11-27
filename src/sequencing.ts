@@ -7,4 +7,10 @@
 // menus for exploring acheivements, replays, unlocks, etc.
 // menus for dealing with networking, online matchmaking & play
 
+
+// think of every single "screen": 
+// has a background(either 2D pic behind menus, a video, or a 3D scene) and
+// has 0 or more entities/characters 
+// has 0 or more overlays
+
 export { }

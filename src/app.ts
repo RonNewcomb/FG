@@ -1,4 +1,4 @@
-import { Dictionary, IButtonArray, IControlSourceType, SystemMove } from "./interfaces";
+import { Dictionary, IControlSourceType, IGameState, SystemMove } from "./interfaces";
 import { IPlatform } from "./IPlatform";
 import { PlatformBrowser } from "./PlatformBrowser";
 import { collisionDetection } from "./collision";
@@ -6,6 +6,7 @@ import { AssetLoader } from "./assetLoader";
 import { HUD } from "./hud";
 import { AIInput } from "./ai";
 import { Character } from "./character";
+import { Menus } from "./menus";
 
 // app constants
 const oneSecond = 1000;
@@ -30,27 +31,29 @@ const modes: Dictionary<IControlSourceType[]> = {
 const controlSourceTypes = modes.demo;
 
 // stage select
-const stage = await assetLoader.getStageAssets("training");
+const stageName = await Menus.selectStage();
+const stage = await assetLoader.getStageAssets(stageName);
 
 // char select
-const selected = ["Kyu", "Ren"]; // and also, # chars in play
-const characterAssets = await Promise.all(selected.map(assetLoader.getCharacterAssets));
+const characterNames = await Menus.selectCharacters(controlSourceTypes.length);
+const characterAssets = await Promise.all(characterNames.map(assetLoader.getCharacterAssets));
 const characters = characterAssets.map((assets, i) => new Character(assets, controlSourceTypes[i], i % 2 === 0));
 
 
 // battle begin
-let logicalFrame = 0; // reset on new round; can rollback to earlier numbers
-const inputs: IButtonArray[][] = []; // index on frameCount; every item is a tuple, 2-tuple for 2-players, 3-tuple for 3 players, etc
+const history: IGameState[/* logical frame # */] = [];
 
-// battle functions
-function getInputs() {
-    // Inputs ///////////////
-    inputs[logicalFrame] = characters.map(character => character.controlSource.getButtons());
+// battle functions //////
+
+/** Inputs */
+function getInputs(logicalFrame: number) {
+    history[logicalFrame] = {
+        inputs: characters.map(character => character.controlSource.getButtons())
+    }
 }
 
-function advanceFrame() {
-    // Computation //////////
-
+/** Computation */
+function advanceFrame(logicalFrame: number) {
     // collision detection
     const collisions = collisionDetection(characters);
     collisions.forEach((collision, i) => {
@@ -61,15 +64,12 @@ function advanceFrame() {
     })
 
     // advance characters 1 frame
-    const current = inputs[logicalFrame];
-    characters.forEach((character, i) => character.nextTick(current[i]));
-
-    logicalFrame++;
+    const current = history[logicalFrame].inputs;
+    history[logicalFrame].states = characters.map((character, i) => character.nextTick(current[i]));
 }
 
-function render() {
-    // Outputs ///////////////
-
+/** Outputs */
+function render(logicalFrame: number) {
     // render stage @ characters' new position
     stage.render(logicalFrame);
 
@@ -78,18 +78,18 @@ function render() {
 
     // render UI
     hud.render(logicalFrame, characters, fps);
-
-
 }
 
 // battle loop
+let logicalFrame = 0; // reset on new round; can rollback to earlier numbers
 function eachFrame() {
-    getInputs();
-    advanceFrame();
-    render();
+    getInputs(logicalFrame);
+    advanceFrame(logicalFrame);
+    render(logicalFrame);
 
     // end the frame, schedule the next
     platformApi.newFrame();
+    logicalFrame++;
     setTimeout(eachFrame, oneSecond / fps);
 }
 eachFrame();

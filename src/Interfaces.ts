@@ -1,3 +1,4 @@
+import { ICharacterRecord } from "./character";
 import { I3DModel, IAudio } from "./IPlatform";
 
 export type Dictionary<T> = { [key: string]: T };
@@ -117,5 +118,12 @@ export interface IAiInput extends IControlSource {
 }
 
 export interface IReplaySystem extends IControlSource {
+}
+
+// rollback //////
+
+export interface IGameState {
+    inputs: IButtonArray[];
+    states?: ICharacterRecord[];
 }
 
