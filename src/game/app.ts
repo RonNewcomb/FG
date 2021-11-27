@@ -1,4 +1,4 @@
-import { Dictionary, IControlSourceType, IGameState, SystemMove } from "../interfaces/interfaces";
+import { Dictionary, fps, IControlSourceType, IGameState, oneSecond } from "../interfaces/interfaces";
 import { IPlatform } from "../interfaces/IPlatform";
 import { PlatformBrowser } from "./PlatformBrowser";
 import { collisionDetection } from "./collision";
@@ -7,10 +7,6 @@ import { HUD } from "./hud";
 import { AIInput } from "./ai";
 import { Character } from "./character";
 import { Menus } from "./menus";
-
-// app constants
-const oneSecond = 1000;
-const fps = 10;
 
 // app init
 const platformApi: IPlatform = new PlatformBrowser().init();

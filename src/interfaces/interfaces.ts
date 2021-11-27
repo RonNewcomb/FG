@@ -3,6 +3,8 @@ import { I3DModel, IAudio } from "./IPlatform";
 
 export type Dictionary<T> = { [key: string]: T };
 
+export const oneSecond = 1000;
+export const fps = 10;
 export type PPM = number; // Parts Per Million: an integer from 0 to 1,000,000 used instead of a floating percentage
 export const million = 1000000;
 export const quartermillion = 250000;
