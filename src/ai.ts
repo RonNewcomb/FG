@@ -1,9 +1,9 @@
 import { FrameData, IAiInput, IButtonArray, SystemMove } from "./interfaces";
 
 export class AIInput implements IAiInput {
-    numMoves: number;
+    readonly numMoves: number;
 
-    constructor(public fdata: FrameData) {
+    constructor(fdata: FrameData) {
         this.numMoves = fdata.moves.length - 1;
     }
 

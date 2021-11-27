@@ -2,6 +2,6 @@ import { FrameData } from "./interfaces";
 import { I3DModel, IAudio } from "./IPlatform";
 
 export class CharacterTemplate {
-    constructor(public models: I3DModel[], public soundBites: IAudio[], public fdata: FrameData, public name: string) {
+    constructor(public readonly models: I3DModel[], public readonly soundBites: IAudio[], public readonly fdata: FrameData, public readonly name: string) {
     }
 }

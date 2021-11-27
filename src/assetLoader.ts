@@ -5,7 +5,7 @@ import { changeStage, IStage } from "./stage";
 import { fdata1 } from "./testdata";
 
 export class AssetLoader {
-    constructor(private platformApi: IPlatform) {
+    constructor(private readonly platformApi: IPlatform) {
     }
 
     getHudAssets = async (): Promise<HUD> => {

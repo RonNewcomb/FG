@@ -1,7 +1,7 @@
 import { Connected, Hitbox, HitboxProperties, SystemMove } from "./interfaces";
 import { Character } from "./character";
 
-export function collisionDetection(characters: Character[]): void {
+export function collisionDetection(characters: Character[]): (Connected | null)[] {
     // collision detection
     const hitboxes = characters.map(c => c.getCurrentBoxesInWorldCoordinates());
 
@@ -30,8 +30,7 @@ export function collisionDetection(characters: Character[]): void {
             p1AttacksP2 = null;
         }
     }
-    if (p1AttacksP2) { characters[1].setCurrentMove(SystemMove.Hit); characters[0].comboCounter++; }
-    if (p2AttacksP1) { characters[0].setCurrentMove(SystemMove.Hit); characters[1].comboCounter++; }
+    return [p2AttacksP1, p1AttacksP2];
 }
 
 export const hasAll = (boxProp: HitboxProperties, properties: HitboxProperties) => (boxProp & properties) === properties;

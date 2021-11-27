@@ -1,8 +1,8 @@
 import { AIInput } from "./ai";
 import { Character } from "./character";
 import { CharacterTemplate } from "./charaterTemplate";
+import { Dictionary } from "./interfaces";
 import { fdata1 } from "./testdata";
-import { Dictionary } from "./util";
 
 test('reset changes all character properties except functions and ctor inputs', () => {
     const flaggedProperty = 4298;

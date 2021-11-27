@@ -1,12 +1,11 @@
+import { Dictionary, IButtonArray, IControlSourceType, SystemMove } from "./interfaces";
 import { IPlatform } from "./IPlatform";
 import { PlatformBrowser } from "./PlatformBrowser";
-import { IButtonArray, IControlSourceType } from "./interfaces";
 import { collisionDetection } from "./collision";
 import { AssetLoader } from "./assetLoader";
 import { HUD } from "./hud";
 import { AIInput } from "./ai";
 import { Character } from "./character";
-import { Dictionary } from "./util";
 
 // app constants
 const oneSecond = 1000;
@@ -43,13 +42,7 @@ const characters = characterAssets.map((assets, i) => new Character(assets, cont
 let logicalFrame = 0; // reset on new round; can rollback to earlier numbers
 const inputs: IButtonArray[][] = []; // index on frameCount; every item is a tuple, 2-tuple for 2-players, 3-tuple for 3 players, etc
 
-// battle loop
-function eachFrame() {
-    getInputs();
-    advanceFrame();
-    render();
-}
-
+// battle functions
 function getInputs() {
     // Inputs ///////////////
     inputs[logicalFrame] = characters.map(character => character.controlSource.getButtons());
@@ -58,8 +51,14 @@ function getInputs() {
 function advanceFrame() {
     // Computation //////////
 
-    // collision detection; sets "Hit" on a character if applicable but otherwise does nothing
-    collisionDetection(characters);
+    // collision detection
+    const collisions = collisionDetection(characters);
+    collisions.forEach((collision, i) => {
+        if (collision) {
+            characters[i].setCurrentMove(SystemMove.Hit);
+            characters[1 - i].comboCounter++;
+        }
+    })
 
     // advance characters 1 frame
     const current = inputs[logicalFrame];
@@ -80,9 +79,17 @@ function render() {
     // render UI
     hud.render(logicalFrame, characters, fps);
 
+
+}
+
+// battle loop
+function eachFrame() {
+    getInputs();
+    advanceFrame();
+    render();
+
     // end the frame, schedule the next
     platformApi.newFrame();
     setTimeout(eachFrame, oneSecond / fps);
 }
-
 eachFrame();

@@ -7,7 +7,7 @@ const isFacingRight = +1; // p1 side
 const isFacingLeft = -1;  // p2 side -- x coordinates are flipped
 
 export class Character {
-    controlSource: IControlSource;
+    readonly controlSource: IControlSource;
     x: PPM = 0;
     y: PPM = 0;
     xv: PPM = 0;
@@ -20,7 +20,7 @@ export class Character {
     currentTick = 0; // index into fdata.moves[currentMove]
     comboCounter = 0;
 
-    constructor(public assets: CharacterTemplate, controlSourceType: IControlSourceType, player1side: boolean) {
+    constructor(public readonly assets: CharacterTemplate, controlSourceType: IControlSourceType, player1side: boolean) {
         this.reset(player1side);
         this.controlSource = new controlSourceType(assets.fdata);
         this.controlSource.matchReset();

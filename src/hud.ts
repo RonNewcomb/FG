@@ -22,10 +22,7 @@ export const lifebar: Hitbox = {
 
 
 export class HUD {
-    private platformApi: IPlatform;
-
-    constructor(platform: IPlatform, assets: object) {
-        this.platformApi = platform;
+    constructor(private readonly platformApi: IPlatform, private readonly assets: object) {
     }
 
     render(currentFrame: number, characters: Character[], fps: number): void {
@@ -38,6 +35,6 @@ export class HUD {
         this.platformApi.drawHitbox(p2Lifebar);
         for (let character of characters)
             if (character.comboCounter)
-                this.platformApi.renderText(450000 + (character.facingDirection * 350000), 100000, character.comboCounter + " hits!");
+                this.platformApi.renderText(450000 + (-character.facingDirection * 350000), 100000, character.comboCounter + " hits!");
     }
 }
