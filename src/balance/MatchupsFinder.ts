@@ -42,12 +42,12 @@ export default async function MatchupsFinder() {
     // loop through every attack move from player 2
     // loop through every possible frame adv/disadv that those 2 moves can be at 
     // loop through every possible range that those 2 moves can connect at
-    for (let i = SystemMove.AttackMovesBegin; i < p1Attacks.length; i++) {
+    for (let i = 0; i < p1Attacks.length - SystemMove.AttackMovesBegin; i++) {
         report[i] = [];
-        for (let j = SystemMove.AttackMovesBegin; j < p2Attacks.length; j++) {
+        for (let j = 0; j < p2Attacks.length - SystemMove.AttackMovesBegin; j++) {
             console.log("p1 move ", i, " vs. p2 move", j);
-            const p1Duration = p1Attacks[i].hitboxes.length;
-            const p2Duration = p2Attacks[j].hitboxes.length;
+            const p1Duration = p1Attacks[i + SystemMove.AttackMovesBegin].hitboxes.length;
+            const p2Duration = p2Attacks[j + SystemMove.AttackMovesBegin].hitboxes.length;
             const latestP2Start = p1Duration - 1; // -1 or else the moves aren't overlapping at all
             const latestP1Start = latestP2Start + p2Duration - 1; // latest p1 start when p2 is starting its latest already
             report[i][j] = [];
@@ -64,8 +64,8 @@ export default async function MatchupsFinder() {
                     // run simulation /////
                     for (let frame = Math.min(p1BeginOnFrame, latestP2Start); !hasHit && frame < latestP1Start + p1Duration; frame++) {
                         //console.log("            @" + frame);
-                        if (frame === latestP1Start) p1.setCurrentMove(i);
-                        if (frame === latestP2Start) p2.setCurrentMove(j);
+                        if (frame === latestP1Start) p1.setCurrentMove(i + SystemMove.AttackMovesBegin);
+                        if (frame === latestP2Start) p2.setCurrentMove(j + SystemMove.AttackMovesBegin);
                         const matrix = collisionDetection(characters);
                         const p1WasHit = matrix[0][1] != null;
                         const p2WasHit = matrix[1][0] != null;
@@ -93,7 +93,7 @@ export default async function MatchupsFinder() {
     const fn = "matchupResults.html";
     fs.writeFileSync(fn, "<style>td{width:2.5em}</style><h1>Results</h1><br>\n");
     const len1 = report.length;
-    for (let p1move = 0; p1move < report.length; p1move++) {
+    for (let p1move = 0; p1move < len1; p1move++) {
         const len2 = report[p1move]?.length || 0;
         for (let p2move = 0; p2move < len2; p2move++) {
             fs.appendFileSync(fn, "<h2>P1 move " + p1move + " vs P2 move " + p2move + "</h2>\n<table>\n");
