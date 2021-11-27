@@ -71,7 +71,7 @@ export default async function MatchupsFinder() {
                         const p2WasHit = matrix[1][0] != null;
                         hasHit = p1WasHit || p2WasHit;
                         if (hasHit) {
-                            const result = (p1WasHit || p2WasHit) ? 3 : p2WasHit ? 2 : 1;
+                            const result = (p1WasHit && p2WasHit) ? 3 : p2WasHit ? 2 : 1;
                             //console.log("            ", result === 3 ? "both" : result);
                             report[i][j][p1BeginOnFrame][distance] = result;
                             break;
