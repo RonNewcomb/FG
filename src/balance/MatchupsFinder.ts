@@ -5,6 +5,7 @@ import { collisionDetection } from "../game/collision";
 import { Menus } from "../game/menus";
 import { PlatformBrowser } from "../game/PlatformBrowser";
 import { NullInput } from "../game/util";
+import * as fs from "fs";
 
 function getWalkSpeed(character: Character): number {
     const walkEffects = character.assets.fdata.moves[SystemMove.WalkForward].effects || [];
@@ -51,18 +52,18 @@ export default async function MatchupsFinder() {
             const latestP1Start = latestP2Start + p2Duration - 1; // latest p1 start when p2 is starting its latest already
             report[i][j] = [];
             for (let p1BeginOnFrame = 0; p1BeginOnFrame <= latestP1Start; p1BeginOnFrame++) {
-                console.log("    frame #" + p1BeginOnFrame);
+                //console.log("    frame #" + p1BeginOnFrame);
                 let hasHit = true;
                 report[i][j][p1BeginOnFrame] = [];
                 for (let distance = 0; hasHit || distance < 40/* blind guess */; distance++) {
-                    console.log("        at distance", distance * smallestDistance / 10000, "%");
+                    //console.log("        at distance", distance * smallestDistance / 10000, "%");
                     p1.reset(true);
                     p2.reset(false);
                     p2.x = p1.x + (distance * smallestDistance);
 
                     // run simulation /////
                     for (let frame = Math.min(p1BeginOnFrame, latestP2Start); !hasHit && frame < latestP1Start + p1Duration; frame++) {
-                        console.log("            @" + frame);
+                        //console.log("            @" + frame);
                         if (frame === latestP1Start) p1.setCurrentMove(i);
                         if (frame === latestP2Start) p2.setCurrentMove(j);
                         const matrix = collisionDetection(characters);
@@ -71,7 +72,7 @@ export default async function MatchupsFinder() {
                         hasHit = p1WasHit || p2WasHit;
                         if (hasHit) {
                             const result = (p1WasHit || p2WasHit) ? 3 : p2WasHit ? 2 : 1;
-                            console.log("            ", result === 3 ? "both" : result);
+                            //console.log("            ", result === 3 ? "both" : result);
                             report[i][j][p1BeginOnFrame][distance] = result;
                             break;
                         }
@@ -84,6 +85,34 @@ export default async function MatchupsFinder() {
             }
         }
     }
-    console.log("FINISHED MatchupsFinder");
+
+    console.log("writing results....");
+
+    const colors = ['transparent', 'red', 'blue', 'gold'];
+
+    const fn = "matchupResults.html";
+    fs.writeFileSync(fn, "<style>td{width:2.5em}</style><h1>Results</h1><br>\n");
+    const len1 = report.length;
+    for (let p1move = 0; p1move < report.length; p1move++) {
+        const len2 = report[p1move]?.length || 0;
+        for (let p2move = 0; p2move < len2; p2move++) {
+            fs.appendFileSync(fn, "<h2>P1 move " + p1move + " vs P2 move " + p2move + "</h2>\n<table>\n");
+            let maxDistance = 0;
+            const len3 = report[p1move][p2move]?.length || 0;
+            for (let frameAdv = 0; frameAdv < len3; frameAdv++) {
+                fs.appendFileSync(fn, "<tr><th>" + frameAdv + "</th>");
+                const len4 = report[p1move][p2move][frameAdv]?.length || 0;
+                for (var distance = 0; distance < len4; distance++) {
+                    const result = report[p1move][p2move][frameAdv][distance] || 0;
+                    fs.appendFileSync(fn, "<td style='background-color:" + colors[result] + "'> </td>");
+                }
+                if (distance > maxDistance) maxDistance = distance;
+                fs.appendFileSync(fn, "</tr>\n");
+            }
+            fs.appendFileSync(fn, "<tr><th>Dist:</th></tr>\n</table>\n");
+        }
+    }
+    console.log("MatchupsFinder output to ", fn);
+
 }
 
