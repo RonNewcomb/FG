@@ -120,7 +120,7 @@ export default async function MatchupsFinder() {
     }
 
     console.log("writing results....");
-    fs.writeFileSync("MatchupResults.json", JSON.stringify(report));
+    fs.writeFileSync("built\\balance\\MatchupResults.json", JSON.stringify(report));
 
     const colors = ['lightgray', 'red', 'blue', 'gold'];
 
@@ -131,8 +131,8 @@ export default async function MatchupsFinder() {
         .flexrow { display:flex }
         .photo { position:relative; width:33% }
         .collage { }
-        .timeline { display: flex }
-        .timeline > div { height: 0.5em; width: 1.5em; border: 1px solid white; border-radius: 2px }
+        .timeline { display: flex; position: absolute; bottom: 5px; transform: translateX(50%); }
+        .timeline > div { height: 0.5em; width: 1.5em; border: 1px solid white; border-radius: 6px }
         .startup { background-color: green; }
         .active {  background-color: red; }
         .recovery { background-color: blue; }

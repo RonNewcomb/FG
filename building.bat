@@ -3,6 +3,7 @@ echo.
 echo Deploying to /built/ ...
 
 copy /y .\\src\\index.html .\\built
+copy /y .\\src\\balance\\matchup.html .\\built\\balance
 
 cd built
 del /q tests\*.*
