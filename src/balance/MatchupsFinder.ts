@@ -1,4 +1,4 @@
-import { SystemMove } from "../interfaces/interfaces";
+import { CharacterMove, SystemMove } from "../interfaces/interfaces";
 import { AssetLoader } from "../game/assetLoader";
 import { Character } from "../game/character";
 import { collisionDetection } from "../game/collision";
@@ -6,6 +6,9 @@ import { Menus } from "../game/menus";
 import { PlatformBrowser } from "../game/PlatformBrowser";
 import { NullInput } from "../game/util";
 import * as fs from "fs";
+import { PlatformNodeJs } from "../game/PlatformNodeJs";
+
+const platform2 = new PlatformNodeJs();
 
 function getWalkSpeed(character: Character): number {
     const walkEffects = character.assets.fdata.moves[SystemMove.WalkForward].effects || [];
@@ -13,6 +16,34 @@ function getWalkSpeed(character: Character): number {
     for (let i = 0; i < 7; i++)
         walkSpeed += walkEffects[i % walkEffects.length].xOffset || 0;
     return walkSpeed;
+}
+
+function getPhoto(move: CharacterMove): string {
+    for (let frame = 0; frame < move.hitboxes.length; frame++) {
+        if (move.hitboxes[frame].some(h => !!h.effects))
+            return "<div class=collage>" + move.hitboxes[frame].map(hb => platform2.drawHitbox(hb)).join('') + "</div>";
+    }
+    return "<div>Photo missing</div>";
+}
+
+function getFramedataVisualization(move: CharacterMove): string {
+    let retval = "";
+    let hasHit = false;
+    for (let frame = 0; frame < move.hitboxes.length; frame++) {
+        const hits = move.hitboxes[frame].some(h => !!h.effects);
+        if (hits) hasHit = true;
+        retval += `<div class=${hits ? "active" : hasHit ? "recovery" : "startup"}></div>`
+    }
+    return retval;
+}
+
+interface MoveVsMove {
+    frameAdvantage: number;
+    p1Photo: string;
+    p2Photo: string;
+    p1FrameVisual: string;
+    p2FrameVisual: string;
+    matchup: number[][];
 }
 
 export default async function MatchupsFinder() {
@@ -24,7 +55,7 @@ export default async function MatchupsFinder() {
     const characterAssets = await Promise.all(characterNames.map(assetLoader.getCharacterAssets));
     const characters = characterAssets.map((assets, i) => new Character(assets, NullInput, i % 2 === 0));
 
-    const report: number[][][][] = [];
+    const report: Array<Array<MoveVsMove>> = [];
 
     // alias for speed/readability
     const p1 = characters[0];
@@ -45,25 +76,29 @@ export default async function MatchupsFinder() {
     for (let i = 0; i < p1Attacks.length - SystemMove.AttackMovesBegin; i++) {
         report[i] = [];
         for (let j = 0; j < p2Attacks.length - SystemMove.AttackMovesBegin; j++) {
-            console.log("p1 move ", i, " vs. p2 move", j);
+            //console.log("p1 move ", i, " vs. p2 move", j);
             const p1Duration = p1Attacks[i + SystemMove.AttackMovesBegin].hitboxes.length;
             const p2Duration = p2Attacks[j + SystemMove.AttackMovesBegin].hitboxes.length;
             const latestP2Start = p1Duration - 1; // -1 or else the moves aren't overlapping at all
             const latestP1Start = latestP2Start + p2Duration - 1; // latest p1 start when p2 is starting its latest already
-            report[i][j] = [];
+            report[i][j] = {
+                frameAdvantage: latestP2Start,
+                p1Photo: getPhoto(p1Attacks[i + SystemMove.AttackMovesBegin]),
+                p2Photo: getPhoto(p2Attacks[j + SystemMove.AttackMovesBegin]),
+                p1FrameVisual: getFramedataVisualization(p1Attacks[i + SystemMove.AttackMovesBegin]),
+                p2FrameVisual: getFramedataVisualization(p2Attacks[i + SystemMove.AttackMovesBegin]),
+                matchup: [],
+            };
             for (let p1BeginOnFrame = 0; p1BeginOnFrame <= latestP1Start; p1BeginOnFrame++) {
-                //console.log("    frame #" + p1BeginOnFrame);
                 let hasHit = true;
-                report[i][j][p1BeginOnFrame] = [];
+                report[i][j].matchup[p1BeginOnFrame] = [];
                 for (let distance = 0; hasHit || distance < 40/* blind guess */; distance++) {
-                    //console.log("        at distance", distance * smallestDistance / 10000, "%");
                     p1.reset(true);
                     p2.reset(false);
                     p2.x = p1.x + (distance * smallestDistance);
 
                     // run simulation /////
                     for (let frame = Math.min(p1BeginOnFrame, latestP2Start); !hasHit && frame < latestP1Start + p1Duration; frame++) {
-                        //console.log("            @" + frame);
                         if (frame === latestP1Start) p1.setCurrentMove(i + SystemMove.AttackMovesBegin);
                         if (frame === latestP2Start) p2.setCurrentMove(j + SystemMove.AttackMovesBegin);
                         const matrix = collisionDetection(characters);
@@ -71,9 +106,7 @@ export default async function MatchupsFinder() {
                         const p2WasHit = matrix[1][0] != null;
                         hasHit = p1WasHit || p2WasHit;
                         if (hasHit) {
-                            const result = (p1WasHit && p2WasHit) ? 3 : p2WasHit ? 2 : 1;
-                            //console.log("            ", result === 3 ? "both" : result);
-                            report[i][j][p1BeginOnFrame][distance] = result;
+                            report[i][j].matchup[p1BeginOnFrame][distance] = (p1WasHit && p2WasHit) ? 3 : p2WasHit ? 2 : 1;
                             break;
                         }
                         p1.quickTick(SystemMove.StandIdle);
@@ -87,29 +120,57 @@ export default async function MatchupsFinder() {
     }
 
     console.log("writing results....");
+    fs.writeFileSync("MatchupResults.json", JSON.stringify(report));
 
-    const colors = ['transparent', 'red', 'blue', 'gold'];
+    const colors = ['lightgray', 'red', 'blue', 'gold'];
 
     const fn = "matchupResults.html";
-    fs.writeFileSync(fn, "<style>td{width:2.5em}</style><h1>Results</h1><br>\n");
+    fs.writeFileSync(fn, `
+    <style>
+        td { width:2.5em }
+        .flexrow { display:flex }
+        .photo { position:relative; width:33% }
+        .collage { }
+        .timeline { display: flex }
+        .timeline > div { height: 0.5em; width: 1.5em; border: 1px solid white; border-radius: 2px }
+        .startup { background-color: green; }
+        .active {  background-color: red; }
+        .recovery { background-color: blue; }
+    </style>
+    <h1>Results</h1><br>\n`);
     const len1 = report.length;
     for (let p1move = 0; p1move < len1; p1move++) {
         const len2 = report[p1move]?.length || 0;
         for (let p2move = 0; p2move < len2; p2move++) {
-            fs.appendFileSync(fn, "<h2>P1 move " + p1move + " vs P2 move " + p2move + "</h2>\n<table>\n");
+            fs.appendFileSync(fn, `<h2>P1 move ${p1move} vs P2 move ${p2move}</h2>\n
+            <div class=flexrow>
+                <div class=photo>
+                    <div>${report[p1move][p2move].p1Photo}</div>
+                    <div class=timeline>${report[p1move][p2move].p1FrameVisual}</div>
+                </div>
+                <table>\n`);
+            const baseFrameAdvantage = report[p1move][p2move].frameAdvantage || 0;
             let maxDistance = 0;
-            const len3 = report[p1move][p2move]?.length || 0;
+            const len3 = report[p1move][p2move]?.matchup?.length || 0;
             for (let frameAdv = 0; frameAdv < len3; frameAdv++) {
-                fs.appendFileSync(fn, "<tr><th>" + frameAdv + "</th>");
-                const len4 = report[p1move][p2move][frameAdv]?.length || 0;
+                const relativeFrameAdvantage = (baseFrameAdvantage - frameAdv);
+                const label = relativeFrameAdvantage > 0 ? "+" + relativeFrameAdvantage : relativeFrameAdvantage;
+                fs.appendFileSync(fn, "<tr><th>" + label + "</th>");
+                const len4 = report[p1move][p2move].matchup[frameAdv]?.length || 0;
                 for (var distance = 0; distance < len4; distance++) {
-                    const result = report[p1move][p2move][frameAdv][distance] || 0;
+                    const result = report[p1move][p2move].matchup[frameAdv][distance] || 0;
                     fs.appendFileSync(fn, "<td style='background-color:" + colors[result] + "'> </td>");
                 }
                 if (distance > maxDistance) maxDistance = distance;
                 fs.appendFileSync(fn, "</tr>\n");
             }
-            fs.appendFileSync(fn, "<tr><th>Dist:</th></tr>\n</table>\n");
+            fs.appendFileSync(fn, `<tr><th>Dist:</th></tr>\n
+                </table>\n
+                <div class=photo>
+                    <div style="transform: scaleX(-1);">${report[p1move][p2move].p2Photo}</div>
+                    <div class=timeline>${report[p1move][p2move].p2FrameVisual}</div>
+                </div>
+            </div>`);
         }
     }
     console.log("MatchupsFinder output to ", fn);
