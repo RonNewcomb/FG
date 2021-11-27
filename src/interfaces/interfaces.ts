@@ -142,9 +142,5 @@ export interface FullReport {
 
 export interface MoveVsMove {
     frameAdvantage: number;
-    p1Photo: string;
-    p2Photo: string;
-    p1FrameVisual: string;
-    p2FrameVisual: string;
     matchup: number[][];
 }

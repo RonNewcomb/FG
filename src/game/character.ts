@@ -72,7 +72,7 @@ export class Character implements ICharacterRecord {
         }
     }
 
-    nextTick(bufferedNextMove: number, thingsHittingMe: (Connected | null)[]): ICharacterRecord {
+    nextTick(bufferedNextMove: number, thingsHittingMe: (Connected | undefined)[]): ICharacterRecord {
         for (let thing of thingsHittingMe)
             if (thing)
                 this.setCurrentMove(SystemMove.Hit);

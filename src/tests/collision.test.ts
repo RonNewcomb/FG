@@ -46,7 +46,7 @@ test("these boxsets don't intersect", () => {
         { x: 150, y: 0, tall: 30, wide: 20, props: HitboxProperties.Hurtbox },
         { x: 250, y: 0, tall: 30, wide: 20, props: HitboxProperties.Hurtbox }
     ];
-    expect(checkBoxes(attacks, targets)).toBeNull();
+    expect(checkBoxes(attacks, targets)).toBeFalsy();
 });
 
 test("these boxsets do intersect - strike misses but grab hits", () => {

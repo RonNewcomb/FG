@@ -2,7 +2,7 @@ import { Connected, Hitbox, HitboxProperties } from "../interfaces/interfaces";
 import { Character } from "./character";
 import { hasAll, hasAny, hasNone } from "./util";
 
-export function collisionDetection(characters: Character[]): (Connected | null)[][] {
+export function collisionDetection(characters: Character[]): (Connected | undefined)[][] {
     // collision detection
     const hitboxes = characters.map(c => c.getCurrentBoxesInWorldCoordinates());
 
@@ -11,10 +11,10 @@ export function collisionDetection(characters: Character[]): (Connected | null)[
     //  cleanly-grabbed chars nulled out attack (even if they were countering a strike, they can't get anything from it this frame)
     // resolve simultaneous grabs, since they require either throw-tech or a cinematic
 
-    const matrix: (Connected | null)[][] = [];
+    const matrix: (Connected | undefined)[][] = [];
     hitboxes.forEach((attacker, j) => {
         hitboxes.forEach((victim, i) => {
-            if (j === 0) matrix[i] = [];
+            if (!matrix[i]) matrix[i] = [];
             if (i !== j) matrix[i][j] = checkBoxes(attacker, victim);
         })
     });
@@ -36,12 +36,12 @@ export function collisionDetection(characters: Character[]): (Connected | null)[
                         const p2Grabbed = hasAll(p2AttacksP1[2], HitboxProperties.Grab);
                         if (p1Grabbed && p2Grabbed) {
                             // throw tech, or just ignore
-                            matrix[i][j] = null;
-                            matrix[j][i] = null;
+                            matrix[i][j] = undefined;
+                            matrix[j][i] = undefined;
                         } else if (p1Grabbed) {
-                            matrix[j][i] = null;
+                            matrix[j][i] = undefined;
                         } else if (p2Grabbed) {
-                            matrix[i][j] = null;
+                            matrix[i][j] = undefined;
                         }
                     }
 
@@ -51,7 +51,7 @@ export function collisionDetection(characters: Character[]): (Connected | null)[
 }
 
 // nested loops instead of .filter(lambda) are ugly but more efficient - no space allocation except return value
-export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connected | null {
+export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connected | undefined {
 
     // check strike -> target
     for (let attack of attackBoxes)
@@ -93,7 +93,7 @@ export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connec
                     if (rectanglesIntersect(attack, target))
                         return [attack, target, HitboxProperties.Reflect];
 
-    return null;
+    return undefined;
 }
 
 export function rectanglesIntersect(attack: Hitbox, target: Hitbox): boolean {

@@ -1,4 +1,4 @@
-import { CharacterMove, FullReport, MoveVsMove, SystemMove } from "../interfaces/interfaces";
+import { FullReport, MoveVsMove, SystemMove } from "../interfaces/interfaces";
 import { AssetLoader } from "../game/assetLoader";
 import { Character } from "../game/character";
 import { collisionDetection } from "../game/collision";
@@ -6,35 +6,14 @@ import { Menus } from "../game/menus";
 import { PlatformBrowser } from "../game/PlatformBrowser";
 import { NullInput } from "../game/util";
 import * as fs from "fs";
-import { PlatformNodeJs } from "../game/PlatformNodeJs";
 
-const platform2 = new PlatformNodeJs();
 
 function getWalkSpeed(character: Character): number {
     const walkEffects = character.assets.fdata.moves[SystemMove.WalkForward].effects || [];
     let walkSpeed = 0;
-    for (let i = 0; i < 7; i++)
+    for (let i = 0; i < 3; i++)
         walkSpeed += walkEffects[i % walkEffects.length].xOffset || 0;
     return walkSpeed;
-}
-
-function getPhoto(move: CharacterMove): string {
-    for (let frame = 0; frame < move.hitboxes.length; frame++) {
-        if (move.hitboxes[frame].some(h => !!h.effects))
-            return "<div class=collage>" + move.hitboxes[frame].map(hb => platform2.drawHitbox(hb)).join('') + "</div>";
-    }
-    return "<div>Photo missing</div>";
-}
-
-function getFramedataVisualization(move: CharacterMove): string {
-    let retval = "";
-    let hasHit = false;
-    for (let frame = 0; frame < move.hitboxes.length; frame++) {
-        const hits = move.hitboxes[frame].some(h => !!h.effects);
-        if (hits) hasHit = true;
-        retval += `<div class=${hits ? "active" : hasHit ? "recovery" : "startup"}></div>`
-    }
-    return retval;
 }
 
 
@@ -75,10 +54,6 @@ export default async function MatchupsFinder() {
             const latestP1Start = latestP2Start + p2Duration - 1; // latest p1 start when p2 is starting its latest already
             report[i][j] = {
                 frameAdvantage: latestP2Start,
-                p1Photo: getPhoto(p1Attacks[i + SystemMove.AttackMovesBegin]),
-                p2Photo: getPhoto(p2Attacks[j + SystemMove.AttackMovesBegin]),
-                p1FrameVisual: getFramedataVisualization(p1Attacks[i + SystemMove.AttackMovesBegin]),
-                p2FrameVisual: getFramedataVisualization(p2Attacks[i + SystemMove.AttackMovesBegin]),
                 matchup: [],
             };
             for (let p1BeginOnFrame = 0; p1BeginOnFrame <= latestP1Start; p1BeginOnFrame++) {
@@ -98,6 +73,8 @@ export default async function MatchupsFinder() {
                         const p2WasHit = matrix[1][0] != null;
                         hasHit = p1WasHit || p2WasHit;
                         if (hasHit) {
+                            console.log(matrix);
+                            console.log('p1WasHit', !!matrix[0][1], "  vs  p2WasHit", !!matrix[1][0])
                             report[i][j].matchup[p1BeginOnFrame][distance] = (p1WasHit && p2WasHit) ? 3 : p2WasHit ? 2 : 1;
                             break;
                         }
@@ -111,65 +88,11 @@ export default async function MatchupsFinder() {
         }
     }
 
-    console.log("writing results....");
+    const filename = "built\\balance\\MatchupResults.json";
+    console.log("writing results to", filename);
     const fullreport: FullReport = {
         report: report,
         moves: characters.map(c => c.assets.fdata.moves),
     };
-    fs.writeFileSync("built\\balance\\MatchupResults.json", JSON.stringify(fullreport));
-
-    const colors = ['lightgray', 'red', 'blue', 'gold'];
-
-    const fn = "matchupResults.html";
-    fs.writeFileSync(fn, `
-    <style>
-        td { width:2.5em }
-        .flexrow { display:flex }
-        .photo { position:relative; width:33% }
-        .collage { }
-        .timeline { display: flex; position: absolute; bottom: 5px; transform: translateX(50%); }
-        .timeline > div { height: 0.5em; width: 1.5em; border: 1px solid white; border-radius: 6px }
-        .startup { background-color: green; }
-        .active {  background-color: red; }
-        .recovery { background-color: blue; }
-    </style>
-    <h1>Results</h1><br>\n`);
-    const len1 = report.length;
-    for (let p1move = 0; p1move < len1; p1move++) {
-        const len2 = report[p1move]?.length || 0;
-        for (let p2move = 0; p2move < len2; p2move++) {
-            fs.appendFileSync(fn, `<h2>P1 move ${p1move} vs P2 move ${p2move}</h2>\n
-            <div class=flexrow>
-                <div class=photo>
-                    <div>${report[p1move][p2move].p1Photo}</div>
-                    <div class=timeline>${report[p1move][p2move].p1FrameVisual}</div>
-                </div>
-                <table>\n`);
-            const baseFrameAdvantage = report[p1move][p2move].frameAdvantage || 0;
-            let maxDistance = 0;
-            const len3 = report[p1move][p2move]?.matchup?.length || 0;
-            for (let frameAdv = 0; frameAdv < len3; frameAdv++) {
-                const relativeFrameAdvantage = (baseFrameAdvantage - frameAdv);
-                const label = relativeFrameAdvantage > 0 ? "+" + relativeFrameAdvantage : relativeFrameAdvantage;
-                fs.appendFileSync(fn, "<tr><th>" + label + "</th>");
-                const len4 = report[p1move][p2move].matchup[frameAdv]?.length || 0;
-                for (let distance = 0; distance < len4; distance++) {
-                    const result = report[p1move][p2move].matchup[frameAdv][distance] || 0;
-                    fs.appendFileSync(fn, "<td style='background-color:" + colors[result] + "'> </td>");
-                }
-                if (len4 > maxDistance) maxDistance = len4;
-                fs.appendFileSync(fn, "</tr>\n");
-            }
-            fs.appendFileSync(fn, `<tr><th>Dist:</th></tr>\n
-                </table>\n
-                <div class=photo>
-                    <div style="transform: scaleX(-1);">${report[p1move][p2move].p2Photo}</div>
-                    <div class=timeline>${report[p1move][p2move].p2FrameVisual}</div>
-                </div>
-            </div>`);
-        }
-    }
-    console.log("MatchupsFinder output to ", fn);
-
+    fs.writeFileSync(filename, JSON.stringify(fullreport));
 }
-
