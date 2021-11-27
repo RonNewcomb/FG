@@ -32,16 +32,19 @@ const controlSourceTypes = modes.demo;
 
 // stage select
 const stageName = await Menus.selectStage();
-const stage = await assetLoader.getStageAssets(stageName);
+const loadingStage = assetLoader.getStageAssets(stageName);
 
 // char select
 const characterNames = await Menus.selectCharacters(controlSourceTypes.length);
-const characterAssets = await Promise.all(characterNames.map(assetLoader.getCharacterAssets));
+const loadingCharacters = Promise.all(characterNames.map(assetLoader.getCharacterAssets));
+
+// splash and load
+const stage = await loadingStage;
+const characterAssets = await loadingCharacters;
 const characters = characterAssets.map((assets, i) => new Character(assets, controlSourceTypes[i], i % 2 === 0));
 
-
 // battle begin
-const history: IGameState[/* logical frame # */] = [];
+export const history: IGameState[/* logical frame # */] = [];
 
 // battle functions //////
 
@@ -53,7 +56,7 @@ function getInputs(logicalFrame: number) {
 }
 
 /** Computation */
-function advanceFrame(logicalFrame: number) {
+export function advanceFrame(logicalFrame: number) {
     // collision detection
     const matrix = collisionDetection(characters);
     matrix.forEach(collisions => collisions.forEach((collision, j) => { if (collision) characters[j].comboCounter++; }));
