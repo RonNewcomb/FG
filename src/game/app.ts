@@ -55,17 +55,12 @@ function getInputs(logicalFrame: number) {
 /** Computation */
 function advanceFrame(logicalFrame: number) {
     // collision detection
-    const collisions = collisionDetection(characters);
-    collisions.forEach((collision, i) => {
-        if (collision) {
-            characters[i].setCurrentMove(SystemMove.Hit);
-            characters[1 - i].comboCounter++;
-        }
-    })
+    const matrix = collisionDetection(characters);
+    matrix.forEach(collisions => collisions.forEach((collision, j) => { if (collision) characters[j].comboCounter++; }));
 
     // advance characters 1 frame
     const current = history[logicalFrame].inputs;
-    history[logicalFrame].states = characters.map((character, i) => character.nextTick(current[i]));
+    history[logicalFrame].states = characters.map((character, i) => character.nextTick(current[i], matrix[i]));
 }
 
 /** Outputs */

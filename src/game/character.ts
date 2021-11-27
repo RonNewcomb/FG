@@ -1,5 +1,5 @@
 import { CharacterTemplate } from "./charaterTemplate";
-import { damagePoints, meterPoints, PPM, HitboxSet, CharacterMove, halfmillion, quartermillion, million, SystemMove, IControlSource, IControlSourceType } from "../interfaces/interfaces";
+import { damagePoints, meterPoints, PPM, HitboxSet, CharacterMove, halfmillion, quartermillion, million, SystemMove, IControlSource, IControlSourceType, Connected } from "../interfaces/interfaces";
 import { IPlatform } from "../interfaces/IPlatform";
 import { translateToWorldCoordinates } from "./util";
 
@@ -54,7 +54,11 @@ export class Character implements ICharacterRecord {
         this.comboCounter = 0;
     }
 
-    nextTick(bufferedNextMove: number): ICharacterRecord {
+    nextTick(bufferedNextMove: number, thingsHittingMe: (Connected | null)[]): ICharacterRecord {
+        for (let thing of thingsHittingMe)
+            if (thing)
+                this.setCurrentMove(SystemMove.Hit);
+
         this.currentTick++;
         const lengthOfMoveInFrames = this.assets.fdata.moves[this.currentMove].hitboxes.length;
         if (this.currentTick >= lengthOfMoveInFrames) {
