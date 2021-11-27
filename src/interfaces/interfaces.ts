@@ -51,6 +51,10 @@ export const enum SystemMove {
     Hit = 0,
     // can be chosen by player
     StandIdle = 1,
+    WalkForward = 2,
+    WalkBack = 3,
+    // first attack move
+    AttackMovesBegin = 4,
 }
 
 export interface Hitbox {

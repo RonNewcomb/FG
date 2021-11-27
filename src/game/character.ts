@@ -54,11 +54,7 @@ export class Character implements ICharacterRecord {
         this.comboCounter = 0;
     }
 
-    nextTick(bufferedNextMove: number, thingsHittingMe: (Connected | null)[]): ICharacterRecord {
-        for (let thing of thingsHittingMe)
-            if (thing)
-                this.setCurrentMove(SystemMove.Hit);
-
+    quickTick(bufferedNextMove: number): void {
         this.currentTick++;
         const lengthOfMoveInFrames = this.assets.fdata.moves[this.currentMove].hitboxes.length;
         if (this.currentTick >= lengthOfMoveInFrames) {
@@ -74,6 +70,15 @@ export class Character implements ICharacterRecord {
             if (effects.xVelocity !== undefined) this.xv = effects.xVelocity * this.facingDirection;
             if (effects.yVelocity !== undefined) this.yv = effects.yVelocity;
         }
+    }
+
+    nextTick(bufferedNextMove: number, thingsHittingMe: (Connected | null)[]): ICharacterRecord {
+        for (let thing of thingsHittingMe)
+            if (thing)
+                this.setCurrentMove(SystemMove.Hit);
+
+        this.quickTick(bufferedNextMove);
+
         const record: ICharacterRecord = {
             x: this.x,
             y: this.y,
