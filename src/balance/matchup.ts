@@ -18,12 +18,13 @@ function getPhoto(character: 0 | 1, moveId: number): string {
 function getFramedataVisualization(character: 0 | 1, moveId: number): string {
   const move: CharacterMove = fullreport.moves[character][moveId + SystemMove.AttackMovesBegin];
   let retval = "";
-  let hasHit = false;
-  for (let frame = 0; frame < move.hitboxes.length; frame++) {
+  let passedActiveFrames = false; // we're going backward, rendering recovery before startup
+  for (let frame = move.hitboxes.length - 1; frame >= 0; frame--) {
     const hits = move.hitboxes[frame].some(h => !!h.effects);
-    if (hits) hasHit = true;
-    retval += `<div class=${hits ? "active" : hasHit ? "recovery" : "startup"}></div>`
+    if (hits) passedActiveFrames = true;
+    retval += `<div class=${hits ? "active" : passedActiveFrames ? "startup" : "recovery"}></div>`
   }
+  retval += `<div style='background-color:white'></div>`; // invisible starter
   return retval;
 }
 
@@ -35,7 +36,7 @@ for (let p1move = 0; p1move < report.length; p1move++) {
   for (let p2move = 0; p2move < report[p1move].length; p2move++) {
     output += `
     <table class=row>
-      <tr>
+      <tr class=header>
         <th>move ${p1move}</th>
         <th>vs.</th>
         <th>move ${p2move}</th>
@@ -58,6 +59,10 @@ for (let p1move = 0; p1move < report.length; p1move++) {
             <div class=flyover>
               ${hits && hits[0] && hits[0][0] ? platform2.drawHitbox(hits[0][0]) : ""}
               ${hits && hits[0] && hits[0][1] ? platform2.drawHitbox(hits[0][1]) : ""}
+            </div>
+            <div class=flyover>
+              ${hits && hits[1] && hits[1][0] ? platform2.drawHitbox(hits[1][0]) : ""}
+              ${hits && hits[1] && hits[1][1] ? platform2.drawHitbox(hits[1][1]) : ""}
             </div>
           </td>`;
       }

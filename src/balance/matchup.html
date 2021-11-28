@@ -3,6 +3,11 @@
   <style>
     table.row {
       margin: auto;
+      margin-bottom: 40px;
+    }
+    .header {
+      background-color: lightseagreen;
+      color: white;
     }
     table.frameTable td {
       width: 2.5em;
@@ -28,12 +33,14 @@
     }
     .timeline {
       display: flex;
+      flex-direction: row-reverse;
     }
     .timeline > div {
       height: 0.5em;
       width: 1.5em;
       border: 1px solid white;
       border-radius: 6px;
+      margin-right: -4px;
     }
     .startup {
       background-color: green;

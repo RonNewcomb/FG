@@ -51,7 +51,7 @@ export const fdata1: FrameData = {
         },
         // grab attack
         {
-            hitboxes: [aWindup, aGrab, aGrab, aGrab, aRecovery, aRecovery],
+            hitboxes: [aWindup, aGrab, aGrab, aRecovery, aRecovery],
         },
         // strike attack
         {
