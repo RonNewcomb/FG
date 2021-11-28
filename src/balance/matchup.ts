@@ -30,7 +30,7 @@ function getFramedataVisualization(character: 0 | 1, moveId: number): string {
   return retval;
 }
 
-const colors = ["lightgray", "red", "blue", "gold"];
+const colors = ["lightgray", "red", "blue", "purple"];
 
 let output = "";
 const report = fullreport.report;
@@ -57,12 +57,12 @@ for (let p1move = 0; p1move < report.length; p1move++) {
         const hits = report[p1move][p2move].matchup[frameAdv][distance];
         const winLoseTradeMiss = !hits ? 0 : hits[0] && hits[1] ? 3 : hits[0] ? 2 : 1;
         output += `
-          <td class=${colors[winLoseTradeMiss]}>
-            <div class=flyover>
+          <td class=${colors[winLoseTradeMiss]} data-clickToShow>
+            <div class=flyover data-p1struck>
               ${hits && hits[0] && hits[0][0] ? platform2.drawHitbox(hits[0][0]) : ""}
               ${hits && hits[0] && hits[0][1] ? platform2.drawHitbox(hits[0][1]) : ""}
             </div>
-            <div class=flyover>
+            <div class=flyover data-p2struck>
               ${hits && hits[1] && hits[1][0] ? platform2.drawHitbox(hits[1][0]) : ""}
               ${hits && hits[1] && hits[1][1] ? platform2.drawHitbox(hits[1][1]) : ""}
             </div>
@@ -94,3 +94,11 @@ for (let p1move = 0; p1move < report.length; p1move++) {
   }
 }
 document.getElementById("report")!.innerHTML = output;
+document.body.addEventListener('click', e => {
+  const el = e.target as HTMLElement;
+  if (el.getAttribute('data-clickToShow') != undefined)
+    Array.from<any>(el.children).forEach((child: HTMLElement) => child.style.display = 'block');
+  if (el.getAttribute('class')?.includes('flyover'))
+    el.style.display = 'none';
+  return false;
+});
