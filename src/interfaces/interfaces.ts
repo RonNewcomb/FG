@@ -58,42 +58,42 @@ export const enum SystemMove {
 }
 
 export interface Hitbox {
-    x: PPM;
-    y: PPM;
-    wide: PPM;
-    tall: PPM;
-    props: HitboxProperties; // bitfield
-    effects?: ActivationEffects; // on hit/grab/reflected/countered/armored
+    readonly x: PPM;
+    readonly y: PPM;
+    readonly wide: PPM;
+    readonly tall: PPM;
+    readonly props: HitboxProperties; // bitfield
+    readonly effects?: ActivationEffects; // on hit/grab/reflected/countered/armored
 }
 
 export interface ActivationEffects {
-    damage?: damagePoints;
-    damageMultiplier?: number; // counter/reflector
-    projectileSpeedMultiplier?: number; // reflected
-    armorMaxThreshold?: damagePoints;
+    readonly damage?: damagePoints;
+    readonly damageMultiplier?: number; // counter/reflector
+    readonly projectileSpeedMultiplier?: number; // reflected
+    readonly armorMaxThreshold?: damagePoints;
     // etc.
 }
 
 export type HitboxSet = Hitbox[]; // one frame has several hitboxes
 
 export interface PerFrameMoveEffects {
-    xOffset?: PPM;
-    yOffset?: PPM;
-    xVelocity?: PPM;
-    yVelocity?: PPM;
+    readonly xOffset?: PPM;
+    readonly yOffset?: PPM;
+    readonly xVelocity?: PPM;
+    readonly yVelocity?: PPM;
 }
 
 export interface CharacterMove {
-    models?: I3DModel[];
-    animationAt?: number;
-    sound?: IAudio;
-    hitboxes: HitboxSet[]; // index is the Nth Frame of the move 
-    effects?: PerFrameMoveEffects[];// index is the Nth Frame of the move 
-    branchOnConnection?: any; // hit-grab, rekkas, chain-cancel, whiff animations.... 
+    readonly models?: I3DModel[];
+    readonly animationAt?: number;
+    readonly sound?: IAudio;
+    readonly hitboxes: HitboxSet[]; // index is the Nth Frame of the move
+    readonly effects?: PerFrameMoveEffects[];// index is the Nth Frame of the move
+    readonly branchOnConnection?: any; // hit-grab, rekkas, chain-cancel, whiff animations....
 }
 
 export interface FrameData {
-    moves: CharacterMove[]; // index is SystemMove or more
+    readonly moves: CharacterMove[]; // index is SystemMove or more
 }
 
 /** a hitbox touched a hurtbox, via property strike/grab/projectile/counter/reflect */
@@ -142,5 +142,5 @@ export interface FullReport {
 
 export interface MoveVsMove {
     frameAdvantage: number;
-    matchup: number[][];
+    matchup: (Connected | undefined)[][][];
 }

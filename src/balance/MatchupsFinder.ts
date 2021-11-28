@@ -74,8 +74,7 @@ export default async function MatchupsFinder() {
                         hasHit = p1WasHit || p2WasHit;
                         if (hasHit) {
                             console.log(matrix);
-                            console.log('p1WasHit', !!matrix[0][1], "  vs  p2WasHit", !!matrix[1][0])
-                            report[i][j].matchup[p1BeginOnFrame][distance] = (p1WasHit && p2WasHit) ? 3 : p2WasHit ? 2 : 1;
+                            report[i][j].matchup[p1BeginOnFrame][distance] = [matrix[0][1], matrix[1][0]];// (p1WasHit && p2WasHit) ? 3 : p2WasHit ? 2 : 1;
                             break;
                         }
                         p1.quickTick(SystemMove.StandIdle);

@@ -3,8 +3,7 @@ import { Character } from "./character";
 import { hasAll, hasAny, hasNone } from "./util";
 
 export function collisionDetection(characters: Character[]): (Connected | undefined)[][] {
-    // collision detection
-    const hitboxes = characters.map(c => c.getCurrentBoxesInWorldCoordinates());
+    const hitboxes = characters.map(character => character.getCurrentBoxesInWorldCoordinates());
 
     // reflect all projectiles
     // process all clean grabs
@@ -14,8 +13,10 @@ export function collisionDetection(characters: Character[]): (Connected | undefi
     const matrix: (Connected | undefined)[][] = [];
     hitboxes.forEach((attacker, j) => {
         hitboxes.forEach((victim, i) => {
-            if (!matrix[i]) matrix[i] = [];
-            if (i !== j) matrix[i][j] = checkBoxes(attacker, victim);
+            if (i !== j) {
+                if (!matrix[i]) matrix[i] = [];
+                matrix[i][j] = checkBoxes(attacker, victim);
+            }
         })
     });
 

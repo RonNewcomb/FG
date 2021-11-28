@@ -14,7 +14,7 @@ export class PlatformNodeJs {
         [HitboxProperties.Hurtbox, { R: 0, G: 0, B: million }],
     ]);
 
-    drawHitbox(box: Hitbox): string {
+    drawHitbox = (box: Hitbox): string => {
         const as = hasAll(box.props, HitboxProperties.Strike) ? HitboxProperties.Strike
             : hasAll(box.props, HitboxProperties.Grab) ? HitboxProperties.Grab
                 : hasAll(box.props, HitboxProperties.Hurtbox) ? HitboxProperties.Hurtbox

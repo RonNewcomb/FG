@@ -1,11 +1,14 @@
 <head>
   <script type="module" src="matchup.js"></script>
   <style>
-    td {
+    table.frameTable td {
       width: 2.5em;
     }
-    .flexrow {
+    .distanceline {
       display: flex;
+      justify-content: space-between;
+      opacity: 0.3;
+      font-size: small;
     }
     .photo {
       position: relative;
@@ -14,11 +17,12 @@
     .collage {
       display: initial;
     }
+    td > .timeline {
+      display: flex;
+      justify-content: center;
+    }
     .timeline {
       display: flex;
-      position: absolute;
-      bottom: 5px;
-      left: 50%;
     }
     .timeline > div {
       height: 0.5em;
@@ -46,6 +50,18 @@
     }
     .gold {
       background-color: gold;
+    }
+    .flyover {
+      display: none;
+      position: absolute;
+      background-color: lightcyan;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    *:hover > .flyover {
+      display: block;
     }
   </style>
 </head>
