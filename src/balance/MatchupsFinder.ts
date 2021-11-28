@@ -1,3 +1,6 @@
+// this file is ran by a hook in the jest tests, after tests finish
+// it produces a .json file for the viewer, matchup.html/matchup.ts, to fetch & consume
+
 import { FullReport, MoveVsMove, SystemMove } from "../interfaces/interfaces";
 import { AssetLoader } from "../game/assetLoader";
 import { Character } from "../game/character";

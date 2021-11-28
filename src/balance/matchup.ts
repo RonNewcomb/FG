@@ -1,3 +1,5 @@
+// this is the app for matchup.html;  might should be a small Preact app or something
+
 import { PlatformNodeJs } from "../game/PlatformNodeJs";
 import { CharacterMove, FullReport, SystemMove } from "../interfaces/interfaces";
 
