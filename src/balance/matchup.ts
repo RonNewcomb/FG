@@ -59,10 +59,12 @@ for (let p1move = 0; p1move < report.length; p1move++) {
         output += `
           <td class=${colors[winLoseTradeMiss]} data-clickToShow>
             <div class=flyover data-p1struck>
+              <h2>P1 struck by...</h2>
               ${hits && hits[0] && hits[0][0] ? platform2.drawHitbox(hits[0][0]) : ""}
               ${hits && hits[0] && hits[0][1] ? platform2.drawHitbox(hits[0][1]) : ""}
             </div>
             <div class=flyover data-p2struck>
+              <h2>P2 struck by...</h2>
               ${hits && hits[1] && hits[1][0] ? platform2.drawHitbox(hits[1][0]) : ""}
               ${hits && hits[1] && hits[1][1] ? platform2.drawHitbox(hits[1][1]) : ""}
             </div>
