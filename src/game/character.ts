@@ -30,7 +30,7 @@ export class Character implements ICharacterRecord {
     isAirborne: boolean = false;
     health: damagePoints = million;
     meter: meterPoints = 0;
-    currentMove = 0; // index into fdata.moves
+    currentMove = SystemMove.StandIdle; // index into fdata.moves
     currentTick = 0; // index into fdata.moves[currentMove]
     comboCounter = 0;
 
@@ -49,7 +49,7 @@ export class Character implements ICharacterRecord {
         this.isAirborne = false;
         this.health = <damagePoints>million;
         this.meter = <meterPoints>0;
-        this.currentMove = 0;
+        this.currentMove = SystemMove.StandIdle;
         this.currentTick = 0;
         this.comboCounter = 0;
         return this;
