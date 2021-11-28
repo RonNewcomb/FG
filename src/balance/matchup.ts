@@ -3,7 +3,6 @@ import { CharacterMove, FullReport, SystemMove } from "../interfaces/interfaces"
 
 const fullreport: FullReport = await fetch("./MatchupResults.json").then(res => res.json());
 console.log(fullreport);
-const report = fullreport.report;
 
 const platform2 = new PlatformNodeJs();
 
@@ -31,25 +30,25 @@ function getFramedataVisualization(character: 0 | 1, moveId: number): string {
 const colors = ["lightgray", "red", "blue", "gold"];
 
 let output = "";
-const len1 = report.length;
-for (let p1move = 0; p1move < len1; p1move++) {
-  const len2 = report[p1move]?.length || 0;
-  for (let p2move = 0; p2move < len2; p2move++) {
+const report = fullreport.report;
+for (let p1move = 0; p1move < report.length; p1move++) {
+  for (let p2move = 0; p2move < report[p1move].length; p2move++) {
     output += `
-    <h2>P1 move ${p1move} vs P2 move ${p2move}</h2>
-    <table>
+    <table class=row>
+      <tr>
+        <th>move ${p1move}</th>
+        <th>vs.</th>
+        <th>move ${p2move}</th>
+      </tr>
       <tr>
         <td class=photo>
-          ${getPhoto(0, p1move)}          
+          ${getPhoto(0, p1move)}
         </td>
         <td>
           <table class=frameTable>`;
     const baseFrameAdvantage = report[p1move][p2move].frameAdvantage || 0;
-    const len3 = report[p1move][p2move]?.matchup?.length || 0;
-    for (let frameAdv = 0; frameAdv < len3; frameAdv++) {
-      const relativeFrameAdvantage = baseFrameAdvantage - frameAdv;
-      const label = relativeFrameAdvantage > 0 ? "+" + relativeFrameAdvantage : relativeFrameAdvantage;
-      output += `<tr><th>${label}</th>`;
+    for (let frameAdv = 0; frameAdv < report[p1move][p2move].matchup.length; frameAdv++) {
+      output += `<tr><th>${(baseFrameAdvantage > frameAdv ? "+" : "") + (baseFrameAdvantage - frameAdv).toString()}</th>`;
       const len4 = report[p1move][p2move].matchup[frameAdv]?.length || 0;
       for (let distance = 0; distance < len4; distance++) {
         const hits = report[p1move][p2move].matchup[frameAdv][distance];

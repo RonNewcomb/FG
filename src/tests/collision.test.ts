@@ -151,10 +151,10 @@ test("grab at frame adv +1 beats other grab", () => {
     characters[1].quickTick();
     let matrix: (Connected | undefined)[][];
     for (let frame = 0; frame <= 6; frame++) {
-        characters.forEach(c => c.quickTick());
         matrix = collisionDetection(characters);
         if (matrix[0][1] != null || matrix[1][0] != null)
             break;
+        characters.forEach(c => c.quickTick());
     }
     expect(matrix!).toBeDefined();
     const p1WasHit = matrix![0][1]; // grab should hit

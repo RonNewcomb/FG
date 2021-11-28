@@ -1,6 +1,9 @@
 <head>
   <script type="module" src="matchup.js"></script>
   <style>
+    table.row {
+      margin: auto;
+    }
     table.frameTable td {
       width: 2.5em;
     }
@@ -15,7 +18,9 @@
       width: 33%;
     }
     .collage {
-      display: initial;
+      position: absolute;
+      top: 20%;
+      left: 40%; /* top/left found by playing with it */
     }
     td > .timeline {
       display: flex;

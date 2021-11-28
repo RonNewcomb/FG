@@ -75,8 +75,8 @@ export default async function MatchupsFinder() {
                             report[i][j].matchup[p1BeginOnFrame][distance] = [matrix[0][1], matrix[1][0]];// (p1WasHit && p2WasHit) ? 3 : p2WasHit ? 2 : 1;
                             break;
                         }
-                        p1.quickTick(SystemMove.StandIdle);
-                        p2.quickTick(SystemMove.StandIdle);
+                        p1.quickTick();
+                        p2.quickTick();
                     }
                     if (!hasHit && p1.x > p2.x) hasHit = true; // in case they passed by each other TODO HACK guaranteed to be broken
                     hasHit = false;
