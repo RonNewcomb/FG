@@ -1,8 +1,9 @@
 import { CharacterTemplate } from '../game/charaterTemplate';
-import { rectanglesIntersect, checkBoxes } from '../game/collision';
-import { Hitbox, HitboxProperties } from '../interfaces/interfaces';
-import { fdata1 } from '../game/testdata';
-import { hasAny } from '../game/util';
+import { rectanglesIntersect, checkBoxes, collisionDetection } from '../game/collision';
+import { Connected, Hitbox, HitboxProperties, SystemMove } from '../interfaces/interfaces';
+import { fdata1, GrabMoveId, standIdle, SwordMoveId } from '../game/testdata';
+import { hasAny, NullInput } from '../game/util';
+import { Character } from '../game/character';
 
 test('exactly equal boxes intersect', () => {
     const attack: Hitbox = { x: 50, y: 0, tall: 30, wide: 20, props: HitboxProperties.Strike };
@@ -79,4 +80,85 @@ test("any frame with a strike/grab/projectile hitbox must have an Effect", () =>
             expect(hasAttackNoEffect).toBeFalsy();
         }
     }
+});
+
+test("sword hits grab and grab misses from range at frame adv +0", () => {
+    const template = new CharacterTemplate([], [], fdata1, "Name");
+    const characters = [new Character(template, NullInput, true), new Character(template, NullInput, false)];
+    characters[1].x = characters[0].x + 300000; // 300,000 apart is in sword range but out of grab range
+    characters[0].setCurrentMove(SwordMoveId);
+    characters[1].setCurrentMove(GrabMoveId);
+    let matrix: (Connected | undefined)[][];
+    for (let frame = 0; frame < 6; frame++) {
+        characters.forEach(c => c.quickTick());
+        matrix = collisionDetection(characters);
+        if (matrix[0][1] != null || matrix[1][0] != null)
+            break;
+    }
+    expect(matrix!).toBeDefined();
+    const p1WasHit = matrix![0][1]; // grab should missed
+    const p2WasHit = matrix![1][0]; // sword should hit
+    expect(p1WasHit).toBeUndefined();
+    expect(p2WasHit).toBeDefined();
+});
+
+test("swords trade at frame adv +0", () => {
+    const template = new CharacterTemplate([], [], fdata1, "Name");
+    const characters = [new Character(template, NullInput, true), new Character(template, NullInput, false)];
+    characters[1].x = characters[0].x + 300000; // 300,000 apart is in sword range but out of grab range
+    characters[0].setCurrentMove(SwordMoveId);
+    characters[1].setCurrentMove(SwordMoveId);
+    let matrix: (Connected | undefined)[][];
+    for (let frame = 0; frame < 6; frame++) {
+        characters.forEach(c => c.quickTick());
+        matrix = collisionDetection(characters);
+        if (matrix[0][1] != null || matrix[1][0] != null)
+            break;
+    }
+    expect(matrix!).toBeDefined();
+    const p1WasHit = matrix![0][1]; // sword should hit
+    const p2WasHit = matrix![1][0]; // sword should hit
+    expect(p1WasHit).toBeDefined();
+    expect(p2WasHit).toBeDefined();
+});
+
+test("simlutaneous grabs at frame adv +0 both miss", () => {
+    const template = new CharacterTemplate([], [], fdata1, "Name");
+    const characters = [new Character(template, NullInput, true), new Character(template, NullInput, false)];
+    characters[1].x = characters[0].x + 300000; // 300,000 apart is in sword range but out of grab range
+    characters[0].setCurrentMove(GrabMoveId);
+    characters[1].setCurrentMove(GrabMoveId);
+    let matrix: (Connected | undefined)[][];
+    for (let frame = 0; frame < 6; frame++) {
+        characters.forEach(c => c.quickTick());
+        matrix = collisionDetection(characters);
+        if (matrix[0][1] != null || matrix[1][0] != null)
+            break;
+    }
+    expect(matrix!).toBeDefined();
+    const p1WasHit = matrix![0][1]; // grab should missed
+    const p2WasHit = matrix![1][0]; // grab should missed
+    expect(p1WasHit).toBeUndefined();
+    expect(p2WasHit).toBeUndefined();
+});
+
+test("grab at frame adv +1 beats other grab", () => {
+    const template = new CharacterTemplate([], [], fdata1, "Name");
+    const characters = [new Character(template, NullInput, true), new Character(template, NullInput, false)];
+    characters[1].x = characters[0].x + 100000; // 300,000 apart is in sword range but out of grab range
+    characters[0].setCurrentMove(GrabMoveId);
+    characters[1].setCurrentMove(GrabMoveId);
+    characters[1].quickTick();
+    let matrix: (Connected | undefined)[][];
+    for (let frame = 0; frame <= 6; frame++) {
+        characters.forEach(c => c.quickTick());
+        matrix = collisionDetection(characters);
+        if (matrix[0][1] != null || matrix[1][0] != null)
+            break;
+    }
+    expect(matrix!).toBeDefined();
+    const p1WasHit = matrix![0][1]; // grab should hit
+    const p2WasHit = matrix![1][0]; // grab should miss
+    expect(p1WasHit).toBeDefined();
+    expect(p2WasHit).toBeUndefined();
 });

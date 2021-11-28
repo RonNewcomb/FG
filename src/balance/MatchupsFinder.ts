@@ -7,7 +7,6 @@ import { PlatformBrowser } from "../game/PlatformBrowser";
 import { NullInput } from "../game/util";
 import * as fs from "fs";
 
-
 function getWalkSpeed(character: Character): number {
     const walkEffects = character.assets.fdata.moves[SystemMove.WalkForward].effects || [];
     let walkSpeed = 0;
@@ -15,7 +14,6 @@ function getWalkSpeed(character: Character): number {
         walkSpeed += walkEffects[i % walkEffects.length].xOffset || 0;
     return walkSpeed;
 }
-
 
 export default async function MatchupsFinder() {
     console.log("running MatchupsFinder...");
@@ -73,7 +71,7 @@ export default async function MatchupsFinder() {
                         const p2WasHit = matrix[1][0] != null;
                         hasHit = p1WasHit || p2WasHit;
                         if (hasHit) {
-                            console.log(matrix);
+                            //console.log(matrix);
                             report[i][j].matchup[p1BeginOnFrame][distance] = [matrix[0][1], matrix[1][0]];// (p1WasHit && p2WasHit) ? 3 : p2WasHit ? 2 : 1;
                             break;
                         }

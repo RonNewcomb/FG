@@ -60,3 +60,5 @@ export const fdata1: FrameData = {
     ]
 }
 
+export const GrabMoveId = 4;
+export const SwordMoveId = 5;

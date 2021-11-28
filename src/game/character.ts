@@ -40,7 +40,7 @@ export class Character implements ICharacterRecord {
         this.controlSource.matchReset();
     }
 
-    reset(player1side: boolean): void {
+    reset(player1side: boolean): this {
         this.facingDirection = (player1side ? isFacingRight : isFacingLeft);
         this.x = halfmillion + -this.facingDirection * quartermillion / 2;
         this.y = million - quartermillion;
@@ -52,9 +52,10 @@ export class Character implements ICharacterRecord {
         this.currentMove = 0;
         this.currentTick = 0;
         this.comboCounter = 0;
+        return this;
     }
 
-    quickTick(bufferedNextMove: number): void {
+    quickTick(bufferedNextMove: number = SystemMove.StandIdle): void {
         this.currentTick++;
         const lengthOfMoveInFrames = this.assets.fdata.moves[this.currentMove].hitboxes.length;
         if (this.currentTick >= lengthOfMoveInFrames) {
