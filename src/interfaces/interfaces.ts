@@ -142,5 +142,5 @@ export interface FullReport {
 
 export interface MoveVsMove {
     frameAdvantage: number;
-    matchup: (Connected | undefined)[][][];
+    matchup: [boolean, boolean, SystemMove, SystemMove][][];
 }

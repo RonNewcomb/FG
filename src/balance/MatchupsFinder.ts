@@ -60,7 +60,7 @@ export default async function MatchupsFinder() {
             for (let p1BeginOnFrame = 0; p1BeginOnFrame <= latestP1Start; p1BeginOnFrame++) {
                 let hasHit = true;
                 report[i][j].matchup[p1BeginOnFrame] = [];
-                for (let distance = 0; hasHit || distance < 40/* blind guess */; distance++) {
+                for (let distance = 0; hasHit || distance < 25/* blind guess */; distance++) {
                     p1.reset(true);
                     p2.reset(false);
                     p2.x = p1.x + (distance * smallestDistance);
@@ -73,9 +73,9 @@ export default async function MatchupsFinder() {
                         const p1WasHit = matrix[0][1] != null;
                         const p2WasHit = matrix[1][0] != null;
                         hasHit = p1WasHit || p2WasHit;
+                        report[i][j].matchup[p1BeginOnFrame][distance] = [p1WasHit, p2WasHit, p1.currentMove, p2.currentMove];// (p1WasHit && p2WasHit) ? 3 : p2WasHit ? 2 : 1;
                         if (hasHit) {
                             //console.log(matrix);
-                            report[i][j].matchup[p1BeginOnFrame][distance] = [matrix[0][1], matrix[1][0]];// (p1WasHit && p2WasHit) ? 3 : p2WasHit ? 2 : 1;
                             break;
                         }
                         p1.quickTick();

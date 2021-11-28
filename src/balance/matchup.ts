@@ -4,21 +4,20 @@ import { PlatformNodeJs } from "../game/PlatformNodeJs";
 import { CharacterMove, FullReport, SystemMove } from "../interfaces/interfaces";
 
 const fullreport: FullReport = await fetch("./MatchupResults.json").then(res => res.json());
-console.log(fullreport);
-
 const platform2 = new PlatformNodeJs();
 
-function getPhoto(character: 0 | 1, moveId: number): string {
-  const move: CharacterMove = fullreport.moves[character][moveId + SystemMove.AttackMovesBegin];
+// TODO translate into world coordinates with each char's location
+function getPhoto(character: 0 | 1, moveId: SystemMove): string {
+  const move: CharacterMove = fullreport.moves[character][moveId];
   for (let frame = 0; frame < move.hitboxes.length; frame++) {
     if (move.hitboxes[frame].some(h => !!h.effects))
-      return "<div class=collage>" + move.hitboxes[frame].map(platform2.drawHitbox).join('') + "</div>";
+      return `<div class=photo data-p=${character} data-moveid=${moveId}>` + move.hitboxes[frame].map(platform2.drawHitbox).join('') + "</div>";
   }
-  return "<div>Photo missing</div>";
+  return `<div class=photo data-p=${character} data-moveid=${moveId}>` + move.hitboxes[0].map(platform2.drawHitbox).join('') + "</div>";
 }
 
-function getFramedataVisualization(character: 0 | 1, moveId: number): string {
-  const move: CharacterMove = fullreport.moves[character][moveId + SystemMove.AttackMovesBegin];
+function getFramedataVisualization(character: 0 | 1, moveId: SystemMove): string {
+  const move: CharacterMove = fullreport.moves[character][moveId];
   let retval = "";
   let passedActiveFrames = false; // we're going backward, rendering recovery before startup
   for (let frame = move.hitboxes.length - 1; frame >= 0; frame--) {
@@ -44,8 +43,8 @@ for (let p1move = 0; p1move < report.length; p1move++) {
         <th>move ${p2move}</th>
       </tr>
       <tr>
-        <td class=photo>
-          ${getPhoto(0, p1move)}
+        <td class=photoFrame>
+          ${getPhoto(0, p1move + SystemMove.AttackMovesBegin)}
         </td>
         <td>
           <table class=frameTable>`;
@@ -54,19 +53,13 @@ for (let p1move = 0; p1move < report.length; p1move++) {
       output += `<tr><th>${(baseFrameAdvantage > frameAdv ? "+" : "") + (baseFrameAdvantage - frameAdv).toString()}</th>`;
       const len4 = report[p1move][p2move].matchup[frameAdv]?.length || 0;
       for (let distance = 0; distance < len4; distance++) {
-        const hits = report[p1move][p2move].matchup[frameAdv][distance];
-        const winLoseTradeMiss = !hits ? 0 : hits[0] && hits[1] ? 3 : hits[0] ? 2 : 1;
+        const [p1WasHit, p2WasHit, p1WasDoing, p2WasDoing] = report[p1move][p2move].matchup[frameAdv][distance] || [false, false, undefined, undefined];
+        const winLoseTradeMiss = !p1WasHit && !p2WasHit ? 0 : p1WasHit && p2WasHit ? 3 : p1WasHit ? 2 : 1;
         output += `
           <td class=${colors[winLoseTradeMiss]} data-clickToShow>
-            <div class=flyover data-p1struck>
-              <h2>P1 struck by...</h2>
-              ${hits && hits[0] && hits[0][0] ? platform2.drawHitbox(hits[0][0]) : ""}
-              ${hits && hits[0] && hits[0][1] ? platform2.drawHitbox(hits[0][1]) : ""}
-            </div>
-            <div class=flyover data-p2struck>
-              <h2>P2 struck by...</h2>
-              ${hits && hits[1] && hits[1][0] ? platform2.drawHitbox(hits[1][0]) : ""}
-              ${hits && hits[1] && hits[1][1] ? platform2.drawHitbox(hits[1][1]) : ""}
+            <div class=flyover>
+              ${(p1WasDoing != undefined) && getPhoto(0, p1WasDoing)}
+              ${(p2WasDoing != undefined) && getPhoto(1, p2WasDoing)}
             </div>
           </td>`;
       }
@@ -75,13 +68,13 @@ for (let p1move = 0; p1move < report.length; p1move++) {
     output += `
           </table>
         </td>
-        <td class=photo style="transform: scaleX(-1);">
-          ${getPhoto(1, p2move)}              
+        <td class=photoFrame>
+          ${getPhoto(1, p2move + SystemMove.AttackMovesBegin)}
         </td>
       </tr>
       <tr>
         <td>
-          <div class=timeline>${getFramedataVisualization(0, p1move)}</div>
+          <div class=timeline>${getFramedataVisualization(0, p1move + SystemMove.AttackMovesBegin)}</div>
         </td>
         <td class="distanceline">
           <span>close</span>
@@ -89,7 +82,7 @@ for (let p1move = 0; p1move < report.length; p1move++) {
           <span>far</span>
         </td>
         <td>
-          <div class=timeline>${getFramedataVisualization(1, p2move)}</div>
+          <div class=timeline>${getFramedataVisualization(1, p2move + SystemMove.AttackMovesBegin)}</div>
         </td>
       </tr>
     </table>`;

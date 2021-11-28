@@ -3,6 +3,7 @@ import { Character } from "./character";
 import { hasAll, hasAny, hasNone } from "./util";
 
 export function collisionDetection(characters: Character[]): (Connected | undefined)[][] {
+    const numCharacters = characters.length;
     const hitboxes = characters.map(character => character.getCurrentBoxesInWorldCoordinates());
 
     // reflect all projectiles
@@ -21,7 +22,6 @@ export function collisionDetection(characters: Character[]): (Connected | undefi
     });
 
     // check for trades/clashes/throwtechs
-    const numCharacters = characters.length;
     for (let i = 0; i < numCharacters; i++)
         for (let j = 0; j < numCharacters; j++)
             if (i !== j)
