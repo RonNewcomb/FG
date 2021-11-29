@@ -2,6 +2,7 @@
 echo.
 echo Deploying to /built/ ...
 
+copy /y .\\favicon.ico .\\built
 copy /y .\\src\\index.html .\\built
 copy /y .\\src\\balance\\matchup.html .\\built\\balance
 
