@@ -147,6 +147,8 @@ function main(fullreport: FullReport): HtmlComponent {
   return output;
 }
 
+const reRender = (old: HTMLElement, innerHtml: string) => old.replaceWith(new DOMParser().parseFromString(innerHtml, 'text/html').body.firstChild!);
+
 document.getElementById("report")!.innerHTML = main(await gettingReport);
 
 document.body.addEventListener('click', e => {
@@ -161,7 +163,7 @@ document.body.addEventListener('click', e => {
   }
   if (target.getAttribute('data-for')) {
     const [character, moveId, frame] = target.getAttribute('data-for')!.split('.').map(x => parseInt(x));
-    Array.from(document.getElementsByName(`${character}.${moveId}`)).forEach(photo => photo.replaceWith(new DOMParser().parseFromString(getPhoto(character as 0 | 1, moveId, frame), 'text/html').body.firstChild!));
+    Array.from(document.getElementsByName(`${character}.${moveId}`)).forEach(photo => reRender(photo, getPhoto(character as 0 | 1, moveId, frame)));
   }
 
   return false;
