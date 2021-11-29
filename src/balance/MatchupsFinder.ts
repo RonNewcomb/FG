@@ -67,7 +67,7 @@ export default async function MatchupsFinder() {
 
                     // run simulation /////
                     for (let frame = Math.min(p1BeginOnFrame, latestP2Start); !hasHit && frame < latestP1Start + p1Duration; frame++) {
-                        if (frame === latestP1Start) p1.setCurrentMove(i + SystemMove.AttackMovesBegin);
+                        if (frame === p1BeginOnFrame) p1.setCurrentMove(i + SystemMove.AttackMovesBegin);
                         if (frame === latestP2Start) p2.setCurrentMove(j + SystemMove.AttackMovesBegin);
                         const matrix = collisionDetection(characters);
                         const p1WasHit = matrix[0][1] != null;
