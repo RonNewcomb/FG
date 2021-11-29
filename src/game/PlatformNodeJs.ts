@@ -24,14 +24,10 @@ export class PlatformNodeJs {
         backgroundColor.A = halfmillion;
 
         const sprite = `
-            <div style="
-                position:absolute;
-                top:${box.y * PPMtoPixels}px;
-                left:${box.x * PPMtoPixels}px;
-                width:${box.wide * PPMtoPixels}px;
-                height:${box.tall * PPMtoPixels}px;
-                background-color:${asHexValue(backgroundColor)};
-                border: 1px solid ${asHexValue(borderColor)};
+            <div style="position:absolute;
+                top:${box.y * PPMtoPixels}px;       left:${box.x * PPMtoPixels}px;
+                width:${box.wide * PPMtoPixels}px;  height:${box.tall * PPMtoPixels}px;
+                background-color:${asHexValue(backgroundColor)}; border: 1px solid ${asHexValue(borderColor)};
             "></div>`;
 
         return sprite;

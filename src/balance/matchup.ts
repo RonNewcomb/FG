@@ -2,11 +2,21 @@
 import { PlatformNodeJs } from "../game/PlatformNodeJs";
 import { CharacterMove, frameCount, FullReport, SystemMove } from "../interfaces/interfaces";
 
+const ppm2px = 1000;
+const ppm2percent = 10000;
 const fullreport: FullReport = await fetch("./MatchupResults.json").then(res => res.json());
 const platform2 = new PlatformNodeJs();
 
-function getPhoto(character: 0 | 1, moveId: SystemMove, translateX?: number): string {
-  const shift = !translateX ? '' : character === 1 ? `style='left: ${60 - 17 + translateX / 10000}%'` : `style='left:${60}%`;
+function getPhoto(character: 0 | 1, moveId: SystemMove, frame: frameCount, translateX?: number): string {
+  const move = fullreport.moves[character][moveId].hitboxes[frame];
+  if (!move) return getPhoto(character, SystemMove.StandIdle, 0, translateX);
+  const shift = !translateX ? '' : character === 1 ? `style='left: ${translateX / ppm2px}px'` : ``;
+  return `<div class=photo data-p=${character} data-moveid=${moveId} ${shift}>
+            ${move.map(platform2.drawHitbox).join('')}
+          </div>`
+}
+
+function findPhoto(character: 0 | 1, moveId: SystemMove, translateX?: number): string {
   const move: CharacterMove = fullreport.moves[character][moveId];
   let frameToUse = 0;
   for (let frame = 0; frame < move.hitboxes.length; frame++)
@@ -14,9 +24,7 @@ function getPhoto(character: 0 | 1, moveId: SystemMove, translateX?: number): st
       frameToUse = frame;
       break;
     }
-  return `<div class=photo data-p=${character} data-moveid=${moveId} ${shift}>
-            ${move.hitboxes[frameToUse].map(platform2.drawHitbox).join('')}
-          </div>`;
+  return getPhoto(character, moveId, frameToUse, translateX);
 }
 
 type Phase = 'startup' | 'active' | 'recovery';
@@ -47,9 +55,9 @@ function getSituation(winLoseTradeMiss: 0 | 1 | 2 | 3, nthFrame: frameCount, p1S
   const attacker = p1doing === 'active' ? p1doing : p2doing;
   const other = attacker === p1doing ? p2doing : p1doing;
   switch (other) {
-    case 'startup': return 'stuffed';
+    case 'startup': return 'CH';
     case 'active': return 'spaced';
-    case 'recovery': return 'punish';
+    case 'recovery': return 'wif pun';
     default: return '';
   }
 }
@@ -69,7 +77,9 @@ for (let p1move = 0; p1move < report.length; p1move++) {
       </tr>
       <tr>
         <td class=photoFrame>
-          ${getPhoto(0, p1move + SystemMove.AttackMovesBegin)}
+          <div class=photoFrameset>
+            ${findPhoto(0, p1move + SystemMove.AttackMovesBegin)}
+          </div>
         </td>
         <td>
           <table class=frameTable>`;
@@ -85,8 +95,8 @@ for (let p1move = 0; p1move < report.length; p1move++) {
           <td class=${colors[winLoseTradeMiss]} data-clickToShow>
             <span class=resultLabel>${situation}</span>
             <div class=flyover>
-              ${getPhoto(0, p1move + SystemMove.AttackMovesBegin)}
-              ${getPhoto(1, p2move + SystemMove.AttackMovesBegin, distance * fullreport.smallestDistance)}
+              ${getPhoto(0, p1move + SystemMove.AttackMovesBegin, connectedOnNthFrame - p1BeginsAttack)}
+              ${getPhoto(1, p2move + SystemMove.AttackMovesBegin, connectedOnNthFrame - p2BeginsAttack, distance * fullreport.smallestDistance)}
             </div>
           </td>`;
       }
@@ -96,7 +106,9 @@ for (let p1move = 0; p1move < report.length; p1move++) {
           </table>
         </td>
         <td class=photoFrame>
-          ${getPhoto(1, p2move + SystemMove.AttackMovesBegin)}
+          <div class=photoFrameset>
+            ${findPhoto(1, p2move + SystemMove.AttackMovesBegin)}
+          </div>
         </td>
       </tr>
       <tr>

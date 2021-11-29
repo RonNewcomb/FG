@@ -1,7 +1,7 @@
 // this file is ran by a hook in the jest tests, after tests finish
 // it produces a .json file for the viewer, matchup.html/matchup.ts, to fetch & consume
 
-import { FullReport, MoveVsMove, SystemMove } from "../interfaces/interfaces";
+import { FullReport, MoveVsMove, PPM, SystemMove } from "../interfaces/interfaces";
 import { AssetLoader } from "../game/assetLoader";
 import { Character } from "../game/character";
 import { collisionDetection } from "../game/collision";
@@ -10,7 +10,7 @@ import { PlatformBrowser } from "../game/PlatformBrowser";
 import { NullInput } from "../game/util";
 import * as fs from "fs";
 
-function getWalkSpeed(character: Character): number {
+function getWalkSpeed(character: Character): PPM {
     const walkEffects = character.assets.fdata.moves[SystemMove.WalkForward].effects || [];
     let walkSpeed = 0;
     for (let i = 0; i < 3; i++)
@@ -39,7 +39,7 @@ export default async function MatchupsFinder() {
     // before teh joystick changes walk direction again; i.e. the shimmy-at-footsies-range
     const rangeEpsilonP1 = getWalkSpeed(p1);
     const rangeEpsilonP2 = getWalkSpeed(p2);
-    const smallestDistance = rangeEpsilonP1 + rangeEpsilonP2;
+    const smallestDistance: PPM = rangeEpsilonP1 + rangeEpsilonP2;
 
     // loop through every attack move from player 1
     // loop through every attack move from player 2
