@@ -68,6 +68,9 @@
     .recovery {
       background-color: blue;
     }
+    .highlight {
+      box-shadow: 0 0 5px 5px yellowgreen;
+    }
     .resultLabel {
       font-size: xx-small;
       font-variant: small-caps;
@@ -107,6 +110,16 @@
     }
     .flyover div {
       z-index: 3;
+    }
+    .flyoverFrameCompare {
+      position: fixed;
+      bottom: 10%;
+      width: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: space-around;
+      background-color: white;
+      align-items: center;
     }
   </style>
 </head>

@@ -41,10 +41,11 @@ function getFramedataDescription(character: 0 | 1, moveId: SystemMove): Phase[] 
   return retval;
 }
 
-function getFramedataVisualization(character: 0 | 1, moveId: SystemMove): string {
+function getFramedataVisualization(character: 0 | 1, moveId: SystemMove, highlightedFrame?: number): string {
   const phases = getFramedataDescription(character, moveId).reverse();
-  return phases.reduce((sum, each) => sum + `<div class=${each}></div>`, "")
+  const timeline = phases.reduce((sum, phase, i) => sum + `<div class="${phase} ${i === highlightedFrame ? 'highlight' : ''}"></div>`, "")
     + `<div style='background-color:white'></div>`; // invisible starter
+  return "<div class=timeline>" + timeline + "</div>";
 }
 
 function getSituation(winLoseTradeMiss: 0 | 1 | 2 | 3, nthFrame: frameCount, p1StartOn: number, p2StartOn: number, moveId1: SystemMove, moveId2: SystemMove): string {
@@ -97,6 +98,11 @@ for (let p1move = 0; p1move < report.length; p1move++) {
             <div class=flyover>
               ${getPhoto(0, p1move + SystemMove.AttackMovesBegin, connectedOnNthFrame - p1BeginsAttack)}
               ${getPhoto(1, p2move + SystemMove.AttackMovesBegin, connectedOnNthFrame - p2BeginsAttack, distance * fullreport.smallestDistance)}
+              <div class=flyoverFrameCompare>
+                ${getFramedataVisualization(0, p1move + SystemMove.AttackMovesBegin, connectedOnNthFrame - p1BeginsAttack)}
+                &mdash;
+                ${getFramedataVisualization(1, p2move + SystemMove.AttackMovesBegin, connectedOnNthFrame - p2BeginsAttack)}
+              </div>
             </div>
           </td>`;
       }
@@ -113,7 +119,7 @@ for (let p1move = 0; p1move < report.length; p1move++) {
       </tr>
       <tr>
         <td>
-          <div class=timeline>${getFramedataVisualization(0, p1move + SystemMove.AttackMovesBegin)}</div>
+          ${getFramedataVisualization(0, p1move + SystemMove.AttackMovesBegin)} 
         </td>
         <td class="distanceline">
           <span>close</span>
@@ -121,7 +127,7 @@ for (let p1move = 0; p1move < report.length; p1move++) {
           <span>far</span>
         </td>
         <td>
-          <div class=timeline>${getFramedataVisualization(1, p2move + SystemMove.AttackMovesBegin)}</div>
+          ${getFramedataVisualization(1, p2move + SystemMove.AttackMovesBegin)} 
         </td>
       </tr>
     </table>`;
@@ -130,9 +136,12 @@ for (let p1move = 0; p1move < report.length; p1move++) {
 document.getElementById("report")!.innerHTML = output;
 document.body.addEventListener('click', e => {
   const el = e.target as HTMLElement;
-  if (el.getAttribute('data-clickToShow') != undefined)
+  if (el.getAttribute('data-clickToShow') != undefined) {
     Array.from<any>(el.children).forEach((child: HTMLElement) => child.style.display = 'block');
-  if (el.getAttribute('class')?.includes('flyover'))
+    el.classList.add('highlight');
+  }
+  if (el.getAttribute('class')?.includes('flyover')) {
     el.style.display = 'none';
+  }
   return false;
 });
