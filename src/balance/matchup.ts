@@ -43,7 +43,7 @@ function getFramedataDescription(character: 0 | 1, moveId: SystemMove): Phase[] 
 
 function getFramedataVisualization(character: 0 | 1, moveId: SystemMove, highlightedFrame?: number): string {
   const phases = getFramedataDescription(character, moveId);
-  const timeline = phases.map((phase, i) => `<div class="${phase} ${i === highlightedFrame ? 'highlight' : ''}"></div>`).reverse();
+  const timeline = phases.map((phase, i) => `<div class="${phase} data-nth=${i} ${i === highlightedFrame ? 'highlight' : ''}"></div>`).reverse();
   return `<div class=timeline>${timeline.join('')}<div style='background-color:white'></div></div>`;
 }
 
