@@ -137,10 +137,11 @@ export interface IGameState {
 
 export interface FullReport {
     report: Array<Array<MoveVsMove>>;
+    smallestDistance: number;
     moves: CharacterMove[][];
 }
 
 export interface MoveVsMove {
-    frameAdvantage: number;
-    matchup: [boolean, boolean, SystemMove, SystemMove][][];
+    p2BeginsAttackOnThisFrame: number;
+    matchup: [boolean, boolean, frameCount][][];
 }

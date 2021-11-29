@@ -51,10 +51,10 @@ export default async function MatchupsFinder() {
             //console.log("p1 move ", i, " vs. p2 move", j);
             const p1Duration = p1Attacks[i + SystemMove.AttackMovesBegin].hitboxes.length;
             const p2Duration = p2Attacks[j + SystemMove.AttackMovesBegin].hitboxes.length;
-            const latestP2Start = p1Duration - 1; // -1 or else the moves aren't overlapping at all
-            const latestP1Start = latestP2Start + p2Duration - 1; // latest p1 start when p2 is starting its latest already
+            const p2BeginsAttackOnThisFrame = p1Duration - 1; // -1 or else the moves aren't overlapping at all
+            const latestP1Start = p2BeginsAttackOnThisFrame + p2Duration - 1; // latest p1 start when p2 is starting its latest already
             report[i][j] = {
-                frameAdvantage: latestP2Start,
+                p2BeginsAttackOnThisFrame: p2BeginsAttackOnThisFrame,
                 matchup: [],
             };
             for (let p1BeginOnFrame = 0; p1BeginOnFrame <= latestP1Start; p1BeginOnFrame++) {
@@ -66,18 +66,15 @@ export default async function MatchupsFinder() {
                     p2.x = p1.x + (distance * smallestDistance);
 
                     // run simulation /////
-                    for (let frame = Math.min(p1BeginOnFrame, latestP2Start); !hasHit && frame < latestP1Start + p1Duration; frame++) {
+                    for (let frame = Math.min(p1BeginOnFrame, p2BeginsAttackOnThisFrame); !hasHit && frame < latestP1Start + p1Duration; frame++) {
                         if (frame === p1BeginOnFrame) p1.setCurrentMove(i + SystemMove.AttackMovesBegin);
-                        if (frame === latestP2Start) p2.setCurrentMove(j + SystemMove.AttackMovesBegin);
+                        if (frame === p2BeginsAttackOnThisFrame) p2.setCurrentMove(j + SystemMove.AttackMovesBegin);
                         const matrix = collisionDetection(characters);
                         const p1WasHit = matrix[0][1] != null;
                         const p2WasHit = matrix[1][0] != null;
                         hasHit = p1WasHit || p2WasHit;
-                        report[i][j].matchup[p1BeginOnFrame][distance] = [p1WasHit, p2WasHit, p1.currentMove, p2.currentMove];// (p1WasHit && p2WasHit) ? 3 : p2WasHit ? 2 : 1;
-                        if (hasHit) {
-                            //console.log(matrix);
-                            break;
-                        }
+                        report[i][j].matchup[p1BeginOnFrame][distance] = [p1WasHit, p2WasHit, frame];
+                        if (hasHit) break;
                         p1.quickTick();
                         p2.quickTick();
                     }
@@ -92,6 +89,7 @@ export default async function MatchupsFinder() {
     console.log("writing results to", filename);
     const fullreport: FullReport = {
         report: report,
+        smallestDistance: smallestDistance,
         moves: characters.map(c => c.assets.fdata.moves),
     };
     fs.writeFileSync(filename, JSON.stringify(fullreport));
