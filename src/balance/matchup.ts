@@ -46,7 +46,7 @@ function getFramedataDescription(character: 0 | 1, moveId: SystemMove): Phase[] 
 function getFramedataVisualization(character: 0 | 1, moveId: SystemMove, highlightedFrame?: number): HtmlComponent {
   const phases = getFramedataDescription(character, moveId);
   const timeline = phases.map((phase, i) => `<div data-for='${character}.${moveId}.${i}' class="${phase} ${i === highlightedFrame ? 'highlight' : ''}"></div>`).reverse();
-  return `<div class=timeline>${timeline.join('')}<div style='background-color:white'></div></div>`;
+  return `<div data-name=timeline data-for='${character}.${moveId}' class=timeline>${timeline.join('')}<div class=prestartup></div></div>`;
 }
 
 type Situation = '' | 'trade' | 'CH' | 'spaced' | 'wif pun';
@@ -163,7 +163,12 @@ document.body.addEventListener('click', e => {
   }
   if (target.getAttribute('data-for')) {
     const [character, moveId, frame] = target.getAttribute('data-for')!.split('.').map(x => parseInt(x));
-    Array.from(document.getElementsByName(`${character}.${moveId}`)).forEach(photo => reRender(photo, getPhoto(character as 0 | 1, moveId, frame)));
+    document.querySelectorAll<HTMLElement>(`[name="${character}.${moveId}"]`).forEach(photo => {
+      reRender(photo, getPhoto(character as 0 | 1, moveId, frame));
+    });
+    document.querySelectorAll<HTMLElement>(`[data-name="timeline"][data-for="${character}.${moveId}"]`).forEach(frameline => {
+      reRender(frameline, getFramedataVisualization(character as 0 | 1, moveId, frame));
+    });
   }
 
   return false;
