@@ -77,18 +77,18 @@ function main(fullreport: FullReport): HtmlComponent {
       let p2wins = 0;
       output += `
     <table class=row>
-      <tr class=header>
-        <th>move ${p1move}</th>
-        <th>vs.</th>
-        <th>move ${p2move}</th>
-      </tr>
       <tr>
-        <td class=photoFrame>
+        <td class=photoFrame data-p=0>
           <div class=photoFrameset>
             ${findPhoto(0, p1move + SystemMove.AttackMovesBegin)}
           </div>
         </td>
         <td>
+          <div class=header>
+            <span>Move ${p1move}</span>
+            <span>vs</span>
+            <span>Move ${p2move}</span>
+          </div>
           <table class=frameTable>`;
       const p2BeginsAttack: frameCount = report[p1move][p2move].p2BeginsAttackOnThisFrame;
       for (let p1BeginsAttack: frameCount = 0; p1BeginsAttack < report[p1move][p2move].matchup.length; p1BeginsAttack++) {
@@ -124,7 +124,7 @@ function main(fullreport: FullReport): HtmlComponent {
             <span>far</span>
           </div>
         </td>
-        <td class=photoFrame>
+        <td class=photoFrame data-p=1>
           <div class=photoFrameset>
             ${findPhoto(1, p2move + SystemMove.AttackMovesBegin)}
           </div>
