@@ -66,15 +66,14 @@ export default async function MatchupsFinder() {
                     p2.x = p1.x + (distance * smallestDistance);
 
                     // run simulation /////
-                    const initialFrame = Math.min(p1BeginOnFrame, p2BeginsAttackOnThisFrame);
-                    for (let frame = initialFrame; !hasHit && frame < latestP1Start + p1Duration; frame++) {
+                    for (let frame = Math.min(p1BeginOnFrame, p2BeginsAttackOnThisFrame); !hasHit && frame < latestP1Start + p1Duration; frame++) {
                         if (frame === p1BeginOnFrame) p1.setCurrentMove(i + SystemMove.AttackMovesBegin);
                         if (frame === p2BeginsAttackOnThisFrame) p2.setCurrentMove(j + SystemMove.AttackMovesBegin);
                         const matrix = collisionDetection(characters);
                         const p1WasHit = matrix[0][1] != null;
                         const p2WasHit = matrix[1][0] != null;
                         hasHit = p1WasHit || p2WasHit;
-                        report[i][j].matchup[p1BeginOnFrame][distance] = [p1WasHit, p2WasHit, frame - initialFrame];
+                        report[i][j].matchup[p1BeginOnFrame][distance] = [p1WasHit, p2WasHit, frame];
                         if (hasHit) break;
                         p1.quickTick();
                         p2.quickTick();

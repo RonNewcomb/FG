@@ -42,10 +42,9 @@ function getFramedataDescription(character: 0 | 1, moveId: SystemMove): Phase[] 
 }
 
 function getFramedataVisualization(character: 0 | 1, moveId: SystemMove, highlightedFrame?: number): string {
-  const phases = getFramedataDescription(character, moveId).reverse();
-  const timeline = phases.reduce((sum, phase, i) => sum + `<div class="${phase} ${i === highlightedFrame ? 'highlight' : ''}"></div>`, "")
-    + `<div style='background-color:white'></div>`; // invisible starter
-  return "<div class=timeline>" + timeline + "</div>";
+  const phases = getFramedataDescription(character, moveId);
+  const timeline = phases.map((phase, i) => `<div class="${phase} ${i === highlightedFrame ? 'highlight' : ''}"></div>`).reverse();
+  return `<div class=timeline>${timeline.join('')}<div style='background-color:white'></div></div>`;
 }
 
 function getSituation(winLoseTradeMiss: 0 | 1 | 2 | 3, nthFrame: frameCount, p1StartOn: number, p2StartOn: number, moveId1: SystemMove, moveId2: SystemMove): string {
@@ -63,7 +62,7 @@ function getSituation(winLoseTradeMiss: 0 | 1 | 2 | 3, nthFrame: frameCount, p1S
   }
 }
 
-const colors = ["lightgray", "red", "blue", "purple"];
+const colors = ["miss", "p1wins", "p2wins", "trade"];
 
 let output = "";
 const report = fullreport.report;
