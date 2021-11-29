@@ -68,6 +68,8 @@ let output = "";
 const report = fullreport.report;
 for (let p1move = 0; p1move < report.length; p1move++) {
   for (let p2move = 0; p2move < report[p1move].length; p2move++) {
+    let p1wins = 0;
+    let p2wins = 0;
     output += `
     <table class=row>
       <tr class=header>
@@ -90,6 +92,8 @@ for (let p1move = 0; p1move < report.length; p1move++) {
       for (let distance = 0; distance < len4; distance++) {
         const [p1WasHit, p2WasHit, connectedOnNthFrame] = report[p1move][p2move].matchup[p1BeginsAttack][distance] || [false, false, 999];
         const winLoseTradeMiss = !p1WasHit && !p2WasHit ? 0 : p1WasHit && p2WasHit ? 3 : p1WasHit ? 2 : 1;
+        if (winLoseTradeMiss & 1) p1wins++;
+        if (winLoseTradeMiss & 2) p2wins++;
         const situation = getSituation(winLoseTradeMiss, connectedOnNthFrame, p1BeginsAttack, p2BeginsAttack, p1move + SystemMove.AttackMovesBegin, p2move + SystemMove.AttackMovesBegin);
         output += `
           <td class=${colors[winLoseTradeMiss]} data-clickToShow>
@@ -109,6 +113,11 @@ for (let p1move = 0; p1move < report.length; p1move++) {
     }
     output += `
           </table>
+          <div class=distanceline>
+            <span>close</span>
+            <span><i>distance</i></span>
+            <span>far</span>
+          </div>
         </td>
         <td class=photoFrame>
           <div class=photoFrameset>
@@ -120,10 +129,8 @@ for (let p1move = 0; p1move < report.length; p1move++) {
         <td>
           ${getFramedataVisualization(0, p1move + SystemMove.AttackMovesBegin)} 
         </td>
-        <td class="distanceline">
-          <span>close</span>
-          <span><i>distance</i></span>
-          <span>far</span>
+        <td class=distanceline>
+          <span>move ${p1move} win rate ${(p1wins / (p1wins + p2wins) * 100).toFixed(0)}%</span>
         </td>
         <td>
           ${getFramedataVisualization(1, p2move + SystemMove.AttackMovesBegin)} 
