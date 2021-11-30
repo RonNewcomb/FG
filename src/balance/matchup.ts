@@ -9,16 +9,16 @@ let fullreport: FullReport;
 const gettingReport = fetch("./MatchupResults.json").then(res => res.json()).then(r => fullreport = r);
 const platform2 = new PlatformNodeJs();
 
-function getPhoto(character: 0 | 1, moveId: SystemMove, frame: frameCount, translateX?: number): HtmlComponent {
+function Snapshot(character: 0 | 1, moveId: SystemMove, frame: frameCount, translateX?: number): HtmlComponent {
   const move = fullreport.moves[character][moveId].hitboxes[frame];
-  if (!move) return getPhoto(character, SystemMove.StandIdle, 0, translateX);
+  if (!move) return Snapshot(character, SystemMove.StandIdle, 0, translateX);
   const shift = !translateX ? '' : character === 1 ? `style='left: ${translateX / ppm2px}px'` : ``;
-  return `<div name='${character}.${moveId}' class=photo data-p=${character} data-moveid=${moveId} ${shift}>
-            ${move.map(platform2.drawHitbox).join('')}
-          </div>`
+  return /*HTML*/`<snap-shot name='${character}.${moveId}' class=photo data-p=${character} data-moveid=${moveId} ${shift}>
+                    ${move.map(platform2.drawHitbox).join('')}
+                  </snap-shot>`
 }
 
-function findPhoto(character: 0 | 1, moveId: SystemMove, translateX?: number): HtmlComponent {
+function findSnapshot(character: 0 | 1, moveId: SystemMove, translateX?: number): HtmlComponent {
   const move: CharacterMove = fullreport.moves[character][moveId];
   let frameToUse = 0;
   for (let frame = 0; frame < move.hitboxes.length; frame++)
@@ -26,7 +26,7 @@ function findPhoto(character: 0 | 1, moveId: SystemMove, translateX?: number): H
       frameToUse = frame;
       break;
     }
-  return getPhoto(character, moveId, frameToUse, translateX);
+  return Snapshot(character, moveId, frameToUse, translateX);
 }
 
 type Phase = 'startup' | 'active' | 'recovery';
@@ -45,13 +45,11 @@ function getFramedataDescription(character: 0 | 1, moveId: SystemMove): Phase[] 
 
 function getFramedataVisualization(character: 0 | 1, moveId: SystemMove, highlightedFrame?: number): HtmlComponent {
   const phases = getFramedataDescription(character, moveId);
-  const timeline = phases.map((phase, i) => `<div data-for='${character}.${moveId}.${i}' class="${phase} ${i === highlightedFrame ? 'highlight' : ''}"></div>`).reverse();
-  return `<div data-name=timeline data-for='${character}.${moveId}' class=timeline>${timeline.join('')}<div class=prestartup></div></div>`;
+  const timeline = phases.map((phase, i) => /*HTML*/`<one-frame data-for='${character}.${moveId}.${i}' class="${phase} ${i === highlightedFrame ? 'highlight' : ''}"></one-frame>`).reverse();
+  return /*HTML*/`<framedata-timeline data-name=timeline data-for='${character}.${moveId}' class=timeline>${timeline.join('')}<div class=prestartup></div></framedata-timeline>`;
 }
 
-type Situation = '' | 'trade' | 'CH' | 'spaced' | 'wif pun';
-
-function getSituation(winLoseTradeMiss: 0 | 1 | 2 | 3, nthFrame: frameCount, p1StartOn: number, p2StartOn: number, moveId1: SystemMove, moveId2: SystemMove): Situation {
+function getSituation(winLoseTradeMiss: 0 | 1 | 2 | 3, nthFrame: frameCount, p1StartOn: number, p2StartOn: number, moveId1: SystemMove, moveId2: SystemMove): HtmlComponent {
   if (winLoseTradeMiss === 0) return '';
   if (winLoseTradeMiss === 3) return 'trade';
   const p1doing = getFramedataDescription(0, moveId1)[nthFrame - p1StartOn];
@@ -61,7 +59,7 @@ function getSituation(winLoseTradeMiss: 0 | 1 | 2 | 3, nthFrame: frameCount, p1S
   switch (other) {
     case 'startup': return 'CH';
     case 'active': return 'spaced';
-    case 'recovery': return 'wif pun';
+    case 'recovery': return /*HTML*/`<div>whiff</div><div>punish</div>`;
     default: return '';
   }
 }
@@ -69,18 +67,19 @@ function getSituation(winLoseTradeMiss: 0 | 1 | 2 | 3, nthFrame: frameCount, p1S
 function main(fullreport: FullReport): HtmlComponent {
   const colors = ["miss", "p1wins", "p2wins", "trade"];
 
+  let probTable: number[][] = [];
   let output = "";
   const report = fullreport.report;
   for (let p1move = 0; p1move < report.length; p1move++) {
     for (let p2move = 0; p2move < report[p1move].length; p2move++) {
       let p1wins = 0;
       let p2wins = 0;
-      output += `
+      output += /*HTML*/`
     <table class=row>
       <tr>
         <td class=photoFrame data-p=0>
           <div class=photoFrameset>
-            ${findPhoto(0, p1move + SystemMove.AttackMovesBegin)}
+            ${findSnapshot(0, p1move + SystemMove.AttackMovesBegin)}
           </div>
         </td>
         <td>
@@ -92,7 +91,7 @@ function main(fullreport: FullReport): HtmlComponent {
           <table class=frameTable>`;
       const p2BeginsAttack: frameCount = report[p1move][p2move].p2BeginsAttackOnThisFrame;
       for (let p1BeginsAttack: frameCount = 0; p1BeginsAttack < report[p1move][p2move].matchup.length; p1BeginsAttack++) {
-        output += `<tr><th>${(p2BeginsAttack > p1BeginsAttack ? "+" : "") + (p2BeginsAttack - p1BeginsAttack).toString()}</th>`;
+        output += /*HTML*/`<tr><th>${(p2BeginsAttack > p1BeginsAttack ? "+" : "") + (p2BeginsAttack - p1BeginsAttack).toString()}</th>`;
         const len4 = report[p1move][p2move].matchup[p1BeginsAttack]?.length || 0;
         for (let distance = 0; distance < len4; distance++) {
           const [p1WasHit, p2WasHit, connectedOnNthFrame] = report[p1move][p2move].matchup[p1BeginsAttack][distance] || [false, false, 999];
@@ -100,12 +99,12 @@ function main(fullreport: FullReport): HtmlComponent {
           if (winLoseTradeMiss & 1) p1wins++;
           if (winLoseTradeMiss & 2) p2wins++;
           const situation = getSituation(winLoseTradeMiss, connectedOnNthFrame, p1BeginsAttack, p2BeginsAttack, p1move + SystemMove.AttackMovesBegin, p2move + SystemMove.AttackMovesBegin);
-          output += `
+          output += /*HTML*/`
           <td class=${colors[winLoseTradeMiss]} data-clickToShow>
             <span class=resultLabel>${situation}</span>
             <div class=flyover>
-              ${getPhoto(0, p1move + SystemMove.AttackMovesBegin, connectedOnNthFrame - p1BeginsAttack)}
-              ${getPhoto(1, p2move + SystemMove.AttackMovesBegin, connectedOnNthFrame - p2BeginsAttack, distance * fullreport.smallestDistance)}
+              ${Snapshot(0, p1move + SystemMove.AttackMovesBegin, connectedOnNthFrame - p1BeginsAttack)}
+              ${Snapshot(1, p2move + SystemMove.AttackMovesBegin, connectedOnNthFrame - p2BeginsAttack, distance * fullreport.smallestDistance)}
               <div class=flyoverFrameCompare>
                 ${getFramedataVisualization(0, p1move + SystemMove.AttackMovesBegin, connectedOnNthFrame - p1BeginsAttack)}
                 &mdash;
@@ -116,7 +115,9 @@ function main(fullreport: FullReport): HtmlComponent {
         }
         output += "</tr>";
       }
-      output += `
+      if (!probTable[p1move]) probTable[p1move] = [];
+      probTable[p1move][p2move] = (p1wins / (p1wins + p2wins) * 100);
+      output += /*HTML*/`
           </table>
           <div class=distanceline>
             <span>close</span>
@@ -126,7 +127,7 @@ function main(fullreport: FullReport): HtmlComponent {
         </td>
         <td class=photoFrame data-p=1>
           <div class=photoFrameset>
-            ${findPhoto(1, p2move + SystemMove.AttackMovesBegin)}
+            ${findSnapshot(1, p2move + SystemMove.AttackMovesBegin)}
           </div>
         </td>
       </tr>
@@ -135,7 +136,7 @@ function main(fullreport: FullReport): HtmlComponent {
           ${getFramedataVisualization(0, p1move + SystemMove.AttackMovesBegin)} 
         </td>
         <td class=distanceline>
-          <span>move ${p1move} win rate ${(p1wins / (p1wins + p2wins) * 100).toFixed(0)}%</span>
+          <span>move ${p1move} win rate ${probTable[p1move][p2move].toFixed(0)}%</span>
         </td>
         <td>
           ${getFramedataVisualization(1, p2move + SystemMove.AttackMovesBegin)} 
@@ -144,6 +145,21 @@ function main(fullreport: FullReport): HtmlComponent {
     </table>`;
     }
   }
+  output += /*HTML*/`
+  <table class=probTable>
+    <tr>
+      <th></th>
+      ${probTable.map((_, p1move) => /*HTML*/`<th>P1 move ${p1move}</th>`).join('')}
+    </tr>
+    ${probTable.map((_, p1move) => /*HTML*/`
+     <tr>
+          <th>P2 move ${p1move}</th>
+          ${probTable[p1move].map((_, p2move) => /*HTML*/`
+            <td>${(probTable[p1move][p2move] || 0).toFixed(0)}%</td>
+          `).join('')
+    } </tr>`
+  ).join('')}
+  </table>`;
   return output;
 }
 
@@ -163,10 +179,10 @@ document.body.addEventListener('click', e => {
   }
   if (target.getAttribute('data-for')) {
     const [character, moveId, frame] = target.getAttribute('data-for')!.split('.').map(x => parseInt(x));
-    document.querySelectorAll<HTMLElement>(`[name="${character}.${moveId}"]`).forEach(photo => {
-      reRender(photo, getPhoto(character as 0 | 1, moveId, frame));
+    document.querySelectorAll<HTMLElement>(`snap-shot[name="${character}.${moveId}"]`).forEach(photo => {
+      reRender(photo, Snapshot(character as 0 | 1, moveId, frame));
     });
-    document.querySelectorAll<HTMLElement>(`[data-name="timeline"][data-for="${character}.${moveId}"]`).forEach(frameline => {
+    document.querySelectorAll<HTMLElement>(`framedata-timeline[data-for="${character}.${moveId}"]`).forEach(frameline => {
       reRender(frameline, getFramedataVisualization(character as 0 | 1, moveId, frame));
     });
   }

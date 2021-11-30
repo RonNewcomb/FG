@@ -17,6 +17,7 @@
       table.frameTable td {
         width: 2.5em;
         text-align: center;
+        padding: 0;
       }
       .distanceline {
         display: flex;
@@ -45,21 +46,22 @@
         left: 50%; /* guessed */
         top: 80px; /* guessed */
       }
-      .photo {
+      snap-shot {
         position: absolute;
+        z-index: 1;
       }
-      .photo[data-p="1"] {
+      snap-shot[data-p="1"] {
         transform: scaleX(-1); /* player2 */
       }
-      td > .timeline {
+      td > framedata-timeline {
         display: flex;
         justify-content: center;
       }
-      .timeline {
+      framedata-timeline {
         display: flex;
         flex-direction: row-reverse;
       }
-      .timeline > div {
+      framedata-timeline > one-frame {
         height: 0.5em;
         width: 1.5em;
         border: 1px solid white;
@@ -131,6 +133,9 @@
         justify-content: space-around;
         background-color: white;
         align-items: center;
+      }
+      .probTable {
+        text-align: center;
       }
     </style>
   </head>
