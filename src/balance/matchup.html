@@ -140,6 +140,141 @@
     </style>
   </head>
   <body>
+    <h1>How to Read</h1>
+    <table>
+      <tbody>
+        <tr>
+          <td class="photoFrame" data-p="0">
+            <div class="photoFrameset">
+              <snap-shot name="0.4" class="photo" data-p="0" data-moveid="4">
+                <div
+                  title="Hurtbox"
+                  style="
+                    position: absolute;
+                    top: 0px;
+                    left: -50px;
+                    width: 115px;
+                    height: 50px;
+                    background-color: rgba(0, 0, 256, 0.5);
+                    border: 1px solid rgb(0, 0, 256);
+                  "
+                ></div>
+                <div
+                  title="Hurtbox"
+                  style="
+                    position: absolute;
+                    top: 50px;
+                    left: -50px;
+                    width: 100px;
+                    height: 100px;
+                    background-color: rgba(0, 0, 256, 0.5);
+                    border: 1px solid rgb(0, 0, 256);
+                  "
+                ></div>
+                <div
+                  title="Grab"
+                  style="
+                    position: absolute;
+                    top: 0px;
+                    left: -50px;
+                    width: 150px;
+                    height: 50px;
+                    background-color: rgba(256, 256, 0, 0.5);
+                    border: 1px solid rgb(256, 256, 0);
+                  "
+                ></div>
+              </snap-shot>
+            </div>
+          </td>
+          <td>
+            <p>For the "photo" of hurtboxes/hitboxes:</p>
+            <div>
+              <div style="width: 3em; height: 1em; background-color: rgba(256, 0, 0, 0.5); border: 1px solid rgb(256, 0, 0)"></div>
+              means hitbox (strike)
+            </div>
+            <div>
+              <div style="width: 3em; height: 1em; background-color: rgba(256, 256, 0, 0.5); border: 1px solid rgb(256, 256, 0)"></div>
+              means hitbox (grab)
+            </div>
+            <div>
+              <div style="width: 3em; height: 1em; background-color: rgba(0, 0, 256, 0.5); border: 1px solid rgb(0, 0, 256)"></div>
+              means hurtbox (can be struck or grabbed)
+            </div>
+            <p>Also try hovering the mouse over a box.</p>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <framedata-timeline data-name="timeline" data-for="1.5" class="timeline">
+              <one-frame data-for="1.5.4" class="recovery"></one-frame>
+              <one-frame data-for="1.5.3" class="active"></one-frame>
+              <one-frame data-for="1.5.2" class="active"></one-frame>
+              <one-frame data-for="1.5.1" class="startup"></one-frame>
+              <one-frame data-for="1.5.0" class="startup"></one-frame>
+              <div class="prestartup"></div>
+            </framedata-timeline>
+          </td>
+          <td>
+            <p>For the "timeline" of a move:</p>
+            <div>
+              <framedata-timeline data-name="timeline" data-for="9.5" class="timeline" style="flex-direction: initial">
+                <one-frame data-for="1.5.3" class="startup"></one-frame>
+              </framedata-timeline>
+              means startup
+            </div>
+            <div>
+              <framedata-timeline data-name="timeline" data-for="9.5" class="timeline" style="flex-direction: initial">
+                <one-frame data-for="1.5.3" class="active"></one-frame>
+              </framedata-timeline>
+              means active
+            </div>
+            <div>
+              <framedata-timeline data-name="timeline" data-for="9.5" class="timeline" style="flex-direction: initial">
+                <one-frame data-for="1.5.3" class="recovery"></one-frame>
+              </framedata-timeline>
+              means recovery
+            </div>
+            <p>And each is clickable to display the "photo" for that frame.</p>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <p>
+              In the center table, a red box means the move on the left won, a blue box, the move on the right. There is a red/blue border around each "photo"
+              as a reminder.
+            </p>
+            <p>The frame advantage column is from the perspective of the left-side move.</p>
+            <p>A purple box means two strikes traded. A white non-box means both sides missed completely.</p>
+            <div>
+              Rules:
+              <ul>
+                <li>Grabs don't trade, they just pass through one another. Or possible throw-tech.</li>
+                <li>Grabs don't trade with strikes, the grab will win.</li>
+              </ul>
+            </div>
+          </td>
+          <td>
+            Terms:
+            <dl>
+              <dt>Whiff</dt>
+              <dd>Misses</dd>
+              <dt>CH</dt>
+              <dd>Counterhit: the losing move was hit during its startup</dd>
+              <dt>Whiff punish</dt>
+              <dd>The losing move was hit during its recovery frames, because its active frames missed.</dd>
+              <dt>Spaced</dt>
+              <dd>
+                The losing move was hit during its active frames, usually because it cannot reach but the opposing move can. However, grabs beating strikes on
+                same frame will also appear as Spaced.
+              </dd>
+            </dl>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
     <h1>Results</h1>
     <br />
     <div id="report"></div>

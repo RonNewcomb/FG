@@ -9,6 +9,7 @@ let fullreport: FullReport;
 const gettingReport = fetch("./MatchupResults.json").then(res => res.json()).then(r => fullreport = r);
 const platform2 = new PlatformNodeJs();
 
+/** creates a picture (hitboxes & hurtboxes) of a particular frame of a particular move, facing in one of two directions, with optional horizontal offset */
 function Snapshot(character: 0 | 1, moveId: SystemMove, frame: frameCount, translateX?: number): HtmlComponent {
   const move = fullreport.moves[character][moveId].hitboxes[frame];
   if (!move) return Snapshot(character, SystemMove.StandIdle, 0, translateX);
@@ -18,6 +19,7 @@ function Snapshot(character: 0 | 1, moveId: SystemMove, frame: frameCount, trans
                   </snap-shot>`
 }
 
+/** finds a good "representative" snapshot to use, usually the first active frame */
 function findSnapshot(character: 0 | 1, moveId: SystemMove, translateX?: number): HtmlComponent {
   const move: CharacterMove = fullreport.moves[character][moveId];
   let frameToUse = 0;
@@ -31,6 +33,7 @@ function findSnapshot(character: 0 | 1, moveId: SystemMove, translateX?: number)
 
 type Phase = 'startup' | 'active' | 'recovery';
 
+/** finds the FG term used to describe a random frame of a random move */
 function getFramedataDescription(character: 0 | 1, moveId: SystemMove): Phase[] {
   const move: CharacterMove = fullreport.moves[character][moveId];
   let retval: Phase[] = [];
@@ -43,12 +46,18 @@ function getFramedataDescription(character: 0 | 1, moveId: SystemMove): Phase[] 
   return retval;
 }
 
+/** creates a visual and clickable "timeline" of a move's startup, active, recovery */
 function getFramedataVisualization(character: 0 | 1, moveId: SystemMove, highlightedFrame?: number): HtmlComponent {
   const phases = getFramedataDescription(character, moveId);
-  const timeline = phases.map((phase, i) => /*HTML*/`<one-frame data-for='${character}.${moveId}.${i}' class="${phase} ${i === highlightedFrame ? 'highlight' : ''}"></one-frame>`).reverse();
+  const changePhoto = (frame: number) => {
+    reRender(photo, Snapshot(character as 0 | 1, moveId, frame));
+    reRender(frameline, getFramedataVisualization(character as 0 | 1, moveId, frame));
+  }
+  const timeline = phases.map((phase, i) => /*HTML*/`<one-frame data-for='${character}.${moveId}.${i}' ${onClick(_ => changePhoto(i))} class="${phase} ${i === highlightedFrame ? 'highlight' : ''}"></one-frame>`).reverse();
   return /*HTML*/`<framedata-timeline data-name=timeline data-for='${character}.${moveId}' class=timeline>${timeline.join('')}<div class=prestartup></div></framedata-timeline>`;
 }
 
+/** finds an FG term used to describe a hit (or miss) */
 function getSituation(winLoseTradeMiss: 0 | 1 | 2 | 3, nthFrame: frameCount, p1StartOn: number, p2StartOn: number, moveId1: SystemMove, moveId2: SystemMove): HtmlComponent {
   if (winLoseTradeMiss === 0) return '';
   if (winLoseTradeMiss === 3) return 'trade';
@@ -64,6 +73,7 @@ function getSituation(winLoseTradeMiss: 0 | 1 | 2 | 3, nthFrame: frameCount, p1S
   }
 }
 
+/** loops through every combination of moves, ranges, and frame adv/disadv and create report of what happens when & where */
 function main(fullreport: FullReport): HtmlComponent {
   const colors = ["miss", "p1wins", "p2wins", "trade"];
 
@@ -163,10 +173,30 @@ function main(fullreport: FullReport): HtmlComponent {
   return output;
 }
 
+// ok just use react or smthg
+type EHandler<T extends keyof GlobalEventHandlersEventMap> = (e: GlobalEventHandlersEventMap[T]) => void;
+type ETuple<T extends keyof GlobalEventHandlersEventMap> = [T, EHandler<T>];
+const placeholder = 'data-ehandler';
+let handlers: ETuple<any>[] = [];
+const onClick = (handler: EHandler<'click'>) => on('click', handler);
+function on<T extends keyof GlobalEventHandlersEventMap>(eventType: T, handler: (e: GlobalEventHandlersEventMap[T]) => void) {
+  return ` ${placeholder}=${handlers.push([eventType, handler])} `;
+}
+const attach = () => {
+  document.querySelectorAll(`[${placeholder}]`).forEach(el => {
+    const i = parseInt(el.getAttribute(placeholder) || "1") - 1;
+    const [eventType, handler] = handlers[i];
+    el.addEventListener(eventType, handler);
+    el.removeAttribute(placeholder);
+  });
+  handlers = [];
+}
 const reRender = (old: HTMLElement, innerHtml: string) => old.replaceWith(new DOMParser().parseFromString(innerHtml, 'text/html').body.firstChild!);
 
+// run program, create webpage report
 document.getElementById("report")!.innerHTML = main(await gettingReport);
 
+// attach click handlers like its 1995
 document.body.addEventListener('click', e => {
   const target = e.target as HTMLElement;
   const currentTarget = e.currentTarget as HTMLElement;
