@@ -16,7 +16,7 @@ Think about rollback netcode.
 
 ✔️ Stick into nested loops to generate which move beats/trades with which other move for the whole moveset, for every possible frame advantage/disadvantage, for every possible range.
 
-📝 Create probability table for which move to use when. Perfect information is missing because all info on which move opposes you is 15 frames stale.
+✔️ Create probability table for which move to use when. Perfect information is missing because all info on which move opposes you is 15 frames stale, hence, it is a probability because the exact spacing, timing, or what move the opponent is doing at that moment can't realistically be perceived.
 
 📝 Create decision tree from probability table. This is now the AI for that side of the matchup for that character vs that other character.
 
