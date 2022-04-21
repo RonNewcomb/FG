@@ -18,7 +18,7 @@ module.exports = {
             import: './src/game/app.ts',
         },
         balancer: {
-            import: './src/balance/matchup.ts',
+            import: './src/balance/matchup.tsx',
             //dependOn: 'game',
         },
     },
