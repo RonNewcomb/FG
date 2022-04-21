@@ -2,17 +2,14 @@
   "name": "fg",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "typescript": "^4.0.3"
-  },
   "scripts": {
     "start": "http://localhost/FG",
-    "build, test, deploy": "tsc && jest && cmd /c building.bat",
-    "build & deploy": "tsc && cmd /c building.bat",
+    "build, test, deploy": "tsc && jest && webpack",
+    "build & deploy": "tsc && webpack",
     "build & test": "tsc && jest",
     "build": "tsc",
     "test": "jest",
-    "deploy": "cmd /c building.bat",
+    "deploy": "webpack",
     "view coverage": "C:/code/FG/coverage/lcov-report/index.html"
   },
   "devDependencies": {
@@ -21,7 +18,13 @@
     "@babel/preset-typescript": "^7.15.0",
     "@types/jest": "^27.0.1",
     "babel-jest": "^27.2.0",
+    "css-loader": "^6.7.1",
+    "html-webpack-plugin": "^5.5.0",
     "jest": "^27.2.0",
-    "ts-node": "^10.2.1"
+    "ts-loader": "^9.2.8",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.0.3",
+    "webpack": "^5.72.0",
+    "webpack-cli": "^4.9.2"
   }
 }

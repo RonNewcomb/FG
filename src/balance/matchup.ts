@@ -50,8 +50,8 @@ function getFramedataDescription(character: 0 | 1, moveId: SystemMove): Phase[] 
 function getFramedataVisualization(character: 0 | 1, moveId: SystemMove, highlightedFrame?: number): HtmlComponent {
   const phases = getFramedataDescription(character, moveId);
   const changePhoto = (frame: number) => {
-    reRender(photo, Snapshot(character as 0 | 1, moveId, frame));
-    reRender(frameline, getFramedataVisualization(character as 0 | 1, moveId, frame));
+    //reRender(photo, Snapshot(character as 0 | 1, moveId, frame));
+    //reRender(frameline, getFramedataVisualization(character as 0 | 1, moveId, frame));
   }
   const timeline = phases.map((phase, i) => /*HTML*/`<one-frame data-for='${character}.${moveId}.${i}' ${onClick(_ => changePhoto(i))} class="${phase} ${i === highlightedFrame ? 'highlight' : ''}"></one-frame>`).reverse();
   return /*HTML*/`<framedata-timeline data-name=timeline data-for='${character}.${moveId}' class=timeline>${timeline.join('')}<div class=prestartup></div></framedata-timeline>`;

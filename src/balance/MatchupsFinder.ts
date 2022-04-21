@@ -85,12 +85,13 @@ export default async function MatchupsFinder() {
         }
     }
 
-    const filename = "built\\balance\\MatchupResults.json";
+    const filename = "built\\MatchupResults.json";
     console.log("writing results to", filename);
     const fullreport: FullReport = {
         report: report,
         smallestDistance: smallestDistance,
         moves: characters.map(c => c.assets.fdata.moves),
     };
+    //try { fs.mkdirSync("built\\balance\\"); } catch { }
     fs.writeFileSync(filename, JSON.stringify(fullreport));
 }

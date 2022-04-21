@@ -11,7 +11,7 @@
         "module": "esnext",
         "resolveJsonModule": true,
         "isolatedModules": true,
-        "outDir": "built",
+        "outDir": "garbage", // not needed with webpack's ts-loader, but i don't want zillions of .js files in /src/
         "lib": [
             "dom",
             "dom.iterable",

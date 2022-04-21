@@ -1,14 +1,6 @@
-## Setup
-
-Needs IIS app "FG" pointed to /built folder. For it, IIS "Mime Types" need to have the extension "." (just a period) as `application/javascript` because we aren't using a module loader, and typescript doesn't add .js to import statements.
-
-The NPM scripts in package.json (visible in VSCode) do the rest. Typescript compiles to /built folder. NPM script "copy" moves `index.html` and removes .js extensions. Browser follows import statements from there.
-
-Go to http://localhost/fg/ for the game or http://localhost/fg/balance/matchup.html for the post-build move matchup charts.
-
 ## Balancing
 
-Think about rollback netcode.
+Think about rollback netcode in a fighting game like Street Fighter V or Guilty Gear: Strive.
 
 - requires re-running the game for several frames within one frame.
 - Re-running shouldn't affect or ask for I/O
@@ -27,3 +19,11 @@ Think about rollback netcode.
 📝 Now rebalance, and repeat the process.
 
 📝 Use Inspector tool on the decision trees to see probabilities of success at every step of the match to inform balancing patch.
+
+## Setup
+
+Create IIS app "FG" pointed to /built folder. The NPM scripts in package.json (visible in VSCode) do the type-checking / testing / building / deploying.
+
+Run the tests (use `npm run test`) to generate matchup info.
+
+Go to http://localhost/fg/ for the game/demo and http://localhost/fg/balancer.html for matchup info.
