@@ -46,22 +46,27 @@
         left: 50%; /* guessed */
         top: 80px; /* guessed */
       }
-      snap-shot {
+      snap-shot,
+      .snap-shot {
         position: absolute;
         z-index: 1;
       }
-      snap-shot[data-p="1"] {
+      snap-shot[data-p="1"],
+      .snap-shot[data-p="1"] {
         transform: scaleX(-1); /* player2 */
       }
-      td > framedata-timeline {
+      td > framedata-timeline,
+      td > .framedata-timeline {
         display: flex;
         justify-content: center;
       }
-      framedata-timeline {
+      framedata-timeline,
+      .framedata-timeline {
         display: flex;
         flex-direction: row-reverse;
       }
-      framedata-timeline > one-frame {
+      framedata-timeline > one-frame,
+      .framedata-timeline > .one-frame {
         height: 0.5em;
         width: 1.5em;
         border: 1px solid white;

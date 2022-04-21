@@ -4,7 +4,7 @@ import { IColor } from "../interfaces/IPlatform";
 
 const ratioPPMto255 = 256 / million;
 const ratioPPMto0_1 = 1 / million;
-let PPMtoPixels = 1000 / million;
+export let PPMtoPixels = 1000 / million;
 
 export class PlatformNodeJs {
     private unknownHitboxColor: IColor = { R: million, G: million, B: million };
@@ -13,6 +13,17 @@ export class PlatformNodeJs {
         [HitboxProperties.Grab, { R: million, G: million, B: 0 }],
         [HitboxProperties.Hurtbox, { R: 0, G: 0, B: million }],
     ]);
+
+    getHitboxProps = (box: Hitbox) => {
+        const as = hasAll(box.props, HitboxProperties.Strike) ? HitboxProperties.Strike
+            : hasAll(box.props, HitboxProperties.Grab) ? HitboxProperties.Grab
+                : hasAll(box.props, HitboxProperties.Hurtbox) ? HitboxProperties.Hurtbox
+                    : HitboxProperties.Pushbox;
+        const borderColor = this.hitboxColors.get(as) || this.unknownHitboxColor;
+        const backgroundColor = { ...(this.hitboxColors.get(as) || this.unknownHitboxColor) };
+        backgroundColor.A = halfmillion;
+        return { as, borderColor, backgroundColor };
+    }
 
     drawHitbox = (box: Hitbox): string => {
         const as = hasAll(box.props, HitboxProperties.Strike) ? HitboxProperties.Strike
