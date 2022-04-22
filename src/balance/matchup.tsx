@@ -29,7 +29,7 @@ function HitboxView({ box }: { box: Hitbox }) {
 function Snapshot({ character, moveId, frame, translateX }: { character: 0 | 1; moveId: SystemMove; frame: frameCount; translateX?: number }) {
   const move = fullreport.moves[character][moveId].hitboxes[frame];
   if (!move) return <Snapshot character={character} moveId={SystemMove.StandIdle} frame={0} translateX={translateX} />;
-  const shift = !translateX ? "" : character === 1 ? `left: ${translateX / ppm2px}px` : "";
+  const shift = character === 0 ? "" : translateX ? `left: ${translateX / ppm2px}px; transform:scaleX(-1)` : `transform:scaleX(-1)`;
   return (
     <div className="snap-shot photo" style={shift}>
       {move.map(h => (
@@ -134,46 +134,44 @@ const colors = ["miss", "p1wins", "p2wins", "trade"];
 let ProbabilityTableContext = { p1wins: 0, p2wins: 0 };
 
 function RowOfDistances({
-  len4,
-  report,
+  vs,
   p1BeginsAttack,
   p2BeginsAttack,
-  p1move,
-  p2move,
+  p1MoveId,
+  p2MoveId,
   highlighting,
   onClickDistance,
 }: {
-  len4: number;
-  report: MoveVsMove[][];
+  vs: MoveVsMove;
   p1BeginsAttack: number;
   p2BeginsAttack: number;
-  p1move: number;
-  p2move: number;
+  p1MoveId: SystemMove;
+  p2MoveId: SystemMove;
   highlighting: [number, number, number];
-  onClickDistance: (dist: number) => void;
+  onClickDistance: (h: HighlightedCell) => void;
 }) {
-  const onClick = (distance: number) => {
-    console.log(distance * 50);
-    onClickDistance(distance * 50);
-  };
-
+  const numberOfDistances = vs.matchup[p1BeginsAttack]?.length || 0;
   const retval = [];
-  for (let distance = 0; distance < len4; distance++) {
-    const [p1WasHit, p2WasHit, connectedOnNthFrame] = report[p1move][p2move].matchup[p1BeginsAttack][distance] || [false, false, 999];
+  for (let distance = 0; distance < numberOfDistances; distance++) {
+    const [p1WasHit, p2WasHit, connectedOnNthFrame] = vs.matchup[p1BeginsAttack][distance] || [false, false, 999];
     const winLoseTradeMiss = !p1WasHit && !p2WasHit ? 0 : p1WasHit && p2WasHit ? 3 : p1WasHit ? 2 : 1;
     if (winLoseTradeMiss & 1) ProbabilityTableContext.p1wins++;
     if (winLoseTradeMiss & 2) ProbabilityTableContext.p2wins++;
-    const highlight = highlighting[2] === distance * 50 && highlighting[0] === p1move && highlighting[1] === p2move;
+    const highlight =
+      highlighting[2] === distance && highlighting[0] === connectedOnNthFrame - p1BeginsAttack && highlighting[1] === connectedOnNthFrame - p2BeginsAttack;
     retval.push(
-      <td className={colors[winLoseTradeMiss] + (highlight ? " highlight" : "")} onClick={() => onClick(distance)}>
+      <td
+        className={colors[winLoseTradeMiss] + (highlight ? " highlight" : "")}
+        onClick={() => onClickDistance({ distance, p1Frame: connectedOnNthFrame - p1BeginsAttack, p2Frame: connectedOnNthFrame - p2BeginsAttack })}
+      >
         <span className="resultLabel">
           <GetSituation
             winLoseTradeMiss={winLoseTradeMiss}
             nthFrame={connectedOnNthFrame}
             p1StartOn={p1BeginsAttack}
             p2StartOn={p2BeginsAttack}
-            moveId1={p1move + SystemMove.AttackMovesBegin}
-            moveId2={p2move + SystemMove.AttackMovesBegin}
+            moveId1={p1MoveId}
+            moveId2={p2MoveId}
           />
         </span>
       </td>
@@ -183,51 +181,47 @@ function RowOfDistances({
 }
 
 function FrameTable({
-  report,
-  p1move,
-  p2move,
-  p2BeginsAttack,
-  probTable,
+  vs,
+  p1MoveId,
+  p2MoveId,
+  setProbability,
   highlighting,
   onClickDistance,
 }: {
-  report: MoveVsMove[][];
-  p1move: number;
-  p2move: number;
-  p2BeginsAttack: number;
-  probTable: number[][];
+  vs: MoveVsMove;
+  p1MoveId: SystemMove;
+  p2MoveId: SystemMove;
+  setProbability: () => void;
   highlighting: [number, number, number];
-  onClickDistance: (box: [number, number, number]) => void;
+  onClickDistance: (h: HighlightedCell) => void;
 }) {
-  const getData = (distance: number, frameAdvantage: number, p1BeginsAttack: number) => {
-    console.log([p1BeginsAttack + frameAdvantage, p2BeginsAttack + frameAdvantage, distance]);
-    onClickDistance([p1BeginsAttack + frameAdvantage, p2BeginsAttack + frameAdvantage, distance]);
+  const p2BeginsAttack = vs.p2BeginsAttackOnThisFrame;
+  const getData = (h: HighlightedCell) => {
+    console.log(h);
+    onClickDistance(h);
   };
   const retval = (
     <table class="frameTable">
-      {report[p1move][p2move].matchup.map((_, p1BeginsAttack) => {
-        const len4 = report[p1move][p2move].matchup[p1BeginsAttack]?.length || 0;
+      {vs.matchup.map((_, p1BeginsAttack) => {
         const frameAdvantage = p2BeginsAttack - p1BeginsAttack;
         return (
           <tr>
             <th>{(p2BeginsAttack > p1BeginsAttack ? "+" : "") + frameAdvantage.toString()}</th>
             <RowOfDistances
-              len4={len4}
               p1BeginsAttack={p1BeginsAttack}
               p2BeginsAttack={p2BeginsAttack}
-              p1move={p1move}
-              p2move={p2move}
-              report={report}
+              p1MoveId={p1MoveId}
+              p2MoveId={p2MoveId}
+              vs={vs}
               highlighting={highlighting}
-              onClickDistance={distance => getData(distance, frameAdvantage, p1BeginsAttack)}
+              onClickDistance={getData}
             />
           </tr>
         );
       })}
     </table>
   );
-  if (!probTable[p1move]) probTable[p1move] = [];
-  probTable[p1move][p2move] = (ProbabilityTableContext.p1wins / (ProbabilityTableContext.p1wins + ProbabilityTableContext.p2wins)) * 100;
+  setProbability();
   return retval;
 }
 
@@ -252,19 +246,33 @@ function ProbabilityTable({ probTable }: { probTable: number[][] }) {
   );
 }
 
+interface HighlightedCell {
+  p1Frame: number;
+  p2Frame: number;
+  distance: number;
+}
+
 function OneComparison({ report, probTable, p1move, p2move }: { report: MoveVsMove[][]; probTable: number[][]; p1move: number; p2move: number }) {
   ProbabilityTableContext = { p1wins: 0, p2wins: 0 };
-  const [displayedFrameP1, setDisplayedFrameP1] = useState(() => findSnapshot(0, p1move + SystemMove.AttackMovesBegin));
-  const [displayedFrameP2, setDisplayedFrameP2] = useState(() => findSnapshot(1, p2move + SystemMove.AttackMovesBegin));
+  const p1MoveId = p1move + SystemMove.AttackMovesBegin;
+  const p2MoveId = p2move + SystemMove.AttackMovesBegin;
+  const [displayedFrameP1, setDisplayedFrameP1] = useState(() => findSnapshot(0, p1MoveId));
+  const [displayedFrameP2, setDisplayedFrameP2] = useState(() => findSnapshot(1, p2MoveId));
   const [distance, setDistance] = useState(500);
 
-  const display = ([p1, p2, dist]: [number, number, number]) => {
-    setDisplayedFrameP1(p1);
-    setDisplayedFrameP2(p2);
-    setDistance(dist);
+  const display = (h: HighlightedCell) => {
+    setDisplayedFrameP1(h.p1Frame);
+    setDisplayedFrameP2(h.p2Frame);
+    setDistance(h.distance);
   };
 
-  const p2BeginsAttack: frameCount = report[p1move][p2move].p2BeginsAttackOnThisFrame;
+  const setProbability = () => {
+    if (!probTable[p1move]) probTable[p1move] = [];
+    probTable[p1move][p2move] = (ProbabilityTableContext.p1wins / (ProbabilityTableContext.p1wins + ProbabilityTableContext.p2wins)) * 100;
+  };
+
+  const smallestDistancePx = fullreport.smallestDistance;
+  const vs: MoveVsMove = report[p1move][p2move];
   return (
     <table class="row">
       <tr>
@@ -275,11 +283,10 @@ function OneComparison({ report, probTable, p1move, p2move }: { report: MoveVsMo
             <span>Move {p2move}</span>
           </div>
           <FrameTable
-            report={report}
-            p1move={p1move}
-            p2move={p2move}
-            p2BeginsAttack={p2BeginsAttack}
-            probTable={probTable}
+            vs={vs}
+            p1MoveId={p1MoveId}
+            p2MoveId={p2MoveId}
+            setProbability={setProbability}
             highlighting={[displayedFrameP1, displayedFrameP2, distance]}
             onClickDistance={display}
           />
@@ -293,8 +300,8 @@ function OneComparison({ report, probTable, p1move, p2move }: { report: MoveVsMo
         </td>
         <td class="photoFrame" colSpan={2}>
           <div class="photoFrameset">
-            <Snapshot character={0} moveId={p1move + SystemMove.AttackMovesBegin} frame={displayedFrameP1} />
-            <Snapshot character={1} moveId={p2move + SystemMove.AttackMovesBegin} frame={displayedFrameP2} translateX={distance} />
+            <Snapshot character={0} moveId={p1MoveId} frame={displayedFrameP1} />
+            <Snapshot character={1} moveId={p2MoveId} frame={displayedFrameP2} translateX={distance * smallestDistancePx} />
           </div>
         </td>
       </tr>
@@ -305,20 +312,10 @@ function OneComparison({ report, probTable, p1move, p2move }: { report: MoveVsMo
           </span>
         </td>
         <td>
-          <MoveTimelineVisualization
-            character={0}
-            moveId={p1move + SystemMove.AttackMovesBegin}
-            highlightedFrame={displayedFrameP1}
-            onChangeShownFrame={setDisplayedFrameP1}
-          />
+          <MoveTimelineVisualization character={0} moveId={p1MoveId} highlightedFrame={displayedFrameP1} onChangeShownFrame={setDisplayedFrameP1} />
         </td>
         <td>
-          <MoveTimelineVisualization
-            character={1}
-            moveId={p2move + SystemMove.AttackMovesBegin}
-            highlightedFrame={displayedFrameP2}
-            onChangeShownFrame={setDisplayedFrameP2}
-          />
+          <MoveTimelineVisualization character={1} moveId={p2MoveId} highlightedFrame={displayedFrameP2} onChangeShownFrame={setDisplayedFrameP2} />
         </td>
       </tr>
     </table>
