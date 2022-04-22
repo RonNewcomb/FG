@@ -26,11 +26,14 @@
       }
       .photoFrame {
         position: relative;
-        vertical-align: top;
-        width: 33%;
+        width: 66%;
         background-color: lightgray;
         border: 1px solid black;
         border-radius: 10px;
+        border-left-color: darkred;
+        border-left-width: 7px;
+        border-right-color: darkblue;
+        border-right-width: 7px;
       }
       .photoFrame[data-p="0"] {
         box-shadow: inset 0 0 0 4px darkred, inset 0 0 0 5px black;
@@ -38,34 +41,25 @@
       .photoFrame[data-p="1"] {
         box-shadow: inset 0 0 0 4px darkblue, inset 0 0 0 5px black;
       }
-      .photoFrameset {
-        position: relative;
-        width: 0px; /* prevent horizontal scrollbar, since div width defaults to 100vw */
-        min-height: 250px; /* most of the animation cells need this much space */
-        left: 50%; /* guessed */
-        top: 80px; /* guessed */
+      .camera {
+        transform: translate(23%, -50px);
       }
-      snap-shot,
       .snap-shot {
         position: absolute;
         z-index: 1;
       }
-      snap-shot[data-p="1"],
       .snap-shot[data-p="1"] {
         transform: scaleX(-1); /* player2 */
       }
-      td > framedata-timeline,
       td > .framedata-timeline {
         display: flex;
         justify-content: center;
       }
-      framedata-timeline,
       .framedata-timeline {
         display: flex;
         flex-direction: row-reverse;
       }
-      framedata-timeline > one-frame,
-      .framedata-timeline > .one-frame {
+      .one-frame {
         height: 0.5em;
         width: 1.5em;
         border: 1px solid white;
@@ -108,36 +102,6 @@
       .trade {
         background-color: purple;
       }
-      .flyover:before {
-        content: " ";
-        position: fixed;
-        background-color: lightcyan;
-        z-index: 1;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-      }
-      .flyover {
-        display: none;
-        position: fixed;
-        z-index: 2;
-        top: 50vh;
-        left: 50vw;
-      }
-      .flyover div {
-        z-index: 3;
-      }
-      .flyoverFrameCompare {
-        position: fixed;
-        bottom: 10%;
-        width: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        justify-content: space-around;
-        background-color: white;
-        align-items: center;
-      }
       .probTable {
         text-align: center;
       }
@@ -149,48 +113,6 @@
     <table>
       <tbody>
         <tr>
-          <td class="photoFrame" data-p="0">
-            <div class="photoFrameset">
-              <snap-shot name="0.4" class="photo" data-p="0" data-moveid="4">
-                <div
-                  title="Hurtbox"
-                  style="
-                    position: absolute;
-                    top: 0px;
-                    left: -50px;
-                    width: 115px;
-                    height: 50px;
-                    background-color: rgba(0, 0, 256, 0.5);
-                    border: 1px solid rgb(0, 0, 256);
-                  "
-                ></div>
-                <div
-                  title="Hurtbox"
-                  style="
-                    position: absolute;
-                    top: 50px;
-                    left: -50px;
-                    width: 100px;
-                    height: 100px;
-                    background-color: rgba(0, 0, 256, 0.5);
-                    border: 1px solid rgb(0, 0, 256);
-                  "
-                ></div>
-                <div
-                  title="Grab"
-                  style="
-                    position: absolute;
-                    top: 0px;
-                    left: -50px;
-                    width: 150px;
-                    height: 50px;
-                    background-color: rgba(256, 256, 0, 0.5);
-                    border: 1px solid rgb(256, 256, 0);
-                  "
-                ></div>
-              </snap-shot>
-            </div>
-          </td>
           <td>
             <p>For the "photo" of hurtboxes/hitboxes:</p>
             <div>
@@ -207,37 +129,27 @@
             </div>
             <p>Also try hovering the mouse over a box.</p>
           </td>
-        </tr>
 
-        <tr>
           <td>
-            <framedata-timeline data-name="timeline" data-for="1.5" class="timeline">
-              <one-frame data-for="1.5.4" class="recovery"></one-frame>
-              <one-frame data-for="1.5.3" class="active"></one-frame>
-              <one-frame data-for="1.5.2" class="active"></one-frame>
-              <one-frame data-for="1.5.1" class="startup"></one-frame>
-              <one-frame data-for="1.5.0" class="startup"></one-frame>
+            <div class="framedata-timeline timeline">
+              <div class="one-frame recovery"></div>
+              <div class="one-frame recovery"></div>
+              <div class="one-frame active"></div>
+              <div class="one-frame startup"></div>
+              <div class="one-frame startup"></div>
               <div class="prestartup"></div>
-            </framedata-timeline>
-          </td>
-          <td>
+            </div>
             <p>For the "timeline" of a move:</p>
             <div>
-              <framedata-timeline data-name="timeline" data-for="9.5" class="timeline" style="flex-direction: initial">
-                <one-frame data-for="1.5.3" class="startup"></one-frame>
-              </framedata-timeline>
+              <div class="one-frame startup"></div>
               means startup
             </div>
             <div>
-              <framedata-timeline data-name="timeline" data-for="9.5" class="timeline" style="flex-direction: initial">
-                <one-frame data-for="1.5.3" class="active"></one-frame>
-              </framedata-timeline>
+              <div class="one-frame active"></div>
               means active
             </div>
             <div>
-              <framedata-timeline data-name="timeline" data-for="9.5" class="timeline" style="flex-direction: initial">
-                <one-frame data-for="1.5.3" class="recovery"></one-frame>
-              </framedata-timeline>
+              <div class="one-frame recovery"></div>
               means recovery
             </div>
             <p>And each is clickable to display the "photo" for that frame.</p>

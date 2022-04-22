@@ -299,7 +299,7 @@ function OneComparison({ report, probTable, p1move, p2move }: { report: MoveVsMo
           </div>
         </td>
         <td class="photoFrame" colSpan={2}>
-          <div class="photoFrameset">
+          <div class="camera">
             <Snapshot character={0} moveId={p1MoveId} frame={displayedFrameP1} />
             <Snapshot character={1} moveId={p2MoveId} frame={displayedFrameP2} translateX={distance * smallestDistancePx} />
           </div>
