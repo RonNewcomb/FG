@@ -34,7 +34,8 @@ export default {
     "built/",
     "/built/*.*",
     "built/*.*",
-    "./built"
+    "./built",
+    "temp"
   ],
 
   // Indicates which provider should be used to instrument code for coverage

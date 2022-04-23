@@ -35,21 +35,13 @@
         border-right-color: darkblue;
         border-right-width: 7px;
       }
-      .photoFrame[data-p="0"] {
-        box-shadow: inset 0 0 0 4px darkred, inset 0 0 0 5px black;
-      }
-      .photoFrame[data-p="1"] {
-        box-shadow: inset 0 0 0 4px darkblue, inset 0 0 0 5px black;
-      }
       .camera {
         transform: translate(23%, -50px);
       }
       .snap-shot {
         position: absolute;
         z-index: 1;
-      }
-      .snap-shot[data-p="1"] {
-        transform: scaleX(-1); /* player2 */
+        transition: left 0.5s;
       }
       td > .framedata-timeline {
         display: flex;

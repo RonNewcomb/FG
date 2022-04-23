@@ -40,9 +40,11 @@ export function collisionDetection(characters: Character[]): (Connected | undefi
                             matrix[i][j] = undefined;
                             matrix[j][i] = undefined;
                         } else if (p1Grabbed) {
+                            matrix[i][j]![3] = "G > S";
                             matrix[j][i] = undefined;
                         } else if (p2Grabbed) {
                             matrix[i][j] = undefined;
+                            matrix[j][i]![3] = "G > S";
                         }
                     }
 

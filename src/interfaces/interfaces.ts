@@ -101,6 +101,7 @@ export interface Connected {
     0: Hitbox; // successful attack
     1: Hitbox; // tagged hurtbox
     2: HitboxProperties; // type of attack (since [0] may have multiple properties i.e. both counter and reflector)
+    3?: string; // reason
 }
 
 // input ///////
@@ -143,5 +144,5 @@ export interface FullReport {
 
 export interface MoveVsMove {
     p2BeginsAttackOnThisFrame: frameCount;
-    matchup: [boolean, boolean, frameCount][][];
+    matchup: [boolean, boolean, frameCount, string?][][];
 }

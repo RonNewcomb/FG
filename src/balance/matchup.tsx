@@ -153,7 +153,7 @@ function RowOfDistances({
   const numberOfDistances = vs.matchup[p1BeginsAttack]?.length || 0;
   const retval = [];
   for (let distance = 0; distance < numberOfDistances; distance++) {
-    const [p1WasHit, p2WasHit, connectedOnNthFrame] = vs.matchup[p1BeginsAttack][distance] || [false, false, 999];
+    const [p1WasHit, p2WasHit, connectedOnNthFrame, oddReason] = vs.matchup[p1BeginsAttack][distance] || [false, false, 999];
     const winLoseTradeMiss = !p1WasHit && !p2WasHit ? 0 : p1WasHit && p2WasHit ? 3 : p1WasHit ? 2 : 1;
     if (winLoseTradeMiss & 1) ProbabilityTableContext.p1wins++;
     if (winLoseTradeMiss & 2) ProbabilityTableContext.p2wins++;
@@ -165,14 +165,18 @@ function RowOfDistances({
         onClick={() => onClickDistance({ distance, p1Frame: connectedOnNthFrame - p1BeginsAttack, p2Frame: connectedOnNthFrame - p2BeginsAttack })}
       >
         <span className="resultLabel">
-          <GetSituation
-            winLoseTradeMiss={winLoseTradeMiss}
-            nthFrame={connectedOnNthFrame}
-            p1StartOn={p1BeginsAttack}
-            p2StartOn={p2BeginsAttack}
-            moveId1={p1MoveId}
-            moveId2={p2MoveId}
-          />
+          {oddReason ? (
+            oddReason
+          ) : (
+            <GetSituation
+              winLoseTradeMiss={winLoseTradeMiss}
+              nthFrame={connectedOnNthFrame}
+              p1StartOn={p1BeginsAttack}
+              p2StartOn={p2BeginsAttack}
+              moveId1={p1MoveId}
+              moveId2={p2MoveId}
+            />
+          )}
         </span>
       </td>
     );

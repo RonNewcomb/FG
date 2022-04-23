@@ -17,7 +17,7 @@
         // "jsx": "preserve",
         // "jsxFactory": "h",
         // "jsxFragmentFactory": "Fragment",
-        "outDir": "garbage", // not needed with webpack's ts-loader, but i don't want zillions of .js files in /src/
+        "outDir": "temp", // not needed with webpack's ts-loader, but i don't want zillions of .js files in /src/
         "lib": [
             "dom",
             "dom.iterable",

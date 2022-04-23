@@ -73,7 +73,8 @@ export default async function MatchupsFinder() {
                         const p1WasHit = matrix[0][1] != null;
                         const p2WasHit = matrix[1][0] != null;
                         hasHit = p1WasHit || p2WasHit;
-                        report[i][j].matchup[p1BeginOnFrame][distance] = [p1WasHit, p2WasHit, frame];
+                        const oddReason = p1WasHit ? matrix[0][1]![3] : p2WasHit ? matrix[1][0]![3] : undefined;
+                        report[i][j].matchup[p1BeginOnFrame][distance] = [p1WasHit, p2WasHit, frame, oddReason];
                         if (hasHit) break;
                         p1.quickTick();
                         p2.quickTick();
