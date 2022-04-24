@@ -2,7 +2,7 @@
 import { render } from "preact";
 import { useState } from "preact/hooks";
 import { asHexValue, asPropertyList, PlatformNodeJs, PPMtoPixels } from "../game/PlatformNodeJs";
-import { CharacterMove, frameCount, FullReport, SystemMove, Hitbox, MoveVsMove } from "../interfaces/interfaces";
+import { CharacterMove, frameCount, FullReport, SystemMove, Hitbox, MoveVsMove, Connected, HitboxID } from "../interfaces/interfaces";
 
 const ppm2px = 1000;
 let fullreport: FullReport;
@@ -11,12 +11,12 @@ const gettingReport = fetch("./MatchupResults.json")
   .then(r => (fullreport = r));
 const platform2 = new PlatformNodeJs();
 
-function HitboxView({ box }: { box: Hitbox }) {
+function HitboxView({ box, glow }: { box: Hitbox; glow?: boolean }) {
   const { borderColor, backgroundColor } = platform2.getHitboxProps(box);
   return (
     <div
       title={asPropertyList(box.props)}
-      style={`position:absolute;
+      style={`position:absolute; ${glow ? "animation: pulse 2s infinite;" : ""}
                 top:${box.y * PPMtoPixels}px;       left:${box.x * PPMtoPixels}px;
                 width:${box.wide * PPMtoPixels}px;  height:${box.tall * PPMtoPixels}px;
                 background-color:${asHexValue(backgroundColor)}; border: 1px solid ${asHexValue(borderColor)};
@@ -26,14 +26,26 @@ function HitboxView({ box }: { box: Hitbox }) {
 }
 
 /** creates a picture (hitboxes & hurtboxes) of a particular frame of a particular move, facing in one of two directions, with optional horizontal offset */
-function Snapshot({ character, moveId, frame, translateX }: { character: 0 | 1; moveId: SystemMove; frame: frameCount; translateX?: number }) {
-  const move = fullreport.moves[character][moveId].hitboxes[frame];
-  if (!move) return <Snapshot character={character} moveId={SystemMove.StandIdle} frame={0} translateX={translateX} />;
+function Snapshot({
+  character,
+  moveId,
+  frame,
+  translateX,
+  boxesInvolved,
+}: {
+  character: 0 | 1;
+  moveId: SystemMove;
+  frame: frameCount;
+  translateX?: number;
+  boxesInvolved?: (HitboxID | undefined)[];
+}) {
+  const hitboxes = fullreport.moves[character][moveId].hitboxes[frame];
+  if (!hitboxes) return <Snapshot character={character} moveId={SystemMove.StandIdle} frame={0} translateX={translateX} />;
   const shift = character === 0 ? "" : translateX ? `left: ${translateX / ppm2px}px; transform:scaleX(-1)` : `transform:scaleX(-1)`;
   return (
     <div className="snap-shot photo" style={shift}>
-      {move.map(h => (
-        <HitboxView box={h} />
+      {hitboxes.map((hitbox, i) => (
+        <HitboxView box={hitbox} glow={boxesInvolved && boxesInvolved.includes(i)} />
       ))}
     </div>
   );
@@ -153,7 +165,7 @@ function RowOfDistances({
   const numberOfDistances = vs.matchup[p1BeginsAttack]?.length || 0;
   const retval = [];
   for (let distance = 0; distance < numberOfDistances; distance++) {
-    const [p1WasHit, p2WasHit, connectedOnNthFrame, oddReason] = vs.matchup[p1BeginsAttack][distance] || [false, false, 999];
+    const [p1WasHit, p2WasHit, connectedOnNthFrame, oddReason, p1Hitting, p2Hitting] = vs.matchup[p1BeginsAttack][distance] || [false, false, 999];
     const winLoseTradeMiss = !p1WasHit && !p2WasHit ? 0 : p1WasHit && p2WasHit ? 3 : p1WasHit ? 2 : 1;
     if (winLoseTradeMiss & 1) ProbabilityTableContext.p1wins++;
     if (winLoseTradeMiss & 2) ProbabilityTableContext.p2wins++;
@@ -162,7 +174,15 @@ function RowOfDistances({
     retval.push(
       <td
         className={colors[winLoseTradeMiss] + (highlight ? " highlight" : "")}
-        onClick={() => onClickDistance({ distance, p1Frame: connectedOnNthFrame - p1BeginsAttack, p2Frame: connectedOnNthFrame - p2BeginsAttack })}
+        onClick={() =>
+          onClickDistance({
+            distance,
+            p1Frame: connectedOnNthFrame - p1BeginsAttack,
+            p2Frame: connectedOnNthFrame - p2BeginsAttack,
+            p1Hitting,
+            p2Hitting,
+          })
+        }
       >
         <span className="resultLabel">
           {oddReason ? (
@@ -200,10 +220,6 @@ function FrameTable({
   onClickDistance: (h: HighlightedCell) => void;
 }) {
   const p2BeginsAttack = vs.p2BeginsAttackOnThisFrame;
-  const getData = (h: HighlightedCell) => {
-    console.log(h);
-    onClickDistance(h);
-  };
   const retval = (
     <table class="frameTable">
       {vs.matchup.map((_, p1BeginsAttack) => {
@@ -218,7 +234,7 @@ function FrameTable({
               p2MoveId={p2MoveId}
               vs={vs}
               highlighting={highlighting}
-              onClickDistance={getData}
+              onClickDistance={onClickDistance}
             />
           </tr>
         );
@@ -254,6 +270,15 @@ interface HighlightedCell {
   p1Frame: number;
   p2Frame: number;
   distance: number;
+  p1Hitting?: Connected;
+  p2Hitting?: Connected;
+}
+
+interface IBoxesInvolved {
+  p1Landing?: HitboxID;
+  p2Landing?: HitboxID;
+  p1Hurting?: HitboxID;
+  p2Hurting?: HitboxID;
 }
 
 function OneComparison({ report, probTable, p1move, p2move }: { report: MoveVsMove[][]; probTable: number[][]; p1move: number; p2move: number }) {
@@ -262,12 +287,19 @@ function OneComparison({ report, probTable, p1move, p2move }: { report: MoveVsMo
   const p2MoveId = p2move + SystemMove.AttackMovesBegin;
   const [displayedFrameP1, setDisplayedFrameP1] = useState(() => findSnapshot(0, p1MoveId));
   const [displayedFrameP2, setDisplayedFrameP2] = useState(() => findSnapshot(1, p2MoveId));
-  const [distance, setDistance] = useState(500);
+  const [distance, setDistance] = useState(5);
+  const [boxesInvolved, setBoxesInvolved] = useState<IBoxesInvolved>();
 
   const display = (h: HighlightedCell) => {
     setDisplayedFrameP1(h.p1Frame);
     setDisplayedFrameP2(h.p2Frame);
     setDistance(h.distance);
+    setBoxesInvolved({
+      p1Landing: h.p1Hitting?.[0],
+      p2Landing: h.p2Hitting?.[0],
+      p1Hurting: h.p2Hitting?.[1],
+      p2Hurting: h.p1Hitting?.[1],
+    });
   };
 
   const setProbability = () => {
@@ -277,6 +309,8 @@ function OneComparison({ report, probTable, p1move, p2move }: { report: MoveVsMo
 
   const smallestDistancePx = fullreport.smallestDistance;
   const vs: MoveVsMove = report[p1move][p2move];
+  const boxesInvolvedP2 = boxesInvolved ? [boxesInvolved.p1Landing, boxesInvolved.p1Hurting] : undefined;
+  const boxesInvolvedP1 = boxesInvolved ? [boxesInvolved.p2Landing, boxesInvolved.p2Hurting] : undefined;
   return (
     <table class="row">
       <tr>
@@ -304,8 +338,8 @@ function OneComparison({ report, probTable, p1move, p2move }: { report: MoveVsMo
         </td>
         <td class="photoFrame" colSpan={2}>
           <div class="camera">
-            <Snapshot character={0} moveId={p1MoveId} frame={displayedFrameP1} />
-            <Snapshot character={1} moveId={p2MoveId} frame={displayedFrameP2} translateX={distance * smallestDistancePx} />
+            <Snapshot character={0} moveId={p1MoveId} frame={displayedFrameP1} boxesInvolved={boxesInvolvedP1} />
+            <Snapshot character={1} moveId={p2MoveId} frame={displayedFrameP2} boxesInvolved={boxesInvolvedP2} translateX={distance * smallestDistancePx} />
           </div>
         </td>
       </tr>

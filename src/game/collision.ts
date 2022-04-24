@@ -40,11 +40,11 @@ export function collisionDetection(characters: Character[]): (Connected | undefi
                             matrix[i][j] = undefined;
                             matrix[j][i] = undefined;
                         } else if (p1Grabbed) {
-                            matrix[i][j]![3] = "G > S";
+                            matrix[i][j]![3] = "Grab wins";
                             matrix[j][i] = undefined;
                         } else if (p2Grabbed) {
                             matrix[i][j] = undefined;
-                            matrix[j][i]![3] = "G > S";
+                            matrix[j][i]![3] = "Grab wins";
                         }
                     }
 
@@ -62,7 +62,7 @@ export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connec
             for (let target of targetBoxes)
                 if (hasAll(target.props, HitboxProperties.Hurtbox) && hasNone(target.props, HitboxProperties.ImmuneStrike))
                     if (rectanglesIntersect(attack, target))
-                        return [attack, target, HitboxProperties.Strike];
+                        return [attackBoxes.indexOf(attack), targetBoxes.indexOf(target), HitboxProperties.Strike];
 
     // check grab -> target
     for (let attack of attackBoxes)
@@ -70,7 +70,7 @@ export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connec
             for (let target of targetBoxes)
                 if (hasAll(target.props, HitboxProperties.Hurtbox) && hasNone(target.props, HitboxProperties.ImmuneGrab))
                     if (rectanglesIntersect(attack, target))
-                        return [attack, target, HitboxProperties.Grab];
+                        return [attackBoxes.indexOf(attack), targetBoxes.indexOf(target), HitboxProperties.Grab];
 
     // check projectile-strike -> target
     for (let attack of attackBoxes)
@@ -78,7 +78,7 @@ export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connec
             for (let target of targetBoxes)
                 if (hasAll(target.props, HitboxProperties.Hurtbox) && hasNone(target.props, HitboxProperties.ImmuneProjectile))
                     if (rectanglesIntersect(attack, target))
-                        return [attack, target, HitboxProperties.Projectile];
+                        return [attackBoxes.indexOf(attack), targetBoxes.indexOf(target), HitboxProperties.Projectile];
 
     // check counter -> strike/projectile 
     for (let attack of attackBoxes)
@@ -86,7 +86,7 @@ export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connec
             for (let target of targetBoxes)
                 if (hasAny(target.props, HitboxProperties.Strike | HitboxProperties.Projectile))
                     if (rectanglesIntersect(attack, target))
-                        return [attack, target, HitboxProperties.Counter];
+                        return [attackBoxes.indexOf(attack), targetBoxes.indexOf(target), HitboxProperties.Counter];
 
     // check reflect -> projectile
     for (let attack of attackBoxes)
@@ -94,7 +94,7 @@ export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connec
             for (let target of targetBoxes)
                 if (hasAll(target.props, HitboxProperties.Projectile))
                     if (rectanglesIntersect(attack, target))
-                        return [attack, target, HitboxProperties.Reflect];
+                        return [attackBoxes.indexOf(attack), targetBoxes.indexOf(target), HitboxProperties.Reflect];
 
     return undefined;
 }

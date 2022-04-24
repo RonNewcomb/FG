@@ -96,10 +96,12 @@ export interface FrameData {
     readonly moves: CharacterMove[]; // index is SystemMove or more
 }
 
+export type HitboxID = number;
+
 /** a hitbox touched a hurtbox, via property strike/grab/projectile/counter/reflect */
 export interface Connected {
-    0: Hitbox; // successful attack
-    1: Hitbox; // tagged hurtbox
+    0: HitboxID; //Hitbox; // successful attack
+    1: HitboxID; //Hitbox; // tagged hurtbox
     2: HitboxProperties; // type of attack (since [0] may have multiple properties i.e. both counter and reflector)
     3?: string; // reason
 }
@@ -144,5 +146,5 @@ export interface FullReport {
 
 export interface MoveVsMove {
     p2BeginsAttackOnThisFrame: frameCount;
-    matchup: [boolean, boolean, frameCount, string?][][];
+    matchup: [boolean, boolean, frameCount, string?, Connected?, Connected?][][];
 }

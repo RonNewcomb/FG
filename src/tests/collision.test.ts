@@ -29,8 +29,8 @@ test("these boxsets do intersect - strike has priority over grab", () => {
     const answer = checkBoxes(attacks, targets)!;
     expect(answer).not.toBeNull();
     expect(answer).toHaveLength(3);
-    const a = answer[0];
-    const t = answer[1];
+    const a = attacks[answer[0]];
+    const t = targets[answer[1]];
     const p = answer[2];
     expect(a).toBe(attacks[1]);
     expect(t).toBe(targets[1]);
@@ -62,8 +62,8 @@ test("these boxsets do intersect - strike misses but grab hits", () => {
     const answer = checkBoxes(attacks, targets)!;
     expect(answer).not.toBeNull();
     expect(answer).toHaveLength(3);
-    const a = answer[0];
-    const t = answer[1];
+    const a = attacks[answer[0]];
+    const t = targets[answer[1]];
     const p = answer[2];
     expect(a).toBe(attacks[1]);
     expect(t).toBe(targets[1]);
