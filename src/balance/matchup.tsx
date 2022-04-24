@@ -309,8 +309,8 @@ function OneComparison({ report, probTable, p1move, p2move }: { report: MoveVsMo
 
   const smallestDistancePx = fullreport.smallestDistance;
   const vs: MoveVsMove = report[p1move][p2move];
-  const boxesInvolvedP2 = boxesInvolved ? [boxesInvolved.p1Landing, boxesInvolved.p1Hurting] : undefined;
-  const boxesInvolvedP1 = boxesInvolved ? [boxesInvolved.p2Landing, boxesInvolved.p2Hurting] : undefined;
+  const boxesInvolvedP1 = boxesInvolved ? [boxesInvolved.p1Landing, boxesInvolved.p1Hurting] : undefined;
+  const boxesInvolvedP2 = boxesInvolved ? [boxesInvolved.p2Landing, boxesInvolved.p2Hurting] : undefined;
   return (
     <table class="row">
       <tr>
