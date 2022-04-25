@@ -1,7 +1,11 @@
 // this is the app for matchup.html;  might should be a small Preact app or something
 import { render } from "preact";
 import { useState } from "preact/hooks";
+import { Character } from "../game/character";
+import { CharacterTemplate } from "../game/charaterTemplate";
 import { asHexValue, asPropertyList, PlatformNodeJs, PPMtoPixels } from "../game/PlatformNodeJs";
+import { fdata1 } from "../game/testdata";
+import { NullInput } from "../game/util";
 import { CharacterMove, frameCount, FullReport, SystemMove, Hitbox, MoveVsMove, Connected, HitboxID } from "../interfaces/interfaces";
 
 const ppm2px = 1000;
@@ -10,6 +14,9 @@ const gettingReport = fetch("./MatchupResults.json")
   .then(res => res.json())
   .then(r => (fullreport = r));
 const platform2 = new PlatformNodeJs();
+
+const template = new CharacterTemplate([], [], fdata1, "Name");
+const renderCharacterBoxes = [new Character(template, NullInput, true), new Character(template, NullInput, false)];
 
 function HitboxView({ box, glow }: { box: Hitbox; glow?: boolean }) {
   const { borderColor, backgroundColor } = platform2.getHitboxProps(box);
@@ -41,10 +48,15 @@ function Snapshot({
 }) {
   const hitboxes = fullreport.moves[character][moveId].hitboxes[frame];
   if (!hitboxes) return <Snapshot character={character} moveId={SystemMove.StandIdle} frame={0} translateX={translateX} />;
-  const shift = character === 0 ? "" : translateX ? `left: ${translateX / ppm2px}px; transform:scaleX(-1)` : `transform:scaleX(-1)`;
+  const char = renderCharacterBoxes[character];
+  char.reset(character === 0);
+  char.x = character === 0 ? 0 : translateX || 0;
+  char.setCurrentMove(moveId);
+  char.currentTick = frame;
+  const boxes = char.getCurrentBoxesInWorldCoordinates();
   return (
-    <div className="snap-shot photo" style={shift}>
-      {hitboxes.map((hitbox, i) => (
+    <div className="snap-shot photo">
+      {boxes.map((hitbox, i) => (
         <HitboxView box={hitbox} glow={boxesInvolved && boxesInvolved.includes(i)} />
       ))}
     </div>

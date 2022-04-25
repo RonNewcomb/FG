@@ -10,12 +10,22 @@ import { PlatformBrowser } from "../game/PlatformBrowser";
 import { NullInput } from "../game/util";
 import * as fs from "fs";
 
-function getWalkSpeed(character: Character): PPM {
+export function getWalkSpeed(character: Character): PPM {
     const walkEffects = character.assets.fdata.moves[SystemMove.WalkForward].effects || [];
     let walkSpeed = 0;
     for (let i = 0; i < 3; i++)
         walkSpeed += walkEffects[i % walkEffects.length].xOffset || 0;
     return walkSpeed;
+}
+
+/**
+ * the smallest range isn't a pixel, its the distance walked by a character in, say, 7 frames
+ * before the joystick changes walk direction again; i.e. the shimmy-at-footsies-range
+ */
+export function getSmallestDistance(p1: Character, p2: Character): PPM {
+    const rangeEpsilonP1 = getWalkSpeed(p1);
+    const rangeEpsilonP2 = getWalkSpeed(p2);
+    return rangeEpsilonP1 + rangeEpsilonP2;
 }
 
 export default async function MatchupsFinder() {
@@ -34,12 +44,7 @@ export default async function MatchupsFinder() {
     const p2 = characters[1];
     const p1Attacks = p1.assets.fdata.moves;
     const p2Attacks = p2.assets.fdata.moves;
-
-    // the smallest range isn't a pixel, its the distance walked by a character in, say, 7 frames 
-    // before teh joystick changes walk direction again; i.e. the shimmy-at-footsies-range
-    const rangeEpsilonP1 = getWalkSpeed(p1);
-    const rangeEpsilonP2 = getWalkSpeed(p2);
-    const smallestDistance: PPM = rangeEpsilonP1 + rangeEpsilonP2;
+    const smallestDistance: PPM = getSmallestDistance(p1, p2);
 
     // loop through every attack move from player 1
     // loop through every attack move from player 2

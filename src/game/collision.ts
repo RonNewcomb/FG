@@ -101,5 +101,5 @@ export function checkBoxes(attackBoxes: Hitbox[], targetBoxes: Hitbox[]): Connec
 
 export function rectanglesIntersect(attack: Hitbox, target: Hitbox): boolean {
     return attack.x <= target.x + target.wide && attack.x + attack.wide >= target.x
-        && attack.y <= target.y + target.tall && attack.y + attack.wide >= target.y;
+        && attack.y <= target.y + target.tall && attack.y + attack.tall >= target.y;
 }
