@@ -122,6 +122,7 @@ function GetSituation({
   p2StartOn,
   moveId1,
   moveId2,
+  oddReason,
 }: {
   winLoseTradeMiss: 0 | 1 | 2 | 3;
   nthFrame: frameCount;
@@ -129,7 +130,9 @@ function GetSituation({
   p2StartOn: number;
   moveId1: SystemMove;
   moveId2: SystemMove;
+  oddReason?: string;
 }) {
+  if (oddReason) return <>{oddReason}</>;
   if (winLoseTradeMiss === 0) return <></>;
   if (winLoseTradeMiss === 3) return <>trade</>;
   const p1doing = getFramedataDescription(0, moveId1)[nthFrame - p1StartOn];
@@ -155,8 +158,6 @@ function GetSituation({
 
 const colors = ["miss", "p1wins", "p2wins", "trade"];
 
-let ProbabilityTableContext = { p1wins: 0, p2wins: 0 };
-
 function RowOfDistances({
   vs,
   p1BeginsAttack,
@@ -179,8 +180,7 @@ function RowOfDistances({
   for (let distance = 0; distance < numberOfDistances; distance++) {
     const [p1WasHit, p2WasHit, connectedOnNthFrame, oddReason, p1Hitting, p2Hitting] = vs.matchup[p1BeginsAttack][distance] || [false, false, 999];
     const winLoseTradeMiss = !p1WasHit && !p2WasHit ? 0 : p1WasHit && p2WasHit ? 3 : p1WasHit ? 2 : 1;
-    if (winLoseTradeMiss & 1) ProbabilityTableContext.p1wins++;
-    if (winLoseTradeMiss & 2) ProbabilityTableContext.p2wins++;
+
     const highlight =
       highlighting[2] === distance && highlighting[0] === connectedOnNthFrame - p1BeginsAttack && highlighting[1] === connectedOnNthFrame - p2BeginsAttack;
     retval.push(
@@ -197,18 +197,15 @@ function RowOfDistances({
         }
       >
         <span className="resultLabel">
-          {oddReason ? (
-            oddReason
-          ) : (
-            <GetSituation
-              winLoseTradeMiss={winLoseTradeMiss}
-              nthFrame={connectedOnNthFrame}
-              p1StartOn={p1BeginsAttack}
-              p2StartOn={p2BeginsAttack}
-              moveId1={p1MoveId}
-              moveId2={p2MoveId}
-            />
-          )}
+          <GetSituation
+            winLoseTradeMiss={winLoseTradeMiss}
+            nthFrame={connectedOnNthFrame}
+            p1StartOn={p1BeginsAttack}
+            p2StartOn={p2BeginsAttack}
+            moveId1={p1MoveId}
+            moveId2={p2MoveId}
+            oddReason={oddReason}
+          />
         </span>
       </td>
     );
@@ -220,19 +217,17 @@ function FrameTable({
   vs,
   p1MoveId,
   p2MoveId,
-  setProbability,
   highlighting,
   onClickDistance,
 }: {
   vs: MoveVsMove;
   p1MoveId: SystemMove;
   p2MoveId: SystemMove;
-  setProbability: () => void;
   highlighting: [number, number, number];
   onClickDistance: (h: HighlightedCell) => void;
 }) {
   const p2BeginsAttack = vs.p2BeginsAttackOnThisFrame;
-  const retval = (
+  return (
     <table class="frameTable">
       {vs.matchup.map((_, p1BeginsAttack) => {
         const frameAdvantage = p2BeginsAttack - p1BeginsAttack;
@@ -253,8 +248,32 @@ function FrameTable({
       })}
     </table>
   );
-  setProbability();
-  return retval;
+}
+
+function calculateProbabilityTable(report: MoveVsMove[][]): number[][] {
+  const probTable: number[][] = [];
+
+  report.forEach((_, p1move) =>
+    report[p1move].forEach((_, p2move) => {
+      let p1wins = 0;
+      let p2wins = 0;
+      let trade = 0;
+      const moveVsMove = report[p1move][p2move];
+      moveVsMove.matchup.forEach((_, p1BeginsAttack) => {
+        const numberOfDistances = moveVsMove.matchup[p1BeginsAttack]?.length || 0;
+        for (let distance = 0; distance < numberOfDistances; distance++) {
+          const [p1WasHit, p2WasHit] = moveVsMove.matchup[p1BeginsAttack][distance] || [false, false];
+          if (p2WasHit && !p1WasHit) p1wins++;
+          if (p1WasHit && !p2WasHit) p2wins++;
+          if (p1WasHit && p2WasHit) trade++;
+        }
+      });
+      if (!probTable[p1move]) probTable[p1move] = [];
+      probTable[p1move][p2move] = (p1wins / (p1wins + p2wins + trade)) * 100;
+    })
+  );
+
+  return probTable;
 }
 
 function ProbabilityTable({ probTable }: { probTable: number[][] }) {
@@ -263,14 +282,14 @@ function ProbabilityTable({ probTable }: { probTable: number[][] }) {
       <tr>
         <th></th>
         {probTable.map((_, p1move) => (
-          <th>P1 move {p1move}</th>
+          <th>P1 move {p1move + 1}</th>
         ))}
       </tr>
       {probTable.map((_, p1move) => (
         <tr>
-          <th>P2 move {p1move}</th>
+          <th>P2 move {p1move + 1}</th>
           {probTable[p1move].map((_, p2move) => (
-            <td>{(probTable[p1move][p2move] || 0).toFixed(0)}%</td>
+            <td style={{ opacity: p1move === p2move ? 0.5 : 1 }}>{(probTable[p1move][p2move] || 0).toFixed(0)}%</td>
           ))}
         </tr>
       ))}
@@ -294,7 +313,6 @@ interface IBoxesInvolved {
 }
 
 function OneComparison({ report, probTable, p1move, p2move }: { report: MoveVsMove[][]; probTable: number[][]; p1move: number; p2move: number }) {
-  ProbabilityTableContext = { p1wins: 0, p2wins: 0 };
   const p1MoveId = p1move + SystemMove.AttackMovesBegin;
   const p2MoveId = p2move + SystemMove.AttackMovesBegin;
   const [displayedFrameP1, setDisplayedFrameP1] = useState(() => findSnapshot(0, p1MoveId));
@@ -314,11 +332,6 @@ function OneComparison({ report, probTable, p1move, p2move }: { report: MoveVsMo
     });
   };
 
-  const setProbability = () => {
-    if (!probTable[p1move]) probTable[p1move] = [];
-    probTable[p1move][p2move] = (ProbabilityTableContext.p1wins / (ProbabilityTableContext.p1wins + ProbabilityTableContext.p2wins)) * 100;
-  };
-
   const smallestDistancePx = fullreport.smallestDistance;
   const vs: MoveVsMove = report[p1move][p2move];
   const boxesInvolvedP1 = boxesInvolved ? [boxesInvolved.p1Landing, boxesInvolved.p1Hurting] : undefined;
@@ -328,18 +341,11 @@ function OneComparison({ report, probTable, p1move, p2move }: { report: MoveVsMo
       <tr>
         <td>
           <div class="header">
-            <span>Move {p1move}</span>
+            <span>Move {p1move + 1}</span>
             <span>vs</span>
-            <span>Move {p2move}</span>
+            <span>Move {p2move + 1}</span>
           </div>
-          <FrameTable
-            vs={vs}
-            p1MoveId={p1MoveId}
-            p2MoveId={p2MoveId}
-            setProbability={setProbability}
-            highlighting={[displayedFrameP1, displayedFrameP2, distance]}
-            onClickDistance={display}
-          />
+          <FrameTable vs={vs} p1MoveId={p1MoveId} p2MoveId={p2MoveId} highlighting={[displayedFrameP1, displayedFrameP2, distance]} onClickDistance={display} />
           <div class="distanceline">
             <span>close</span>
             <span>
@@ -358,7 +364,7 @@ function OneComparison({ report, probTable, p1move, p2move }: { report: MoveVsMo
       <tr>
         <td class="distanceline">
           <span>
-            move {p1move} win rate {probTable?.[p1move]?.[p2move]?.toFixed(0)}%
+            move {p1move + 1} win rate {probTable?.[p1move]?.[p2move]?.toFixed(0)}%
           </span>
         </td>
         <td>
@@ -374,8 +380,8 @@ function OneComparison({ report, probTable, p1move, p2move }: { report: MoveVsMo
 
 /** loops through every combination of moves, ranges, and frame adv/disadv and create report of what happens when & where */
 function Main2({ fullreport }: { fullreport: FullReport }) {
-  const probTable: number[][] = [];
   const report = fullreport.report;
+  const probTable = calculateProbabilityTable(report);
   return (
     <>
       {report.map((_, p1move) => report[p1move].map((_, p2move) => <OneComparison report={report} probTable={probTable} p1move={p1move} p2move={p2move} />))}
